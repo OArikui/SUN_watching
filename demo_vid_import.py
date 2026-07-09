@@ -83,7 +83,7 @@ try:
     
     ax_img = ax.imshow(img, cmap='gray', vmin=0, vmax=255)
     
-    circle = plt.Circle((0, 0), 0, fill=True, color='skyblue', linewidth=2)
+    circle = plt.Circle((0, 0), 0, fill=True, color='skyblue', linewidth=2,alpha=0.5)
     ax_min2 = ax.add_patch(circle)
     ax_shdw_c, = ax.plot([], [], 'o', color="cyan", markersize=3, alpha=0.4, label="circle center track")
     
@@ -115,8 +115,12 @@ try:
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         else:
             img = frame
-
-        (cx, cy), r = MIN2(img)
+        try:
+            (cx, cy), r = MIN2(img)
+        except Exception as e:
+            print()
+            print(f"MIN2の処理中にエラーが発生しました: {e}")
+            continue
         buffer.append([cx, cy])
 
         buf_arr = np.array(buffer)
