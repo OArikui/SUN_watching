@@ -150,9 +150,9 @@ try:
         
         need_cl = plturn(calculate)
         fig_text.set_text(f'turn camera_{need_cl}° clockwise')
-        clockwi = True if need_cl > 0 else False
+        clockwise = True if need_cl > 0 else False
         
-        arrow.update(gapangle=abs(need_cl), clockwise=clockwi, edgecolor=uxc[1], tri_color=uxc[1])
+        arrow.update(gapangle=abs(need_cl), clockwise=clockwise, edgecolor=uxc[1], tri_color=uxc[1])
         
         for gl in grid_lines:
             gl.set_color(uxc[0])

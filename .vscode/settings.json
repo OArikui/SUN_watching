@@ -1,11 +1,27 @@
 {
     "cSpell.words": [
+        "BANDWIDTHOVERLOAD",
+        "cmap",
         "drow",
+        "edgecolor",
+        "fignum",
+        "fontsize",
+        "frombuffer",
+        "gapangle",
+        "imshow",
+        "kansoku",
+        "markersize",
         "MEIPASS",
         "plturn",
         "RANSAC",
+        "shdw",
         "skyblue",
+        "sunline",
+        "vmax",
         "vmin",
-        "waittime"
+        "waittime",
+        "xdata",
+        "ydata",
+        "zwoasi"
     ]
 }
