@@ -130,7 +130,6 @@ try:
         ax_min2.set_center((cx, cy))
         ax_min2.set_radius(r)
         
-        # （上部省略）
         ax_shdw_c.set_data(recent_pts[:, 0], recent_pts[:, 1])
 
         calculate = west_angle(recent_pts)
@@ -150,9 +149,9 @@ try:
             
             need_cl = plturn(calculate)
             fig_text.set_text(f'turn camera_{need_cl}° clockwise')
-            clockwi = True if need_cl > 0 else False
+            clockwise = True if need_cl > 0 else False
             
-            arrow.update(gapangle=abs(need_cl), clockwise=clockwi, edgecolor=uxc[1], tri_color=uxc[1])
+            arrow.update(gapangle=abs(need_cl), clockwise=clockwise, edgecolor=uxc[1], tri_color=uxc[1])
         else:
             # データが足りず、まだ角度が計算できないときの処理
             uxc = ("red", "purple")
