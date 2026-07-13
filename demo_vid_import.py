@@ -132,7 +132,7 @@ try:
         
         ax_shdw_c.set_data(recent_pts[:, 0], recent_pts[:, 1])
 
-        calculate = west_angle(recent_pts)
+        calculate,vector = west_angle(recent_pts)
         
         # === [修正] calculate が None の場合の安全対策を追加 ===
         if calculate is not None:

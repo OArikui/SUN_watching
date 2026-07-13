@@ -42,7 +42,8 @@ def calculate_west_angle_robust(p_lst):
     # ラジアンから度数法(Degree)に変換
     angle_deg = math.degrees(angle_rad)
 
-    return angle_deg
+    return angle_deg,(vy,vx\
+        )
 
 # --- テスト実行と描画 ---
 if __name__ == "__main__":

@@ -140,7 +140,7 @@ try:
         
         ax_shdw_c.set_data(recent_pts[:, 0], recent_pts[:, 1])
 
-        calculate = west_angle(recent_pts)
+        calculate,vectorYX = west_angle(recent_pts)
         
         if 180 - abs(calculate) < acceptable:
             uxc = ("limegreen", "mediumseagreen")
