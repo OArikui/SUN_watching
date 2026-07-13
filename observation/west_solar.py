@@ -7,6 +7,11 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
+#UI parameters
+
+grid_color=FFFFFF
+
+
 # ==========================================
 # 0. 階層エラー対策 (パスの自動追加)
 # ==========================================
@@ -103,10 +108,10 @@ try:
     
     grid_lines = []
     for y_val in np.linspace(0, height, 5)[1:-1]:
-        line, = ax.plot([0, width], [y_val, y_val], color=uxc[0], linewidth=3, alpha=0.4)
+        line, = ax.plot([0, width], [y_val, y_val], color=grid_color, linewidth=3, alpha=0.4)
         grid_lines.append(line)
         
-    sunline = min(width, height) * 3 / 4 / 2
+    sunline =( min(width, height) * 2 / 4 )/ 2
     ax_sunline, = ax.plot([], [], color=uxc[1], linewidth=3)
     
     fig_text = fig.text(0.01, 0.5, f'turn camera_0°', ha='left', fontsize=20, color=uxc[0])
@@ -154,8 +159,6 @@ try:
         
         arrow.update(gapangle=abs(need_cl), clockwise=clockwise, edgecolor=uxc[1], tri_color=uxc[1])
         
-        for gl in grid_lines:
-            gl.set_color(uxc[0])
         ax_sunline.set_color(uxc[1])
         fig_text.set_color(uxc[0])
 
