@@ -116,7 +116,7 @@ try:
         else:
             img = frame
         try:
-            (cx, cy), r = MIN2(img)
+            cx, cy, r = MIN2(img)
         except Exception as e:
             print()
             print(f"MIN2の処理中にエラーが発生しました: {e}")

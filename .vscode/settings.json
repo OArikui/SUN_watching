@@ -23,5 +23,6 @@
         "xdata",
         "ydata",
         "zwoasi"
-    ]
+    ],
+    "python-envs.defaultEnvManager": "ms-python.python:system"
 }

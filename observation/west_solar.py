@@ -123,7 +123,7 @@ try:
 
         img = np.frombuffer(frame, dtype=np.uint8).reshape(height, width)
 
-        (cx, cy), r = MIN2(img)
+        cx, cy, r = MIN2(img)
         buffer.append([cx, cy])
 
         buf_arr = np.array(buffer)
