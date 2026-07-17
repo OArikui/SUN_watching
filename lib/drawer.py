@@ -6,6 +6,7 @@ from matplotlib.widgets import Slider
 
 __all__ = ["OpenCircleArrow", "Visualizer"]
 
+
 # 1. OpenCircleArrow クラス (描画パーツ)
 class OpenCircleArrow:
     def __init__(
@@ -211,34 +212,83 @@ class Visualizer:
 
 # テスト・デモ実行用
 if __name__ == "__main__":
-    # このスクリプトを直接実行した場合、スライダー付きの矢印デモが動作します
-    fig, ax = plt.subplots(figsize=(5, 6))
-    plt.subplots_adjust(bottom=0.25)
+    from tkinter.filedialog import askopenfile
 
-    arrow = OpenCircleArrow(ax, center=(0, 0), radius=1.0, gap_angle=90, clockwise=True)
+    demo_mode = input("allow,west as (1or2)")
+    if demo_mode == "1":
+        # このスクリプトを直接実行した場合、スライダー付きの矢印デモが動作します
+        fig, ax = plt.subplots(figsize=(5, 6))
+        plt.subplots_adjust(bottom=0.25)
 
-    ax.set_xlim(-1.5, 1.5)
-    ax.set_ylim(-1.5, 1.5)
-    ax.set_aspect("equal")
-    ax.axis("off")
-
-    ax_gap = plt.axes([0.2, 0.14, 0.6, 0.03])
-    ax_radius = plt.axes([0.2, 0.09, 0.6, 0.03])
-    ax_start = plt.axes([0.2, 0.04, 0.6, 0.03])
-
-    slider_gap = Slider(ax_gap, "Gap Angle", 0, 360, valinit=90)
-    slider_radius = Slider(ax_radius, "Radius", 0.1, 1.4, valinit=1.0)
-    slider_start = Slider(ax_start, "Start Angle", 0, 360, valinit=180)
-
-    def handle_update(val):
-        arrow.update(
-            gap_angle=slider_gap.val,
-            radius=slider_radius.val,
-            start_angle=slider_start.val,
+        arrow = OpenCircleArrow(
+            ax, center=(0, 0), radius=1.0, gap_angle=90, clockwise=True
         )
 
-    slider_gap.on_changed(handle_update)
-    slider_radius.on_changed(handle_update)
-    slider_start.on_changed(handle_update)
+        ax.set_xlim(-1.5, 1.5)
+        ax.set_ylim(-1.5, 1.5)
+        ax.set_aspect("equal")
+        ax.axis("off")
 
-    plt.show()
+        ax_gap = plt.axes([0.2, 0.14, 0.6, 0.03])
+        ax_radius = plt.axes([0.2, 0.09, 0.6, 0.03])
+        ax_start = plt.axes([0.2, 0.04, 0.6, 0.03])
+
+        slider_gap = Slider(ax_gap, "Gap Angle", 0, 360, valinit=90)
+        slider_radius = Slider(ax_radius, "Radius", 0.1, 1.4, valinit=1.0)
+        slider_start = Slider(ax_start, "Start Angle", 0, 360, valinit=180)
+
+        def handle_update(val):
+            arrow.update(
+                gap_angle=slider_gap.val,
+                radius=slider_radius.val,
+                start_angle=slider_start.val,
+            )
+
+        slider_gap.on_changed(handle_update)
+        slider_radius.on_changed(handle_update)
+        slider_start.on_changed(handle_update)
+
+        plt.show()
+    if demo_mode == "2":
+        img_shape = (1608, 1104)
+        radius = 300
+        acceptable =1
+        fps=60
+        
+        footsteps = []#太陽位置の時系列データ [(cx1,cy1),(cxx2,cy2),(cx3,cy3)...]
+        footstep_mode = input("footsteps? existing(0)/console(1)/csv(2)")
+        if footstep_mode == "0":
+            if len(footsteps) == 0:
+                print("No existing footstep")
+            else:
+                pass
+        elif footstep_mode == "1":
+            input_footsteps = input("paste tuple")
+            try:
+                footsteps = [
+                    (
+                        float(tp[1:-1].replace(" ", "").split(",")[0]),
+                        float(tp[1:-1].replace(" ", "").split(",")[1]),
+                    )
+                    for tp in input_footsteps.split("\n")
+                ]
+            except Exception:
+                print("format error")
+        elif footstep_mode == "":#2
+            footstep_csv = askopenfile("chose the footsteps file")
+            # TODO:executerのformatで受け取り
+        else:
+            print("your typo or yet")
+            
+        if footsteps:
+            #NEXT:footstepsを軌跡として、指定されたfpsのデモを回す。以下詳細
+            """
+            これはdemo,UIの確認なので、解析要素は必要ない。
+            太陽画像はなし。真っ暗な背景でよい
+            rはradiusで固定
+            画像サイズはimg_shapeで固定
+            見た目としては、太陽は画像には映っていないが、指定されたrとfootstepsによって太陽像の描画はされるというもの。
+            
+            スライダーをつけて、footstepsを画像中心を軸に回転できるような機能を付ける。
+            ただし、footstepsが画面外に出る場合は、そのこと自体は許容するが、描画範囲は固定すること。
+            """
