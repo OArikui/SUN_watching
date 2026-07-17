@@ -252,23 +252,30 @@ if __name__ == "__main__":
         slider_start.on_changed(handle_update)
 
         plt.show()
-    if demo_mode == "2":
+    else:
         img_shape = (1608, 1104)
         radius = 300
         acceptable = 1
         fps = 60
 
         footsteps = []  # 太陽位置の時系列データ [(cx1,cy1),(cxx2,cy2),(cx3,cy3)...]
-        footstep_mode = input("footsteps? existing(0)/console(1)/csv(2)")
+        footstep_mode = input("footsteps? existing(0)/console(1)/txt(2)/csv(3)")
         if footstep_mode == "0":
             if len(footsteps) == 0:
                 print("No existing footstep")
             else:
                 pass
-        elif footstep_mode == "1":
-            print("文字を入力してください（終了するには Ctrl+D [Mac/Linux] または Ctrl+Z [Windows] を押してください）:")
-            # すべての入力を一括で取得
-            input_footsteps = sys.stdin.read().replace("^Z", "").strip()
+        elif footstep_mode in ["1", "2"]:
+            if footstep_mode == "1":
+                print("文字を入力してください（終了するには Ctrl+D [Mac/Linux] または Ctrl+Z [Windows] を押してください）:")
+                # すべての入力を一括で取得
+                input_footsteps = sys.stdin.read().replace("^Z", "").strip()
+            elif footstep_mode == "2":
+                file_path = askopenfile(mode="r", filetypes=[("Text files", "*.txt")])
+                if file_path is None:
+                    print("ファイルが選択されませんでした。")
+                    sys.exit(1)
+                input_footsteps = file_path.read().strip()
             try:
                 footsteps = [
                     (
@@ -279,8 +286,6 @@ if __name__ == "__main__":
                 ]
             except Exception:
                 print("format error")
-        elif footstep_mode == "":  # 2
-            footstep_csv = askopenfile("chose the footsteps file")
             # TODO:executerのformatで受け取り
         else:
             print("your typo or yet")
