@@ -150,6 +150,11 @@ class Visualizer:
             0.01, 0.5, "turn camera_0°", ha="left", fontsize=20, color="red"
         )
 
+        # 【追加】フレーム数と太陽の角度（数値）を表示するテキストオブジェクト
+        self.info_text = self.fig.text(
+            0.01, 0.43, "", ha="left", fontsize=14, color="yellow"
+        )
+
         # 同ファイル内に定義した OpenCircleArrow を直接使用
         self.arrow = OpenCircleArrow(
             self.ax,
@@ -160,7 +165,7 @@ class Visualizer:
             tri_color="purple",
         )
 
-    def update(self, img, cx, cy, r, recent_pts, calculate, need_cl):
+    def update(self, img, cx, cy, r, recent_pts, calculate, need_cl, frame_idx=None):
         """計算結果を受け取り、画面を更新する"""
         self.ax_img.set_data(img)
         self.ax_min2.set_center((cx, cy))
@@ -197,6 +202,12 @@ class Visualizer:
 
         self.ax_sunline.set_color(uxc[1])
         self.fig_text.set_color(uxc[0])
+
+        # フレーム数と太陽の角度を数値として表示更新
+        txt_display = f"Sun Angle: {calculate:.2f}°"
+        if frame_idx is not None:
+            txt_display += f" | Frame: {frame_idx}"
+        self.info_text.set_text(txt_display)
 
         # 描画を反映
         plt.pause(0.001)
@@ -267,7 +278,9 @@ if __name__ == "__main__":
                 pass
         elif footstep_mode in ["1", "2"]:
             if footstep_mode == "1":
-                print("文字を入力してください（終了するには Ctrl+D [Mac/Linux] または Ctrl+Z [Windows] を押してください）:")
+                print(
+                    "文字を入力してください（終了するには Ctrl+D [Mac/Linux] または Ctrl+Z [Windows] を押してください）:"
+                )
                 # すべての入力を一括で取得
                 input_footsteps = sys.stdin.read().replace("^Z", "").strip()
             elif footstep_mode == "2":
@@ -377,9 +390,16 @@ if __name__ == "__main__":
                     calculate = base_calculate + angle_deg
                     need_cl = plturn(calculate)
 
-                    # 描画更新
+                    # 描画更新（frame_idx を渡すように変更）
                     viz.update(
-                        black_img, cx, cy, radius, recent_pts, calculate, need_cl
+                        black_img,
+                        cx,
+                        cy,
+                        radius,
+                        recent_pts,
+                        calculate,
+                        need_cl,
+                        frame_idx=frame_idx,
                     )
 
                 # 次のフレームへ進める
