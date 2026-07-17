@@ -311,10 +311,13 @@ if __name__ == "__main__":
                 sys.path.insert(0, str(project_root))
 
             try:
-                from RANSAC import calculate_west_angle_robust as west_angle
+                from lib.RANSAC import calculate_west_angle_robust as west_angle
             except ImportError:
-                print("エラー: RANSACモジュールが見つかりません。")
-                sys.exit(1)
+                try: 
+                    from RANSAC import calculate_west_angle_robust as west_angle
+                except ImportError:
+                    print("エラー: RANSACモジュールが見つかりません。")
+                    sys.exit(1)
 
             # デモ用のダミー角度計算に必要な plturn 関数
             def plturn(n):
