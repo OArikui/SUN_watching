@@ -137,8 +137,15 @@ class Visualizer:
             )
             self.grid_lines.append(line)
 
-        (self.ax_sunline,) = self.ax.plot([], [], color="purple", linewidth=3)
-
+        # (self.ax_sunline,) = self.ax.plot([], [], color="purple", linewidth=3)
+        
+        
+        # 矢印を描画するための quiver オブジェクトを作成（0で1件分の領域を確保）
+        self.ax_sunline = self.ax.quiver(
+            0, 0, 0, 0,
+            angles="xy", scale_units="xy", scale=1,
+            color="purple", width=0.008, pivot="tail", zorder=10,linestyle="dashed"
+        )
         # フレーム数と太陽の角度（数値）を表示するテキストオブジェクト
         self.info_text = self.fig.text(
             0.01, 0.43, "", ha="left", fontsize=14, color="yellow"
@@ -169,14 +176,15 @@ class Visualizer:
             uxc = ("red", "purple")
 
         calc_rad = np.radians(calculate)
-        tan_val = np.tan(calc_rad) if abs(np.tan(calc_rad)) > 1e-5 else 1e-5
-
-        self.ax_sunline.set_xdata(
-            np.linspace(cx - self.sunline / tan_val, cx + self.sunline / tan_val, 100)
-        )
-        self.ax_sunline.set_ydata(
-            np.linspace(cy - self.sunline * tan_val, cy + self.sunline * tan_val, 100)
-        )
+        
+        # 角度からベクトルのX, Y成分を計算 (長さは self.sunline)
+        # 画像座標系(下がY正)に合わせてY成分を反転させる
+        u = self.sunline * np.cos(calc_rad)
+        v = -self.sunline * np.sin(calc_rad)
+        
+        # 矢印の始点(cx, cy)とベクトル成分(u, v)を更新
+        self.ax_sunline.set_offsets(np.c_[cx, cy])
+        self.ax_sunline.set_UVC(u, v)
 
         self.arrow.update(
             gap_angle=360 - abs(calculate),
