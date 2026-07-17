@@ -5,46 +5,31 @@ from collections import deque
 import cv2
 import numpy as np
 
-
-from drawer import Visualizer
-
 # 0. 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
-project_root = current_dir.parent
+project_root = current_dir
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 from lib.MIN2_ver1 import MIN2_ignore_sunspots as MIN2
 from lib.RANSAC import calculate_west_angle_robust as west_angle
+from lib.drawer import Visualizer
+# ==================
+# パラメータ設定
+acceptable = 1
+grid_color = "#FFFFFF"
+# =====================
 
-# zwoasiのインポート
+# zwoasiのインポートと環境変数設定
 env_filename = project_root / "lib" / "ASICamera2.dll"
 os.environ["ZWO_ASI_LIB"] = str(env_filename)
 import zwoasi as asi
+from lib.camera_utils import connect_camera
 
-# ==================
-# パラメータ設定
+# 1. & 2. モジュールを使用してカメラを接続（待機ループ実行）
+camera = connect_camera(str(env_filename))
 
-acceptable = 1
-grid_color = "#FFFFFF"
-
-# =====================
-
-# 1. SDKの初期化
-if not env_filename.exists():
-    print(f"エラー: {env_filename} が見つかりません。")
-    sys.exit(1)
-
-asi.init(str(env_filename))
-
-# 2. カメラの接続と設定
-if asi.get_num_cameras() == 0:
-    print("カメラが接続されていません。")
-    sys.exit(1)
-
-camera = asi.Camera(0)
-print(f"接続されたカメラ: {camera.get_camera_property()['Name']}")
-
+# プロジェクト特有のカメラ設定
 camera.set_control_value(asi.ASI_EXPOSURE, 30000)
 camera.set_control_value(asi.ASI_GAIN, 150)
 camera.set_control_value(asi.ASI_BANDWIDTHOVERLOAD, 40)
@@ -113,8 +98,13 @@ try:
             break
 
 finally:
-    camera.stop_video_capture()
-    camera.close()
+    # 例外発生時も確実にリソースを解放
+    print("カメラとリソースを解放しています...")
+    try:
+        camera.stop_video_capture()
+        camera.close()
+    except:
+        pass
     cv2.destroyAllWindows()
     if "viz" in locals():
         viz.close()
