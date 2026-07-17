@@ -183,10 +183,10 @@ class Visualizer:
         tan_val = np.tan(calc_rad) if abs(np.tan(calc_rad)) > 1e-5 else 1e-5
 
         self.ax_sunline.set_xdata(
-            np.linspace(cx - self.sunline * tan_val, cx + self.sunline * tan_val, 100)
+            np.linspace(cx - self.sunline / tan_val, cx + self.sunline / tan_val, 100)
         )
         self.ax_sunline.set_ydata(
-            np.linspace(cy - self.sunline / tan_val, cy + self.sunline / tan_val, 100)
+            np.linspace(cy - self.sunline * tan_val, cy + self.sunline * tan_val, 100)
         )
 
         self.fig_text.set_text(f"turn camera_{need_cl}° clockwise")
