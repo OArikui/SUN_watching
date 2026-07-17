@@ -24,6 +24,7 @@
 - [ ] circle arrow の敏感な角度反映
 - [ ] 動かない分度器
 - [x] del 回転指示(plturn)
+- [ ] color palletの改善
 
 ## 機能
 
