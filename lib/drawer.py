@@ -213,6 +213,9 @@ class Visualizer:
 # テスト・デモ実行用
 if __name__ == "__main__":
     from tkinter.filedialog import askopenfile
+    import time
+    import sys
+    from pathlib import Path
 
     demo_mode = input("allow,west as (1or2)")
     if demo_mode == "1":
@@ -252,10 +255,10 @@ if __name__ == "__main__":
     if demo_mode == "2":
         img_shape = (1608, 1104)
         radius = 300
-        acceptable =1
-        fps=60
-        
-        footsteps = []#太陽位置の時系列データ [(cx1,cy1),(cxx2,cy2),(cx3,cy3)...]
+        acceptable = 1
+        fps = 60
+
+        footsteps = []  # 太陽位置の時系列データ [(cx1,cy1),(cxx2,cy2),(cx3,cy3)...]
         footstep_mode = input("footsteps? existing(0)/console(1)/csv(2)")
         if footstep_mode == "0":
             if len(footsteps) == 0:
@@ -274,21 +277,108 @@ if __name__ == "__main__":
                 ]
             except Exception:
                 print("format error")
-        elif footstep_mode == "":#2
+        elif footstep_mode == "":  # 2
             footstep_csv = askopenfile("chose the footsteps file")
             # TODO:executerのformatで受け取り
         else:
             print("your typo or yet")
-            
+
         if footsteps:
-            #NEXT:footstepsを軌跡として、指定されたfpsのデモを回す。以下詳細
-            """
-            これはdemo,UIの確認なので、解析要素は必要ない。
-            太陽画像はなし。真っ暗な背景でよい
-            rはradiusで固定
-            画像サイズはimg_shapeで固定
-            見た目としては、太陽は画像には映っていないが、指定されたrとfootstepsによって太陽像の描画はされるというもの。
-            
-            スライダーをつけて、footstepsを画像中心を軸に回転できるような機能を付ける。
-            ただし、footstepsが画面外に出る場合は、そのこと自体は許容するが、描画範囲は固定すること。
-            """
+            # 階層エラー対策 (find_west.py に準拠したインポート設定)
+            current_dir = Path(__file__).resolve().parent
+            project_root = current_dir.parent
+            if str(project_root) not in sys.path:
+                sys.path.insert(0, str(project_root))
+
+            try:
+                from RANSAC import calculate_west_angle_robust as west_angle
+            except ImportError:
+                print("エラー: RANSACモジュールが見つかりません。")
+                sys.exit(1)
+
+            # デモ用のダミー角度計算に必要な plturn 関数
+            def plturn(n):
+                if n == 0:
+                    return 0
+                g = 1 if n < 0 else -1
+                c = 1
+                n = abs(n)
+                nn = n + n
+                while True:
+                    if nn >= 180:
+                        return ((180) % (n) + n * (c - 1)) * g
+                    else:
+                        c += 1
+                        nn = n * c
+
+            width, height = img_shape
+            black_img = np.zeros((height, width), dtype=np.uint8)
+
+            # Numpy配列化
+            pts = np.array(footsteps)
+
+            # --- 変更点: 初めに一度だけRANSACで基準の角度を計算 ---
+            print("初期軌跡データからRANSACで基準角度を計算しています...")
+            base_calculate, vectorYX = west_angle(pts)
+
+            # UI確認のため Visualizer を初期化
+            viz = Visualizer(width, height, acceptable)
+
+            # 描画範囲を画像サイズに固定
+            viz.ax.set_xlim(0, width)
+            viz.ax.set_ylim(height, 0)
+
+            # スライダー用の余白を画面下部に作成し、スライダーを配置
+            plt.subplots_adjust(bottom=0.2)
+            ax_slider = viz.fig.add_axes([0.2, 0.05, 0.6, 0.03])
+            rot_slider = Slider(ax_slider, "Rotation", -180, 180, valinit=0)
+
+            # 回転の基準となる画像中心
+            cx0, cy0 = width / 2, height / 2
+
+            frame_idx = 0
+            num_frames = len(footsteps)
+
+            print(
+                f"デモを開始します (FPS: {fps})。グラフウィンドウを閉じるかCtrl+Cで終了します。"
+            )
+
+            # アニメーションループ
+            while viz.is_alive():
+                start_time = time.time()
+
+                # スライダーの値を取得
+                angle_deg = rot_slider.val
+                angle_rad = np.radians(angle_deg)
+
+                # footsteps を画像中心を軸に回転
+                cos_a, sin_a = np.cos(angle_rad), np.sin(angle_rad)
+                x = pts[:, 0] - cx0
+                y = pts[:, 1] - cy0
+                rx = x * cos_a - y * sin_a + cx0
+                ry = x * sin_a + y * cos_a + cy0
+                rotated_pts = np.column_stack((rx, ry))
+
+                # 現在のフレームで描画する軌跡 (最大直近100件程度)
+                start_idx = max(0, frame_idx - 100)
+                recent_pts = rotated_pts[start_idx : frame_idx + 1]
+
+                if len(recent_pts) > 0:
+                    cx, cy = recent_pts[-1]
+
+                    # --- 変更点: 角度は「初期計算値 + スライダーの回転量」で決定 ---
+                    calculate = base_calculate + angle_deg
+                    need_cl = plturn(calculate)
+
+                    # 描画更新
+                    viz.update(
+                        black_img, cx, cy, radius, recent_pts, calculate, need_cl
+                    )
+
+                # 次のフレームへ進める
+                frame_idx = (frame_idx + 1) % num_frames
+
+                # 指定された fps に合わせた待機処理
+                elapsed = time.time() - start_time
+                sleep_time = max(0.001, (1.0 / fps) - elapsed)
+                plt.pause(sleep_time)
