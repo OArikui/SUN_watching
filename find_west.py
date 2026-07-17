@@ -41,22 +41,6 @@ width, height, binning, img_type = camera.get_roi_format()
 
 buffer = deque(maxlen=500)
 
-
-def plturn(n):
-    if n == 0:
-        return 0
-    g = 1 if n < 0 else -1
-    c = 1
-    n = abs(n)
-    nn = n + n
-    while True:
-        if nn >= 180:
-            return ((180) % (n) + n * (c - 1)) * g
-        else:
-            c += 1
-            nn = n * c
-
-
 # 3. リアルタイム処理ループ
 try:
     print("loading...")
@@ -85,10 +69,9 @@ try:
         recent_pts = buf_arr[-100:]
 
         calculate, vectorYX = west_angle(recent_pts)
-        need_cl = plturn(calculate)
 
         # 描画更新
-        viz.update(img, cx, cy, r, recent_pts, calculate, need_cl)
+        viz.update(img, cx, cy, r, recent_pts, calculate, frame_idx=len(buffer))
 
         # 終了判定
         if cv2.waitKey(1) & 0xFF == ord("q"):

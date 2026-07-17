@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.patches import Arc, Polygon
+from matplotlib.patches import Arc, Polygon, Circle
 from matplotlib.transforms import Affine2D
 from matplotlib.widgets import Slider
 
@@ -16,7 +16,6 @@ class OpenCircleArrow:
         radius=1.0,
         gap_angle=90,
         start_angle=180,
-        clockwise=True,
         edgecolor="C0",
         lw=3,
         tri_size=0.12,
@@ -30,7 +29,6 @@ class OpenCircleArrow:
         self.radius = radius
         self.gap_angle = gap_angle
         self.start_angle = start_angle
-        self.clockwise = clockwise
         self.edgecolor = edgecolor
         self.lw = lw
         self.tri_size = tri_size
@@ -87,12 +85,6 @@ class OpenCircleArrow:
         self.tri_patch = Polygon(tri_rot, closed=True, color=self.tri_color)
         self.ax.add_patch(self.tri_patch)
 
-        # 時計回りの反転処理
-        if self.clockwise:
-            flip = Affine2D().scale(1, -1).translate(0, 2 * cy)
-            self.arc_patch.set_transform(flip + self.ax.transData)
-            self.tri_patch.set_transform(flip + self.ax.transData)
-
         # 画面の更新を促す
         if self.ax.figure and self.ax.figure.canvas:
             self.ax.figure.canvas.draw_idle()
@@ -124,7 +116,7 @@ class Visualizer:
         self.ax_img = self.ax.imshow(dummy_img, cmap="gray", vmin=0, vmax=255)
 
         # 各種プロットオブジェクトの初期設定
-        self.circle = plt.Circle((0, 0), 0, fill=True, color="skyblue", linewidth=2)
+        self.circle = Circle((0, 0), 0, fill=True, color="skyblue", linewidth=2)
         self.ax_min2 = self.ax.add_patch(self.circle)
 
         (self.ax_shdw_c,) = self.ax.plot(
@@ -146,11 +138,8 @@ class Visualizer:
             self.grid_lines.append(line)
 
         (self.ax_sunline,) = self.ax.plot([], [], color="purple", linewidth=3)
-        self.fig_text = self.fig.text(
-            0.01, 0.5, "turn camera_0°", ha="left", fontsize=20, color="red"
-        )
 
-        # 【追加】フレーム数と太陽の角度（数値）を表示するテキストオブジェクト
+        # フレーム数と太陽の角度（数値）を表示するテキストオブジェクト
         self.info_text = self.fig.text(
             0.01, 0.43, "", ha="left", fontsize=14, color="yellow"
         )
@@ -165,11 +154,11 @@ class Visualizer:
             tri_color="purple",
         )
 
-    def update(self, img, cx, cy, r, recent_pts, calculate, need_cl, frame_idx=None):
+    def update(self, img, cx, cy, r, recent_pts, calculate,frame_idx=None):
         """計算結果を受け取り、画面を更新する"""
         self.ax_img.set_data(img)
-        self.ax_min2.set_center((cx, cy))
-        self.ax_min2.set_radius(r)
+        self.ax_min2.set_center((cx, cy))  # pyright: ignore[reportAttributeAccessIssue]
+        self.ax_min2.set_radius(r)  # pyright: ignore[reportAttributeAccessIssue]
 
         self.ax_shdw_c.set_data(recent_pts[:, 0], recent_pts[:, 1])
 
@@ -189,19 +178,13 @@ class Visualizer:
             np.linspace(cy - self.sunline * tan_val, cy + self.sunline * tan_val, 100)
         )
 
-        self.fig_text.set_text(f"turn camera_{need_cl}° clockwise")
-        clockwise = True if need_cl > 0 else False
-
-        # gapangle から gap_angle に修正し、プロパティを正確に更新
         self.arrow.update(
-            gap_angle=abs(need_cl),
-            clockwise=clockwise,
+            gap_angle=360 - abs(calculate),
             edgecolor=uxc[1],
             tri_color=uxc[1],
         )
 
         self.ax_sunline.set_color(uxc[1])
-        self.fig_text.set_color(uxc[0])
 
         # フレーム数と太陽の角度を数値として表示更新
         txt_display = f"Sun Angle: {calculate:.2f}°"
@@ -214,7 +197,9 @@ class Visualizer:
 
     def is_alive(self):
         """ウィンドウが閉じられていないか判定する"""
-        return plt.fignum_exists(self.fig.number)
+        return plt.fignum_exists(
+            self.fig.number  # pyright: ignore[reportAttributeAccessIssue]
+        )
 
     def close(self):
         """描画リソースを安全に閉じる"""
@@ -234,18 +219,20 @@ if __name__ == "__main__":
         fig, ax = plt.subplots(figsize=(5, 6))
         plt.subplots_adjust(bottom=0.25)
 
-        arrow = OpenCircleArrow(
-            ax, center=(0, 0), radius=1.0, gap_angle=90, clockwise=True
-        )
+        arrow = OpenCircleArrow(ax, center=(0, 0), radius=1.0, gap_angle=90)
 
         ax.set_xlim(-1.5, 1.5)
         ax.set_ylim(-1.5, 1.5)
         ax.set_aspect("equal")
         ax.axis("off")
 
-        ax_gap = plt.axes([0.2, 0.14, 0.6, 0.03])
-        ax_radius = plt.axes([0.2, 0.09, 0.6, 0.03])
-        ax_start = plt.axes([0.2, 0.04, 0.6, 0.03])
+        ax_gap = plt.axes([0.2, 0.14, 0.6, 0.03])  # pyright: ignore[reportArgumentType]
+        ax_radius = plt.axes(
+            [0.2, 0.09, 0.6, 0.03]  # pyright: ignore[reportArgumentType]
+        )
+        ax_start = plt.axes(
+            [0.2, 0.04, 0.6, 0.03]  # pyright: ignore[reportArgumentType]
+        )
 
         slider_gap = Slider(ax_gap, "Gap Angle", 0, 360, valinit=90)
         slider_radius = Slider(ax_radius, "Radius", 0.1, 1.4, valinit=1.0)
@@ -295,10 +282,12 @@ if __name__ == "__main__":
                         float(tp[1:-1].replace(" ", "").split(",")[0]),
                         float(tp[1:-1].replace(" ", "").split(",")[1]),
                     )
-                    for tp in input_footsteps.split("\n")
+                    for tp in input_footsteps.split(  # pyright: ignore[reportPossiblyUnboundVariable]
+                        "\n"
+                    )
                 ]
-            except Exception:
-                print("format error")
+            except Exception as e:
+                print(f"format error: {e}")
             # TODO:executerのformatで受け取り
         else:
             print("your typo or yet")
@@ -319,21 +308,6 @@ if __name__ == "__main__":
                     print("エラー: RANSACモジュールが見つかりません。")
                     sys.exit(1)
 
-            # デモ用のダミー角度計算に必要な plturn 関数
-            def plturn(n):
-                if n == 0:
-                    return 0
-                g = 1 if n < 0 else -1
-                c = 1
-                n = abs(n)
-                nn = n + n
-                while True:
-                    if nn >= 180:
-                        return ((180) % (n) + n * (c - 1)) * g
-                    else:
-                        c += 1
-                        nn = n * c
-
             width, height = img_shape
             black_img = np.zeros((height, width), dtype=np.uint8)
 
@@ -342,8 +316,12 @@ if __name__ == "__main__":
 
             # --- 変更点: 初めに一度だけRANSACで基準の角度を計算 ---
             print("初期軌跡データからRANSACで基準角度を計算しています...")
-            base_calculate, vectorYX = west_angle(pts)
-
+            west_re = west_angle(pts)
+            if west_re is not None:
+                base_calculate, vectorYX = west_re
+            else:
+                print("データが少なすぎます。")
+                sys.exit(1)
             # UI確認のため Visualizer を初期化
             viz = Visualizer(width, height, acceptable)
 
@@ -353,7 +331,14 @@ if __name__ == "__main__":
 
             # スライダー用の余白を画面下部に作成し、スライダーを配置
             plt.subplots_adjust(bottom=0.2)
-            ax_slider = viz.fig.add_axes([0.2, 0.05, 0.6, 0.03])
+            ax_slider = viz.fig.add_axes(
+                [
+                    0.2,
+                    0.05,
+                    0.6,
+                    0.03,
+                ]  # pyright: ignore[reportArgumentType, reportCallIssue]
+            )
             rot_slider = Slider(ax_slider, "Rotation", -180, 180, valinit=0)
 
             # 回転の基準となる画像中心
@@ -391,7 +376,6 @@ if __name__ == "__main__":
 
                     # --- 変更点: 角度は「初期計算値 + スライダーの回転量」で決定 ---
                     calculate = base_calculate + angle_deg
-                    need_cl = plturn(calculate)
 
                     # 描画更新（frame_idx を渡すように変更）
                     viz.update(
@@ -401,7 +385,6 @@ if __name__ == "__main__":
                         radius,
                         recent_pts,
                         calculate,
-                        need_cl,
                         frame_idx=frame_idx,
                     )
 
