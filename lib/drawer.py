@@ -228,7 +228,7 @@ if __name__ == "__main__":
     import sys
     from pathlib import Path
 
-    demo_mode = input("allow,west as (1or2)")
+    demo_mode = "2"
     if demo_mode == "1":
         # このスクリプトを直接実行した場合、スライダー付きの矢印デモが動作します
         fig, ax = plt.subplots(figsize=(5, 6))
@@ -270,7 +270,7 @@ if __name__ == "__main__":
         fps = 60
 
         footsteps = []  # 太陽位置の時系列データ [(cx1,cy1),(cxx2,cy2),(cx3,cy3)...]
-        footstep_mode = input("footsteps? existing(0)/console(1)/txt(2)/csv(3)")
+        footstep_mode = "2" #"footsteps? existing(0)/console(1)/txt(2)/csv(3)"
         if footstep_mode == "0":
             if len(footsteps) == 0:
                 print("No existing footstep")
