@@ -266,7 +266,9 @@ if __name__ == "__main__":
             else:
                 pass
         elif footstep_mode == "1":
-            input_footsteps = input("paste tuple")
+            print("文字を入力してください（終了するには Ctrl+D [Mac/Linux] または Ctrl+Z [Windows] を押してください）:")
+            # すべての入力を一括で取得
+            input_footsteps = sys.stdin.read().replace("^Z", "").strip()
             try:
                 footsteps = [
                     (
