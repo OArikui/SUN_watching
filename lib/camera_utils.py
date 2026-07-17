@@ -3,6 +3,7 @@ import sys
 import time
 import zwoasi as asi
 
+
 def connect_camera(dll_path):
     """
     ASIカメラの初期化と接続待機を行うモジュール
@@ -12,7 +13,7 @@ def connect_camera(dll_path):
         print(f"【エラー】DLLファイルが見つかりません。")
         print(f"指定されたパス: {dll_path}")
         print("上記パスに 64bit版の ASICamera2.dll を配置してください。")
-        input("\nEnterキーを押して終了します...") 
+        input("\nEnterキーを押して終了します...")
         sys.exit(1)
 
     # 2. SDKの初期化
@@ -60,7 +61,7 @@ def connect_camera(dll_path):
         # 汎用的な基本設定
         camera.set_control_value(asi.ASI_BANDWIDTHOVERLOAD, 40)
         camera.disable_dark_subtract()
-        
+
         return camera
     except Exception as e:
         print(f"カメラの初期化中にエラーが発生しました: {e}")

@@ -14,6 +14,7 @@ if str(project_root) not in sys.path:
 from lib.MIN2_ver1 import MIN2_ignore_sunspots as MIN2
 from lib.RANSAC import calculate_west_angle_robust as west_angle
 from lib.drawer import Visualizer
+
 # ==================
 # パラメータ設定
 acceptable = 1

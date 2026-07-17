@@ -270,7 +270,7 @@ if __name__ == "__main__":
         fps = 60
 
         footsteps = []  # 太陽位置の時系列データ [(cx1,cy1),(cxx2,cy2),(cx3,cy3)...]
-        footstep_mode = "2" #"footsteps? existing(0)/console(1)/txt(2)/csv(3)"
+        footstep_mode = "2"  # "footsteps? existing(0)/console(1)/txt(2)/csv(3)"
         if footstep_mode == "0":
             if len(footsteps) == 0:
                 print("No existing footstep")
@@ -313,7 +313,7 @@ if __name__ == "__main__":
             try:
                 from lib.RANSAC import calculate_west_angle_robust as west_angle
             except ImportError:
-                try: 
+                try:
                     from RANSAC import calculate_west_angle_robust as west_angle
                 except ImportError:
                     print("エラー: RANSACモジュールが見つかりません。")
