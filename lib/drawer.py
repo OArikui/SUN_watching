@@ -14,8 +14,7 @@ class OpenCircleArrow:
         ax,
         center=(0, 0),
         radius=1.0,
-        gap_angle=90,
-        start_angle=180,
+        angle=90,  # gap_angleやstart_angleの代わりに直接角度を受け取る
         edgecolor="C0",
         lw=3,
         tri_size=0.12,
@@ -27,13 +26,11 @@ class OpenCircleArrow:
         self.ax = ax
         self.center = center
         self.radius = radius
-        self.gap_angle = gap_angle
-        self.start_angle = start_angle
+        self.angle = angle  # -180 ~ 180度の角度
         self.edgecolor = edgecolor
         self.lw = lw
         self.tri_size = tri_size
         self.tri_color = tri_color
-
         # 描画したパッチを保持する変数
         self.arc_patch = None
         self.tri_patch = None
@@ -50,8 +47,20 @@ class OpenCircleArrow:
             self.tri_patch.remove()
 
         cx, cy = self.center
-        theta1 = self.start_angle
-        theta2 = self.start_angle - (360 - self.gap_angle)
+
+        # 尻を右(0度)に固定し、正負で矢じりの向きを反転
+        if self.angle >= 0:
+            # 正の角度（反時計回り）
+            arc_t1 = 0
+            arc_t2 = self.angle
+            tangent_angle = self.angle + 90
+            tip_angle = self.angle
+        else:
+            # 負の角度（時計回り）
+            arc_t1 = self.angle
+            arc_t2 = 0
+            tangent_angle = self.angle - 90
+            tip_angle = self.angle
 
         # 円弧の生成
         self.arc_patch = Arc(
@@ -59,8 +68,8 @@ class OpenCircleArrow:
             2 * self.radius,
             2 * self.radius,
             angle=0,
-            theta1=theta2,
-            theta2=theta1,
+            theta1=arc_t1,
+            theta2=arc_t2,
             linewidth=self.lw,
             edgecolor=self.edgecolor,
             linestyle="solid",
@@ -68,11 +77,10 @@ class OpenCircleArrow:
         self.ax.add_patch(self.arc_patch)
 
         # 矢じりの計算
-        tip_rad = np.deg2rad(theta1)
+        tip_rad = np.deg2rad(tip_angle)
         ex = cx + self.radius * np.cos(tip_rad)
         ey = cy + self.radius * np.sin(tip_rad)
 
-        tangent_angle = theta1 + 90
         t_rad = np.deg2rad(tangent_angle)
 
         s = self.tri_size * self.radius
@@ -138,13 +146,21 @@ class Visualizer:
             self.grid_lines.append(line)
 
         # (self.ax_sunline,) = self.ax.plot([], [], color="purple", linewidth=3)
-        
-        
+
         # 矢印を描画するための quiver オブジェクトを作成（0で1件分の領域を確保）
         self.ax_sunline = self.ax.quiver(
-            0, 0, 0, 0,
-            angles="xy", scale_units="xy", scale=1,
-            color="purple", width=0.008, pivot="tail", zorder=10,linestyle="dashed"
+            0,
+            0,
+            0,
+            0,
+            angles="xy",
+            scale_units="xy",
+            scale=1,
+            color="purple",
+            width=0.008,
+            pivot="tail",
+            zorder=10,
+            linestyle="dashed",
         )
         # フレーム数と太陽の角度（数値）を表示するテキストオブジェクト
         self.info_text = self.fig.text(
@@ -156,18 +172,18 @@ class Visualizer:
             self.ax,
             center=(0, 0.5),
             radius=100,
-            gap_angle=90,
+            angle=0,  # 初期角度
             edgecolor="purple",
             tri_color="purple",
         )
 
-    def update(self, img, cx, cy, r, recent_pts, calculate,frame_idx=None):
+    def update(self, img, cx, cy, r, recent_pts, calculate, frame_idx=None):
         """計算結果を受け取り、画面を更新する"""
         self.ax_img.set_data(img)
         self.ax_min2.set_center((cx, cy))  # pyright: ignore[reportAttributeAccessIssue]
         self.ax_min2.set_radius(r)  # pyright: ignore[reportAttributeAccessIssue]
         self.ax_min2.set_alpha(0.4)  # pyright: ignore[reportAttributeAccessIssue]
-        
+
         self.ax_shdw_c.set_data(recent_pts[:, 0], recent_pts[:, 1])
 
         # 許容範囲に応じて色を変更
@@ -177,18 +193,19 @@ class Visualizer:
             uxc = ("red", "purple")
 
         calc_rad = np.radians(calculate)
-        
+
         # 角度からベクトルのX, Y成分を計算 (長さは self.sunline)
         # 画像座標系(下がY正)に合わせてY成分を反転させる
         u = self.sunline * np.cos(calc_rad)
         v = -self.sunline * np.sin(calc_rad)
-        
+
         # 矢印の始点(cx, cy)とベクトル成分(u, v)を更新
         self.ax_sunline.set_offsets(np.c_[cx, cy])
         self.ax_sunline.set_UVC(u, v)
 
         self.arrow.update(
-            gap_angle=360 - abs(calculate),
+            center=(cx, cy),
+            angle=calculate,
             edgecolor=uxc[1],
             tri_color=uxc[1],
         )
@@ -228,35 +245,31 @@ if __name__ == "__main__":
         fig, ax = plt.subplots(figsize=(5, 6))
         plt.subplots_adjust(bottom=0.25)
 
-        arrow = OpenCircleArrow(ax, center=(0, 0), radius=1.0, gap_angle=90)
+        arrow = OpenCircleArrow(ax, center=(0, 0), radius=1.0, angle=45)
 
         ax.set_xlim(-1.5, 1.5)
         ax.set_ylim(-1.5, 1.5)
         ax.set_aspect("equal")
         ax.axis("off")
 
-        ax_gap = plt.axes([0.2, 0.14, 0.6, 0.03])  # pyright: ignore[reportArgumentType]
+        ax_angle = plt.axes(
+            [0.2, 0.14, 0.6, 0.03]  # pyright: ignore[reportArgumentType]
+        )
         ax_radius = plt.axes(
             [0.2, 0.09, 0.6, 0.03]  # pyright: ignore[reportArgumentType]
         )
-        ax_start = plt.axes(
-            [0.2, 0.04, 0.6, 0.03]  # pyright: ignore[reportArgumentType]
-        )
 
-        slider_gap = Slider(ax_gap, "Gap Angle", 0, 360, valinit=90)
+        slider_angle = Slider(ax_angle, "Angle", -180, 180, valinit=45)
         slider_radius = Slider(ax_radius, "Radius", 0.1, 1.4, valinit=1.0)
-        slider_start = Slider(ax_start, "Start Angle", 0, 360, valinit=180)
 
         def handle_update(val):
             arrow.update(
-                gap_angle=slider_gap.val,
+                angle=slider_angle.val,
                 radius=slider_radius.val,
-                start_angle=slider_start.val,
             )
 
-        slider_gap.on_changed(handle_update)
+        slider_angle.on_changed(handle_update)
         slider_radius.on_changed(handle_update)
-        slider_start.on_changed(handle_update)
 
         plt.show()
     else:
@@ -383,7 +396,8 @@ if __name__ == "__main__":
                 if len(recent_pts) > 0:
                     cx, cy = recent_pts[-1]
 
-                    # --- 変更点: 角度は「初期計算値 + スライダーの回転量」で決定 ---
+                    # 角度は「初期計算値 + スライダーの回転量」で決定
+
                     calculate = base_calculate + angle_deg
 
                     # 描画更新（frame_idx を渡すように変更）
