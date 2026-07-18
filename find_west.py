@@ -11,7 +11,7 @@ project_root = current_dir
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from lib.MIN2_ver1 import MIN2_ignore_sunspots as MIN2  # noqa: E402
+from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2  # noqa: E402
 from lib.RANSAC import calculate_west_angle_robust as west_angle  # noqa: E402
 from lib.drawer import Visualizer  # noqa: E402
 
