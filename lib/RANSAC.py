@@ -70,10 +70,14 @@ if __name__ == "__main__":
     simple_angle = math.degrees(math.atan2(dy_simple, dx_simple))
 
     # 2. RANSACによるロバストな計算
-    robust_angle, vx, vy = calculate_west_angle_robust(noisy_trajectory)
+    result = calculate_west_angle_robust(noisy_trajectory)
 
-    print(f"単純計算の角度: {simple_angle:.2f} 度")
-    print(f"RANSACによるロバストな角度: {robust_angle:.2f} 度")
+    if result is None:
+        print("データが不足しています")
+    else:
+        robust_angle, (vy, vx) = result
+        print(f"単純計算の角度: {simple_angle:.2f} 度")
+        print(f"RANSACによるロバストな角度: {robust_angle:.2f} 度")
 
     # --- matplotlib による描画処理 ---
     plt.figure(figsize=(8, 8))
@@ -96,7 +100,7 @@ if __name__ == "__main__":
     center_x = np.median(x_vals)
     center_y = np.median(y_vals)
 
-    # 【修正箇所】 単純計算の方向ベクトルを矢印で描画
+    # 単純計算の方向ベクトルを矢印で描画
     # エラー回避のため linestyle ではなく、widthを細くし、alphaを薄くして表現します
     len_simple = math.hypot(dx_simple, dy_simple)
     plt.quiver(
@@ -114,20 +118,25 @@ if __name__ == "__main__":
     )
 
     # RANSACで推定した方向ベクトルを矢印で描画 (青太線)
-    len_robust = math.hypot(vx, vy)
-    plt.quiver(
-        center_x,
-        center_y,
-        (vx / len_robust) * 3,
-        (vy / len_robust) * 3,
-        angles="xy",
-        scale_units="xy",
-        scale=1,
-        color="darkblue",
-        width=0.008,
-        label=f"RANSAC Vector ({robust_angle:.1f}°)",
-    )
-
+    try:
+        len_robust = math.hypot(
+            vx, vy  # pyright: ignore[reportPossiblyUnboundVariable]
+        )
+        plt.quiver(
+            center_x,
+            center_y,
+            (vx / len_robust) * 3,  # pyright: ignore[reportPossiblyUnboundVariable]
+            (vy / len_robust) * 3,  # pyright: ignore[reportPossiblyUnboundVariable]
+            angles="xy",
+            scale_units="xy",
+            scale=1,
+            color="darkblue",
+            width=0.008,
+            label=f"RANSAC Vector ({robust_angle:.1f}°)",  # pyright: ignore[reportPossiblyUnboundVariable]
+        )
+    except NameError:
+        # robust_angleが定義されていない場合（データ不足など）
+        pass
     # グラフの設定
     plt.title("Comparison of Direction Vector Estimation", fontsize=14)
     plt.xlabel("X coordinate")
