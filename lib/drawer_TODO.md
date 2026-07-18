@@ -20,7 +20,7 @@
 
 ### else
 
-- [ ] sun fillをなくす
+- [x] sun fillをなくす
 - [ ] circle arrow の敏感な角度反映
 - [ ] 動かない分度器
 - [x] del 回転指示(plturn)
