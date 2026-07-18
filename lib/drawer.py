@@ -166,11 +166,12 @@ class Visualizer:
         self.ax_img.set_data(img)
         self.ax_min2.set_center((cx, cy))  # pyright: ignore[reportAttributeAccessIssue]
         self.ax_min2.set_radius(r)  # pyright: ignore[reportAttributeAccessIssue]
-
+        self.ax_min2.set_alpha(0.4)  # pyright: ignore[reportAttributeAccessIssue]
+        
         self.ax_shdw_c.set_data(recent_pts[:, 0], recent_pts[:, 1])
 
         # 許容範囲に応じて色を変更
-        if 180 - abs(calculate) < self.acceptable:
+        if abs(calculate) < self.acceptable:
             uxc = ("limegreen", "mediumseagreen")
         else:
             uxc = ("red", "purple")
