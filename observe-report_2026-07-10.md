@@ -15,13 +15,7 @@
 
 - 赤道儀による追尾なしの映像の撮影
 
-- 学校貸与PCの撮影fpsの検証
-  
-  > [!INFO]
-  > `学校貸与PCの撮影fpsの検証`は学校貸与PCが実用に耐えうるかという検証である。
-  > 学校貸与PCを使用しての初の観測の際に撮影fpsが、非常に低かった。(2026.05.30)
-  > 撮影場所がプールサイドであったこともあり、この原因はおそらく排熱不足によるものであると考えている。
-  > PC室では撮影fpsが120出ていたこともあり、学校貸与PCの実用可能性については検証が必要であるのだ。
+- 学校貸与PCの撮影fpsの検証[^1]
 
 ---
 
@@ -35,13 +29,13 @@
 
 - 望遠鏡:`Sky Watcher` 天文台主鏡ファインダー
 
-- カメラ:`ZWO ASI432MM`[^1] グレースケール,16bit(下位12bit)
+- カメラ:`ZWO ASI432MM`[^2] グレースケール,16bit(下位12bit)
 
 - PC:Surface Laptop Go 3  パイプ椅子の座面に置いて観測を実施した。
 
 - OS:Windows11Pro 24H2 
 
-- App:`ASICap_V2.18`[^2]
+- App:`ASICap_V2.18`[^3]
 
 - ケーブル:純正 USB type BtoA
 
@@ -127,7 +121,7 @@
 ### find_westの試験的使用について
 
 カメラの接続不良によって実施できなかった。
-解決策及びその施行は`zwoasiCAM_connect_test`[^3]にて完了している。
+解決策及びその施行は`zwoasiCAM_connect_test`[^4]にて完了している。
 
 ## 課題・反省
 
@@ -142,10 +136,15 @@
 特にPCの排熱状況などの評価のために、撮影状況の写真の撮影を行うべきであった。
 これは今回に限ったことではなく、人の記憶は信用しがたいため、毎度の撮影の際に観測状況の俯瞰写真を撮影・保存するべきである。
 
-[^1]: [ASI432MM](https://www.bing.com/ck/a?!&&p=37019ba05556b3272ce273824f5dd1ecaf41b8d1767b56a37fecfda65a039d73JmltdHM9MTc4MzU1NTIwMA&ptn=3&ver=2&hsh=4&fclid=0218a384-e0a7-693d-2227-b575e1c96879&psq=ASI432MM&u=a1aHR0cHM6Ly93d3cuendvYXN0cm8uY29tL3Byb2R1Y3QvendvLWFzaTQzMm1tLw)
+[^1]: > `学校貸与PCの撮影fpsの検証`は学校貸与PCが実用に耐えうるかという検証である。  
+    > 学校貸与PCを使用しての初の観測の際に撮影fpsが、非常に低かった。(2026.05.30)  
+    > 撮影場所がプールサイドであったこともあり、この原因はおそらく排熱不足によるものであると考えている。  
+    > PC室では撮影fpsが120出ていたこともあり、学校貸与PCの実用可能性については検証が必要であるのだ。  
+
+[^2]: [ASI432MM](https://www.bing.com/ck/a?!&&p=37019ba05556b3272ce273824f5dd1ecaf41b8d1767b56a37fecfda65a039d73JmltdHM9MTc4MzU1NTIwMA&ptn=3&ver=2&hsh=4&fclid=0218a384-e0a7-693d-2227-b575e1c96879&psq=ASI432MM&u=a1aHR0cHM6Ly93d3cuendvYXN0cm8uY29tL3Byb2R1Y3QvendvLWFzaTQzMm1tLw)
   
-[^2]: [ASICap_V2.18(64bit)](https://www.bing.com/ck/a?!&&p=bd83e778ffa244a8905226692de98954c856feff92046dec67c1ab3b31317ff6JmltdHM9MTc4MzU1NTIwMA&ptn=3&ver=2&hsh=4&fclid=0218a384-e0a7-693d-2227-b575e1c96879&psq=ASICap&u=a1aHR0cHM6Ly93d3cuendvYXN0cm8uY29tL3NvZnR3YXJlLw)
+[^3]: [ASICap_V2.18(64bit)](https://www.bing.com/ck/a?!&&p=bd83e778ffa244a8905226692de98954c856feff92046dec67c1ab3b31317ff6JmltdHM9MTc4MzU1NTIwMA&ptn=3&ver=2&hsh=4&fclid=0218a384-e0a7-693d-2227-b575e1c96879&psq=ASICap&u=a1aHR0cHM6Ly93d3cuendvYXN0cm8uY29tL3NvZnR3YXJlLw)
 
-[^3]: [asiCAMtest README](https://github.com/OArikui/SUN_watching/blob/sun_find_west/zwoasiCAM_connect_test/README.md)
+[^4]: [asiCAMtest README](https://github.com/OArikui/SUN_watching/blob/sun_find_west/zwoasiCAM_connect_test/README.md)
 
-[^4]: [file_transfer v1.00](https://github.com/fuji-astronomy-club-coders/file_transfer/releases/tag/LAN_file_transfar_v1.00)
+[^5]: [file_transfer v1.00](https://github.com/fuji-astronomy-club-coders/file_transfer/releases/tag/LAN_file_transfar_v1.00)
