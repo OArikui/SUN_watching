@@ -127,7 +127,7 @@ class OpenCircleArrow:
 
 # 2. Visualizer クラス (メイン描画マネージャー)
 class Visualizer:
-    def __init__(self, width, height, acceptable, grid_color="#FFFFFF"):
+    def __init__(self, width, height, acceptable, grid_color="#FFFFFF", grid_ny=2, grid_nx=4, grid_r=300, grid_alpha=0.4):
         self.width = width
         self.height = height
         self.acceptable = acceptable
@@ -155,13 +155,30 @@ class Visualizer:
             label="circle center track",
         )
 
-        # グリッドの描画
+        # グリッドの描画 
         self.grid_lines = []
-        for y_val in np.linspace(0, height, 5)[1:-1]:
+        
+
+        # 縦分割数 (grid_ny) に応じて横線を描画
+        for y_val in np.linspace(0, height, grid_ny + 1)[1:-1]:
             (line,) = self.ax.plot(
-                [0, width], [y_val, y_val], color=grid_color, linewidth=3, alpha=0.4
+                [0, width], [y_val, y_val], color=grid_color, linewidth=3, alpha=grid_alpha
             )
             self.grid_lines.append(line)
+            
+        # 横分割数 (grid_nx) に応じて縦線を描画
+        for x_val in np.linspace(0, width, grid_nx + 1)[1:-1]:
+            (line,) = self.ax.plot(
+                [x_val, x_val], [0, height], color=grid_color, linewidth=3, alpha=grid_alpha
+            )
+            self.grid_lines.append(line)
+            
+        # 画像中心に半径 grid_r の正円を描画
+        center_x, center_y = width / 2, height / 2
+        self.grid_circle = Circle(
+            (center_x, center_y), grid_r, fill=False, edgecolor=grid_color, linewidth=3, alpha=grid_alpha
+        )
+        self.ax.add_patch(self.grid_circle)
 
         # (self.ax_sunline,) = self.ax.plot([], [], color="purple", linewidth=3)
 
@@ -365,7 +382,10 @@ if __name__ == "__main__":
             else:
                 print("データが少なすぎます。")
                 sys.exit(1)
+            
             # UI確認のため Visualizer を初期化
+            # NOTE: グリッドの分割数などを変えたい場合は以下のように引数を指定します。
+            # viz = Visualizer(width, height, acceptable, grid_ny=4, grid_nx=6, grid_r=400, grid_alpha=0.5)
             viz = Visualizer(width, height, acceptable)
 
             # 描画範囲を画像サイズに固定
