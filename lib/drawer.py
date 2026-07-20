@@ -5,10 +5,25 @@ from matplotlib.transforms import Affine2D
 from matplotlib.widgets import Slider
 
 __all__ = ["OpenCircleArrow", "Visualizer"]
+def convert_angle_to_west(robust_angle: float) -> float:
+    """標準座標系（右0度, 上90度）の角度を西座標系（左0度, 上90度）に変換し、
 
+    [-180, 180] の範囲に正規化します。
+
+    Args:
+        robust_angle (float): 変換前の角度（度数法 / degree）
+
+    Returns:
+        float: UI用の角度（度数法 / degree, 範囲: -180 ~ 180）
+    """
+    raw_ui_angle = 180.0 - robust_angle #座標系の変換
+    ui_angle = (raw_ui_angle + 180.0) % 360.0 - 180.0 # 正規化
+
+    return ui_angle
 
 # 1. OpenCircleArrow クラス (描画パーツ)
 class OpenCircleArrow:
+    # NEXT:矢印の始点を水平ひだりに固定
     def __init__(
         self,
         ax,
@@ -186,18 +201,21 @@ class Visualizer:
 
         self.ax_shdw_c.set_data(recent_pts[:, 0], recent_pts[:, 1])
 
+        # 2つの座標系、いずれも上が正,下が負で-180~+180
+        west_angle=convert_angle_to_west(robust_angle)#左0°の座標
+        east_angle=robust_angle#右0°の座標
+        
         # 許容範囲に応じて色を変更
-        if abs(robust_angle) < self.acceptable:
+        if abs(west_angle) < self.acceptable:
             uxc = ("limegreen", "mediumseagreen")
         else:
             uxc = ("red", "purple")
 
-        robust_rad = np.radians(robust_angle)
+        east_rad = np.radians(east_angle)
 
         # 角度からベクトルのX, Y成分を計算 (長さは self.sunline)
-        # 画像座標系(下がY正)に合わせてY成分を反転させる
-        u = self.sunline * np.cos(robust_rad)
-        v = -self.sunline * np.sin(robust_rad)
+        u = self.sunline * np.cos(east_rad)
+        v = self.sunline * np.sin(east_rad)
 
         # 矢印の始点(cx, cy)とベクトル成分(u, v)を更新
         self.ax_sunline.set_offsets(np.c_[cx, cy])
@@ -205,7 +223,7 @@ class Visualizer:
 
         self.arrow.update(
             center=(cx, cy),
-            angle=robust_angle,
+            angle=east_angle,
             edgecolor=uxc[1],
             tri_color=uxc[1],
         )
@@ -213,7 +231,7 @@ class Visualizer:
         self.ax_sunline.set_color(uxc[1])
 
         # フレーム数と太陽の角度を数値として表示更新
-        txt_display = f"Sun Angle: {robust_angle:.2f}°"
+        txt_display = f"Sun Angle: {west_angle:.2f}°"
         if frame_idx is not None:
             txt_display += f" | Frame: {frame_idx}"
         self.info_text.set_text(txt_display)
