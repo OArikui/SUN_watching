@@ -17,8 +17,8 @@ from lib.drawer import Visualizer  # noqa: E402
 
 # ==================
 # パラメータ設定
-acceptable = 1  #許容誤差(degree)
-buf_lookback=100    #前何フレームを軌道推定に使うか
+acceptable = 1  # 許容誤差(degree)
+buf_lookback = 100  # 前何フレームを軌道推定に使うか
 grid_color = "#FFFFFF"
 # =====================
 
@@ -70,7 +70,9 @@ try:
         recent_pts = buf_arr[-buf_lookback:]
 
         # west_angle may return None (e.g. not enough points); handle that safely
-        result = west_angle(recent_pts) # NOTE:fpsと対応させることでより移動に即した矢印が作製可能に
+        result = west_angle(
+            recent_pts
+        )  # NOTE:fpsと対応させることでより移動に即した矢印が作製可能に
         if result is None:
             robust_angle = False
             vectorYX = (0.0, 0.0)

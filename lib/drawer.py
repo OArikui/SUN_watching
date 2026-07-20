@@ -5,6 +5,8 @@ from matplotlib.transforms import Affine2D
 from matplotlib.widgets import Slider
 
 __all__ = ["OpenCircleArrow", "Visualizer"]
+
+
 def convert_angle_to_west(robust_angle: float) -> float:
     """標準座標系（右0度, 上90度）の角度を西座標系（左0度, 上90度）に変換し、
 
@@ -16,10 +18,11 @@ def convert_angle_to_west(robust_angle: float) -> float:
     Returns:
         float: UI用の角度（度数法 / degree, 範囲: -180 ~ 180）
     """
-    raw_ui_angle = 180.0 - robust_angle #座標系の変換
-    ui_angle = (raw_ui_angle + 180.0) % 360.0 - 180.0 # 正規化
+    raw_ui_angle = 180.0 - robust_angle  # 座標系の変換
+    ui_angle = (raw_ui_angle + 180.0) % 360.0 - 180.0  # 正規化
 
     return ui_angle
+
 
 # 1. OpenCircleArrow クラス (描画パーツ)
 class OpenCircleArrow:
@@ -202,9 +205,9 @@ class Visualizer:
         self.ax_shdw_c.set_data(recent_pts[:, 0], recent_pts[:, 1])
 
         # 2つの座標系、いずれも上が正,下が負で-180~+180
-        west_angle=convert_angle_to_west(robust_angle)#左0°の座標
-        east_angle=robust_angle#右0°の座標
-        
+        west_angle = convert_angle_to_west(robust_angle)  # 左0°の座標
+        east_angle = robust_angle  # 右0°の座標
+
         # 許容範囲に応じて色を変更
         if abs(west_angle) < self.acceptable:
             uxc = ("limegreen", "mediumseagreen")

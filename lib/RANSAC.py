@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 from numpy.typing import NDArray
 from sklearn.linear_model import RANSACRegressor
 
-version=1.00
+version = 1.00
+
+
 def calculate_west_angle_robust(
     p_lst: Union[List[List[float]], NDArray[np.float64]],
     time_stomps: Optional[Union[List[float], NDArray[np.float32]]] = None,
@@ -25,7 +27,7 @@ def calculate_west_angle_robust(
             ※ データ不足時は None を返す
     """
     points = np.asarray(p_lst, dtype=np.float64)
-    
+
     # 角度計算には最低2点が必要
     if len(points) < 2:
         return None
@@ -132,7 +134,8 @@ if __name__ == "__main__":
     # RANSACで推定した方向ベクトルを矢印で描画 (青太線)
     try:
         len_robust = math.hypot(
-            vx, vy  # pyright: ignore[reportPossiblyUnboundVariable]
+            vx,
+            vy,  # pyright: ignore[reportPossiblyUnboundVariable]
         )
         plt.quiver(
             center_x,
