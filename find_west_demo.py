@@ -20,7 +20,7 @@ from lib.drawer import Visualizer  # noqa: E402
 # パラメータ設定
 acceptable = 1
 grid_color = "#FFFFFF"
-video_path = askopenfilename()  # 読み込むAVIファイルのパスに変更してください
+video_path = askopenfilename() 
 # =====================
 
 # トラックバー用のダミーコールバック関数
@@ -87,13 +87,13 @@ try:
         # RANSACによる west_angle 計算
         result = west_angle(recent_pts)
         if result is None:
-            calculate = False
+            robust_angle = False
             vectorYX = (0.0, 0.0)
         else:
-            calculate, vectorYX = result
+            robust_angle, vectorYX = result
 
         # 5. 描画更新
-        viz.update(img, cx, cy, r, recent_pts, calculate, frame_idx=len(buffer))
+        viz.update(img, cx, cy, r, recent_pts, robust_angle, frame_idx=len(buffer))
 
         # 終了判定（動画再生速度に合わせて30ms待機）
         if cv2.waitKey(30) & 0xFF == ord("q"):

@@ -177,7 +177,7 @@ class Visualizer:
             tri_color="purple",
         )
 
-    def update(self, img, cx, cy, r, recent_pts, calculate, frame_idx=None):
+    def update(self, img, cx, cy, r, recent_pts, robust_angle, frame_idx=None):
         """計算結果を受け取り、画面を更新する"""
         self.ax_img.set_data(img)
         self.ax_min2.set_center((cx, cy))  # pyright: ignore[reportAttributeAccessIssue]
@@ -187,17 +187,17 @@ class Visualizer:
         self.ax_shdw_c.set_data(recent_pts[:, 0], recent_pts[:, 1])
 
         # 許容範囲に応じて色を変更
-        if abs(calculate) < self.acceptable:
+        if abs(robust_angle) < self.acceptable:
             uxc = ("limegreen", "mediumseagreen")
         else:
             uxc = ("red", "purple")
 
-        calc_rad = np.radians(calculate)
+        robust_rad = np.radians(robust_angle)
 
         # 角度からベクトルのX, Y成分を計算 (長さは self.sunline)
         # 画像座標系(下がY正)に合わせてY成分を反転させる
-        u = self.sunline * np.cos(calc_rad)
-        v = -self.sunline * np.sin(calc_rad)
+        u = self.sunline * np.cos(robust_rad)
+        v = -self.sunline * np.sin(robust_rad)
 
         # 矢印の始点(cx, cy)とベクトル成分(u, v)を更新
         self.ax_sunline.set_offsets(np.c_[cx, cy])
@@ -205,7 +205,7 @@ class Visualizer:
 
         self.arrow.update(
             center=(cx, cy),
-            angle=calculate,
+            angle=robust_angle,
             edgecolor=uxc[1],
             tri_color=uxc[1],
         )
@@ -213,7 +213,7 @@ class Visualizer:
         self.ax_sunline.set_color(uxc[1])
 
         # フレーム数と太陽の角度を数値として表示更新
-        txt_display = f"Sun Angle: {calculate:.2f}°"
+        txt_display = f"Sun Angle: {robust_angle:.2f}°"
         if frame_idx is not None:
             txt_display += f" | Frame: {frame_idx}"
         self.info_text.set_text(txt_display)
@@ -398,7 +398,7 @@ if __name__ == "__main__":
 
                     # 角度は「初期計算値 + スライダーの回転量」で決定
 
-                    calculate = base_calculate + angle_deg
+                    robust_angle = base_calculate + angle_deg
 
                     # 描画更新（frame_idx を渡すように変更）
                     viz.update(
@@ -407,7 +407,7 @@ if __name__ == "__main__":
                         cy,
                         radius,
                         recent_pts,
-                        calculate,
+                        robust_angle,
                         frame_idx=frame_idx,
                     )
 

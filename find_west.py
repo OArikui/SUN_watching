@@ -71,13 +71,13 @@ try:
         # west_angle may return None (e.g. not enough points); handle that safely
         result = west_angle(recent_pts)
         if result is None:
-            calculate = False
+            robust_angle = False
             vectorYX = (0.0, 0.0)
         else:
-            calculate, vectorYX = result
+            robust_angle, vectorYX = result
 
         # 描画更新
-        viz.update(img, cx, cy, r, recent_pts, calculate, frame_idx=len(buffer))
+        viz.update(img, cx, cy, r, recent_pts, robust_angle, frame_idx=len(buffer))
 
         # 終了判定
         if cv2.waitKey(1) & 0xFF == ord("q"):
