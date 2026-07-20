@@ -18,11 +18,26 @@ from lib.drawer import Visualizer  # noqa: E402
 
 # ==================
 # パラメータ設定
-acceptable = 1  # 許容誤差(degree)
-buf_lookback = 100  # 前何フレームを軌道推定に使うか
-grid_color = "#FFFFFF"
+# analyzing 
+acceptable = 1  # 許容誤差(degree 0~)
+buf_lookback = 100  # 前何フレームを軌道推定に使うか (frame 2~)
+
 video_path = askopenfilename()
+
+# interface
+grid_param={
+    grid_color : "#FFFFFF" #grid_color(hex16)
+    ,grid_alpha:0.4 #grid_alpha(0.0-1.0)
+    ,grid_ny:2  #splitting y (2~)
+    ,grid_nx:4  #splitting x (2~)
+    ,grid_r:300 #center guide circle radian(pix)
+    }
+
 # =====================
+
+# parameter結集
+viz_init_params={"acceptable":acceptable}
+viz_init_params.update(grid_param)
 
 
 # トラックバー用のダミーコールバック関数
@@ -53,7 +68,7 @@ try:
     print("loading...")
 
     # 描画クラスを初期化
-    viz = Visualizer(width, height, acceptable, grid_color)
+    viz = Visualizer(width, height,**viz_init_params)
 
     print("complete loading")
     print(

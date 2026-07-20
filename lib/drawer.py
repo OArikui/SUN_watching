@@ -127,7 +127,7 @@ class OpenCircleArrow:
 
 # 2. Visualizer クラス (メイン描画マネージャー)
 class Visualizer:
-    def __init__(self, width, height, acceptable, grid_color="#FFFFFF", grid_ny=2, grid_nx=4, grid_r=300, grid_alpha=0.4):
+    def __init__(self, width, height, acceptable=1, grid_color="#FFFFFF", grid_ny=2, grid_nx=4, grid_r=300, grid_alpha=0.4):
         self.width = width
         self.height = height
         self.acceptable = acceptable
