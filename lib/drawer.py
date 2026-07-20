@@ -197,10 +197,36 @@ class Visualizer:
             zorder=10,
             linestyle="dashed",
         )
-        # フレーム数と太陽の角度（数値）を表示するテキストオブジェクト
+
+         # HUD（表示パネル）のカスタマイズ用設定辞書
+        self.hud_style = {
+            "x": 0.02,                  # 画面左端からの位置 (0.0 ~ 1.0)
+            "y": 0.98,                  # 画面下端からの位置 (0.0 ~ 1.0)
+            "ha": "left",               # 水平方向の揃え (left, center, right)
+            "va": "top",                # 垂直方向の揃え (top, center, bottom)
+            "fontsize": 13,             # 文字サイズ
+            "color": "#00FF00",         # 文字色
+            "family": "monospace",      # フォントスタイル (等幅フォントを推奨)
+            "bbox": dict(               # 背景パネルの設定
+                facecolor='black',
+                alpha=0.5,
+                edgecolor='none',
+                boxstyle='round,pad=0.5'
+            )
+        }
+
         self.info_text = self.fig.text(
-            0.01, 0.43, "", ha="left", fontsize=14, color="yellow"
+            self.hud_style["x"], self.hud_style["y"], "",
+            ha=self.hud_style["ha"],
+            va=self.hud_style["va"],
+            fontsize=self.hud_style["fontsize"],
+            color=self.hud_style["color"],
+            family=self.hud_style["family"],
+            bbox=self.hud_style["bbox"]
         )
+
+        # FPS計測用の変数
+        self.prev_time = time.time()
 
         # 同ファイル内に定義した OpenCircleArrow を直接使用
         self.arrow = OpenCircleArrow(
@@ -250,12 +276,22 @@ class Visualizer:
 
         self.ax_sunline.set_color(uxc[1])
 
-        # フレーム数と太陽の角度を数値として表示更新
-        txt_display = f"Sun Angle: {west_angle:.2f}°"
-        if frame_idx is not None:
-            txt_display += f" | Frame: {frame_idx}"
-        self.info_text.set_text(txt_display)
+         # 実際のFPSを計算
+        now = time.time()
+        dt = now - self.prev_time
+        self.prev_time = now
+        actual_fps = 1.0 / dt if dt > 0 else 0.0
 
+         # 表示テキストのフォーマット (桁数を揃えて視認性を向上)
+        text_lines = [
+            f"Angle      : {west_angle:7.2f} °",
+            f"MIN2 Stat  : X={cx:.1f} Y={cy:.1f} R={r:.1f}",
+            f"Frames     : {frame_idx} / {total_frames}",
+            f"Traj Points: {len(recent_pts)}",
+            f"Actual FPS : {actual_fps:7.2f}",
+            f"Target FPS : {target_fps:7.2f}"
+        ]
+        self.info_text.set_text("\n".join(text_lines))
         # 描画を反映
         plt.pause(0.001)
 
