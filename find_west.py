@@ -69,7 +69,7 @@ try:
         recent_pts = buf_arr[-100:]
 
         # west_angle may return None (e.g. not enough points); handle that safely
-        result = west_angle(recent_pts)
+        result = west_angle(recent_pts) # NOTE:fpsと対応させることでより移動に即した矢印が作製可能に
         if result is None:
             robust_angle = False
             vectorYX = (0.0, 0.0)

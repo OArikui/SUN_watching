@@ -1,55 +1,59 @@
-import numpy as np
-from sklearn.linear_model import RANSACRegressor
 import math
+from typing import List, Optional, Tuple, Union
+import numpy as np
 import matplotlib.pyplot as plt
+from numpy.typing import NDArray
+from sklearn.linear_model import RANSACRegressor
 
+version=1.00
+def calculate_west_angle_robust(
+    p_lst: Union[List[List[float]], NDArray[np.float64]],
+    time_stomps: Optional[Union[List[float], NDArray[np.float32]]] = None,
+) -> Optional[Tuple[float, Tuple[float, float]]]:
+    """時系列の座標リストから、外れ値（ノイズ）に強い移動方向（角度）と速度ベクトルを算出する。
 
-def calculate_west_angle_robust(p_lst,time_stomps):
-    """
-    時系列の座標リストから、誤差に強い移動方向（角度）を算出する関数。
-    デカルト座標系(右が0度、左が180度/-180度、上が正、下が負の座標系です。)
+    デカルト座標系（右: 0度、上: 90度、左: 180/-180度、下: -90度）
+
     Parameters:
-        p_lst (list): [[x1, y1], [x2, y2], ...] のような2次元座標のリスト
+        p_lst: [[x1, y1], [x2, y2], ...] のような2次元座標のリストまたはndarray
+        time_stomps: 各点のタイムスタンプ（任意）。指定しない場合は等間隔(0, 1, 2...)として扱う
 
     Returns:
-        float: 移動方向の角度（度数法: -180 ~ 180度）
-               ※ データが不足している場合はNoneを返す
+        Optional[Tuple[float, Tuple[float, float]]]:
+            - angle_deg (float): 移動方向の角度（-180 ~ 180度）
+            - (vy, vx) (Tuple[float, float]): y方向およびx方向の推定速度
+            ※ データ不足時は None を返す
     """
-    points = np.array(p_lst)
-    if len(points) < 2:
-        return None  # 角度を計算するには最低2点必要
-
-    # 時間インデックス t を作成 (0, 1, 2, ..., N-1)
-    # scikit-learnの入力形式に合わせて2次元配列にする
-    need_t=False
-    if not time_stomps:
-        need_t=True
-    elif len(time_stomps) != len(p_lst):
-        need_t=True
-    if need_t:
-        t = np.arange(len(points)).reshape(-1, 1)
-    else:
-        t = np.array(time_stomps,dtype=np.float32)  
+    points = np.asarray(p_lst, dtype=np.float64)
     
-    # x座標とy座標を分離
-    x = points[:, 0]
-    y = points[:, 1]
+    # 角度計算には最低2点が必要
+    if len(points) < 2:
+        return None
+
+    # 時間インデックス t の作成と2次元配列化 (n_samples, 1)
+    if time_stomps is None or len(time_stomps) != len(points):
+        t: NDArray[np.float64] = np.arange(len(points), dtype=np.float64).reshape(-1, 1)
+    else:
+        t = np.asarray(time_stomps, dtype=np.float64).reshape(-1, 1)
+
+    # x座標とy座標の分離
+    x: NDArray[np.float64] = points[:, 0]
+    y: NDArray[np.float64] = points[:, 1]
 
     # x方向の速度(傾き)をRANSACで推定
     ransac_x = RANSACRegressor(random_state=42)
     ransac_x.fit(t, x)
-    vx = ransac_x.estimator_.coef_[0]
+    # estimator_ は学習済みの LinearRegression インスタンス
+    vx: float = float(ransac_x.estimator_.coef_[0])
 
     # y方向の速度(傾き)をRANSACで推定
     ransac_y = RANSACRegressor(random_state=42)
     ransac_y.fit(t, y)
-    vy = ransac_y.estimator_.coef_[0]
+    vy: float = float(ransac_y.estimator_.coef_[0])
 
-    # ベクトルからラジアンを計算
-    angle_rad = math.atan2(vy, vx)
-
-    # ラジアンから度数法(Degree)に変換
-    angle_deg = math.degrees(angle_rad)
+    # ベクトルからラジアン・度数法へ変換
+    angle_rad: float = math.atan2(vy, vx)
+    angle_deg: float = math.degrees(angle_rad)
 
     return angle_deg, (vy, vx)
 

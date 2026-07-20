@@ -85,7 +85,7 @@ try:
         recent_pts = buf_arr[-100:]
 
         # RANSACによる west_angle 計算
-        result = west_angle(recent_pts)
+        result = west_angle(recent_pts)# NOTE:fpsと対応させることでより移動に即した矢印が作製可能に
         if result is None:
             robust_angle = False
             vectorYX = (0.0, 0.0)
