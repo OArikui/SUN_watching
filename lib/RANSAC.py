@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 def calculate_west_angle_robust(p_lst):
     """
     時系列の座標リストから、誤差に強い移動方向（角度）を算出する関数。
-    デカルト座標系(左が0度、右が180度/-180度、上が正、下が負の座標系です。)
+    デカルト座標系(右が0度、左が180度/-180度、上が正、下が負の座標系です。)
     Parameters:
         p_lst (list): [[x1, y1], [x2, y2], ...] のような2次元座標のリスト
 
@@ -37,8 +37,8 @@ def calculate_west_angle_robust(p_lst):
     ransac_y.fit(t, y)
     vy = ransac_y.estimator_.coef_[0]
 
-    # vxの符号を反転させることで、左水平を0度とする
-    angle_rad = math.atan2(vy, -vx)
+    # ベクトルからラジアンを計算
+    angle_rad = math.atan2(vy, vx)
 
     # ラジアンから度数法(Degree)に変換
     angle_deg = math.degrees(angle_rad)
