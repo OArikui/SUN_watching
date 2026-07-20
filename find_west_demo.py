@@ -18,7 +18,8 @@ from lib.drawer import Visualizer  # noqa: E402
 
 # ==================
 # パラメータ設定
-acceptable = 1
+acceptable = 1  #許容誤差(degree)
+buf_lookback=100    #前何フレームを軌道推定に使うか
 grid_color = "#FFFFFF"
 video_path = askopenfilename() 
 # =====================
@@ -82,7 +83,7 @@ try:
         buffer.append([cx, cy])
 
         buf_arr = np.array(buffer)
-        recent_pts = buf_arr[-100:]
+        recent_pts = buf_arr[-buf_lookback:]
 
         # RANSACによる west_angle 計算
         result = west_angle(recent_pts)# NOTE:fpsと対応させることでより移動に即した矢印が作製可能に
