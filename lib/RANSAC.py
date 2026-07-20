@@ -4,7 +4,7 @@ import math
 import matplotlib.pyplot as plt
 
 
-def calculate_west_angle_robust(p_lst):
+def calculate_west_angle_robust(p_lst,time_stomps):
     """
     時系列の座標リストから、誤差に強い移動方向（角度）を算出する関数。
     デカルト座標系(右が0度、左が180度/-180度、上が正、下が負の座標系です。)
@@ -21,8 +21,16 @@ def calculate_west_angle_robust(p_lst):
 
     # 時間インデックス t を作成 (0, 1, 2, ..., N-1)
     # scikit-learnの入力形式に合わせて2次元配列にする
-    t = np.arange(len(points)).reshape(-1, 1)
-
+    need_t=False
+    if not time_stomps:
+        need_t=True
+    elif len(time_stomps) != len(p_lst):
+        need_t=True
+    if need_t:
+        t = np.arange(len(points)).reshape(-1, 1)
+    else:
+        t = np.array(time_stomps,dtype=np.float32)  
+    
     # x座標とy座標を分離
     x = points[:, 0]
     y = points[:, 1]
