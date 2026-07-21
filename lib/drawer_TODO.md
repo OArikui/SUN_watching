@@ -12,11 +12,11 @@
 
 ### 数値の表示
 
-- [ ] 現在の角度
-- [ ] MIN2 circle stat
-- [ ] frame数
-- [ ] 軌跡の表示数
-- [ ] 実際のfps
+- [x] 現在の角度
+- [x] MIN2 circle stat
+- [x] frame数
+- [x] 軌跡の表示数
+- [x] 実際のfps
 
 ### else
 

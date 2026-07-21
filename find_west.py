@@ -54,6 +54,10 @@ camera.set_image_type(asi.ASI_IMG_RAW8)
 camera.start_video_capture()
 width, height, binning, img_type = camera.get_roi_format()
 
+#変数初期化
+frame_count = 0
+target_fps = 30.0 # カメラの露出時間
+
 buffer = deque(maxlen=500)
 
 # 3. リアルタイム処理ループ
@@ -73,8 +77,10 @@ try:
             frame = camera.capture_video_frame(timeout=500)
         except asi.ZWO_CaptureError:
             continue
-
+        
         img = np.frombuffer(frame, dtype=np.uint8).reshape(height, width)
+
+        frame_count+=1
 
         # 計算処理
         cx, cy, r = MIN2(img)
@@ -94,8 +100,13 @@ try:
             robust_angle, vectorYX = result
 
         # 描画更新
-        viz.update(img, cx, cy, r, recent_pts, robust_angle, frame_idx=len(buffer))
-
+        viz.update(
+            img, cx, cy, r, recent_pts, robust_angle,
+            frame_idx=frame_count,
+            total_frames="∞",
+            target_fps=target_fps
+        )
+        
         # 終了判定
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break

@@ -24,6 +24,10 @@ buf_lookback = 100  # 前何フレームを軌道推定に使うか (frame 2~)
 
 video_path = askopenfilename()
 
+target_fps = cap.get(cv2.CAP_PROP_FPS)
+total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+frame_count = 0
+
 # interface
 grid_param={
     grid_color : "#FFFFFF" #grid_color(hex16)
@@ -82,7 +86,7 @@ try:
                 "動画の再生が終了したか、フレームを取得できませんでした。ループを終了します。"
             )
             break
-
+        frame_count+=1
         # ASIカメラのRAW8（1チャンネル）入力に合わせるためグレースケール変換
         if len(frame.shape) == 3:
             img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -119,8 +123,13 @@ try:
             robust_angle, vectorYX = result
 
         # 5. 描画更新
-        viz.update(img, cx, cy, r, recent_pts, robust_angle, frame_idx=len(buffer))
-
+        viz.update(
+            img, cx, cy, r, recent_pts, robust_angle,
+            frame_idx=frame_count,
+            total_frames=total_frames,
+            target_fps=target_fps
+        )
+        
         # 終了判定（動画再生速度に合わせて30ms待機）
         if cv2.waitKey(30) & 0xFF == ord("q"):
             break
