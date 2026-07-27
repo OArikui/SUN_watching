@@ -1,10 +1,11 @@
 import os
 import sys
+import cv2
+import numpy as np
+import zwoasi as asi
 from time import time
 from pathlib import Path
 from collections import deque
-import cv2
-import numpy as np
 
 # 0. 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
@@ -15,6 +16,8 @@ if str(project_root) not in sys.path:
 from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2  # noqa: E402
 from lib.RANSAC import calculate_west_angle_robust as west_angle  # noqa: E402
 from lib.drawer import Visualizer  # noqa: E402
+
+from lib.camera_utils import connect_camera  # noqa: E402
 
 # ==================
 # パラメータ設定
@@ -38,8 +41,6 @@ viz_init_params = {"acceptable": acceptable, **grid_param}
 # zwoasiのインポートと環境変数設定
 env_filename = project_root / "lib" / "ASICamera2.dll"
 os.environ["ZWO_ASI_LIB"] = str(env_filename)
-import zwoasi as asi  # noqa: E402
-from lib.camera_utils import connect_camera  # noqa: E402
 
 # 1. & 2. モジュールを使用してカメラを接続（待機ループ実行）
 camera = connect_camera(str(env_filename))
