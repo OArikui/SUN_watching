@@ -15,6 +15,10 @@ logger = logging.getLogger(__name__)
 
 logger.info("=== start processing ===")
 
+def cancel_process():
+    logging.info("=== cancel processing ===")
+    sys.exit()
+
 try:
     import os# noqa: E402
     import sys# noqa: E402
@@ -28,7 +32,7 @@ try:
 except ImportError:
     logging.error("Failed to import standard module")
     logging.error(traceback.format_exc())
-    raise
+    cancel_process()
 
 logging.info("all standard modules imported successfully")
 
@@ -46,7 +50,7 @@ try:
 except ImportError:
     logging.error("Failed to import custom module")
     logging.error(traceback.format_exc())   
-    raise
+    cancel_process()
 
 logging.info("all custom modules imported successfully")
 
@@ -67,13 +71,14 @@ grid_param = {
 
 # =====================
 # parameter light 結集
-logging.info("checking schema visualizer parameters")
+logging.info("validating schema visualizer parameters")
 try:
     viz_init_params = {"acceptable": acceptable, **grid_param}
     validate(instance=viz_init_params, schema=viz_schema)#TODO:drawerにschemaを設置
 except ValidationError as e:
+    logging.error("visualizer parameters validation failed")
     logging.error("Validation error: %s", e)
-    raise
+    cancel_process()
 
 logging.info("got visualizer's parameters successfully")
 
