@@ -1,5 +1,6 @@
 import os
 import sys
+from time import time
 from pathlib import Path
 from collections import deque
 import cv2
@@ -56,7 +57,8 @@ width, height, binning, img_type = camera.get_roi_format()
 frame_count = 0
 target_fps = 30.0  # カメラの露出時間
 
-buffer = deque(maxlen=500)
+buffer_c = deque(maxlen=500)
+buffer_t = deque(maxlen=500)
 
 # 3. リアルタイム処理ループ
 try:
@@ -82,14 +84,16 @@ try:
 
         # 計算処理
         cx, cy, r = MIN2(img)
-        buffer.append([cx, cy])
+        buffer_c.append([cx, cy])
+        buf_c_arr = np.array(buffer_c)
+        recent_pts = buf_c_arr[-buf_lookback:]
 
-        buf_arr = np.array(buffer)
-        recent_pts = buf_arr[-buf_lookback:]
-
+        buffer_t.append(time())
+        buf_t_arr = np.array(buffer_t)
+        recent_timestamps=buf_t_arr[-buf_lookback:]
         if len(recent_pts) > 2:
             # west_angle may return None (e.g. not enough points); handle that safely
-            result = west_angle(recent_pts)  # NOTE:timestamp を追加
+            result = west_angle(recent_pts,recent_timestamps)
             robust_angle, vectorYX = result # pyright: ignore[reportGeneralTypeIssues]
         else:
             robust_angle = False
