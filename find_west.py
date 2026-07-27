@@ -1,14 +1,7 @@
-import os
-import sys
-import cv2
-import numpy as np
-import zwoasi as asi
-from time import time
-from pathlib import Path
-from collections import deque
-
 import logging
+import traceback
 import datetime
+
 logfile=f"app_{datetime.now().strftime("%Y-%m-%d")}.log"
 
 logging.basicConfig(
@@ -18,10 +11,26 @@ logging.basicConfig(
     filemode="a"        
 )
 
-
 logger = logging.getLogger(__name__)
 
 logger.info("=== start processing ===")
+
+try:
+    import os# noqa: E402
+    import sys# noqa: E402
+    import cv2# noqa: E402
+    import numpy as np# noqa: E402
+    import zwoasi as asi# noqa: E402
+    from time import time# noqa: E402
+    from pathlib import Path# noqa: E402
+    from collections import deque# noqa: E402
+    from jsonschema import validate, ValidationError# noqa: E402
+except ImportError:
+    logging.error("Failed to import standard module")
+    logging.error(traceback.format_exc())
+    raise
+
+logging.info("all standard modules imported successfully")
 
 # 0. 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
@@ -29,11 +38,17 @@ project_root = current_dir
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2  # noqa: E402
-from lib.RANSAC import calculate_west_angle_robust as west_angle  # noqa: E402
-from lib.drawer import Visualizer  # noqa: E402
+try:
+    from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2  # noqa: E402
+    from lib.RANSAC import calculate_west_angle_robust as west_angle  # noqa: E402
+    from lib.drawer import Visualizer,viz_schema # noqa: E402
+    from lib.camera_utils import connect_camera  # noqa: E402
+except ImportError:
+    logging.error("Failed to import custom module")
+    logging.error(traceback.format_exc())   
+    raise
 
-from lib.camera_utils import connect_camera  # noqa: E402
+logging.info("all custom modules imported successfully")
 
 # ==================
 # パラメータ設定
