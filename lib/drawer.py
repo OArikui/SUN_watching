@@ -238,7 +238,7 @@ class Visualizer:
             tri_color="purple",
         )
 
-    def update(self, img, cx, cy, r, recent_pts, robust_angle, frame_idx=None):
+    def update(self, img, cx, cy, r, recent_pts, robust_angle, frame_idx=None,total_frames=None,target_fps=None):
         """計算結果を受け取り、画面を更新する"""
         self.ax_img.set_data(img)
         self.ax_min2.set_center((cx, cy))  # pyright: ignore[reportAttributeAccessIssue]

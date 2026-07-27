@@ -33,6 +33,7 @@ def calculate_west_angle_robust(
     # 角度計算には最低2点が必要
     if len(points) < 2:
         raise ValueError ("")#NEXT:エラーメッセージを挿入
+        return False,(0.0,0.0)
 
     # 時間インデックス t の作成と2次元配列化 (n_samples, 1)
     if time_stomps is None or len(time_stomps) != len(points):
@@ -59,7 +60,8 @@ def calculate_west_angle_robust(
     angle_rad: float = math.atan2(vy, vx)
     angle_deg: float = math.degrees(angle_rad)
 
-    return angle_deg, (vy, vx)
+    vectorYX = vy, vx
+    return angle_deg, vectorYX
 
 
 # --- テスト実行と描画 ---

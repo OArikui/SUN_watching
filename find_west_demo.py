@@ -24,24 +24,22 @@ buf_lookback = 100  # 前何フレームを軌道推定に使うか (frame 2~)
 
 video_path = askopenfilename()
 
-target_fps = cap.get(cv2.CAP_PROP_FPS)
-total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
 frame_count = 0
 
 # interface
 grid_param={
-    grid_color : "#FFFFFF" #grid_color(hex16)
-    ,grid_alpha:0.4 #grid_alpha(0.0-1.0)
-    ,grid_ny:2  #splitting y (2~)
-    ,grid_nx:4  #splitting x (2~)
-    ,grid_r:300 #center guide circle radian(pix)
+    "grid_color" : "#FFFFFF" #grid_color(hex16)
+    ,"grid_alpha":0.4 #grid_alpha(0.0-1.0)
+    ,"grid_ny":2  #splitting y (2~)
+    ,"grid_nx":4  #splitting x (2~)
+    ,"grid_r":300 #center guide circle radian(pix)
     }
 
 # =====================
 
 # parameter結集
-viz_init_params={"acceptable":acceptable}
-viz_init_params.update(grid_param)
+viz_init_params={"acceptable":acceptable,**grid_param}
 
 
 # トラックバー用のダミーコールバック関数
@@ -56,6 +54,9 @@ if not cap.isOpened():
         f"エラー: 動画ファイル '{video_path}' を開けませんでした。パスを確認してください。"
     )
     sys.exit(1)
+
+target_fps = cap.get(cv2.CAP_PROP_FPS)
+total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
 # フレームサイズを取得
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))

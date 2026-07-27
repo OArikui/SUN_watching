@@ -17,25 +17,23 @@ from lib.drawer import Visualizer  # noqa: E402
 
 # ==================
 # パラメータ設定
-# analyzing 
+# analyzing
 acceptable = 1  # 許容誤差(degree 0~)
 buf_lookback = 100  # 前何フレームを軌道推定に使うか (frame 2~)
 
 # interface
-grid_param={
-    grid_color : "#FFFFFF" #grid_color(hex16)
-    ,grid_alpha:0.4 #grid_alpha(0.0-1.0)
-    ,grid_ny:2  #splitting y (2~)
-    ,grid_nx:4  #splitting x (2~)
-    ,grid_r:300 #center guide circle radian(pix)
-    }
+grid_param = {
+    "grid_color": "#FFFFFF",  # grid_color(hex16)
+    "grid_alpha": 0.4,  # grid_alpha(0.0-1.0)
+    "grid_ny": 2,  # splitting y (2~)
+    "grid_nx": 4,  # splitting x (2~)
+    "grid_r": 300,  # center guide circle radian(pix)
+}
 
 # =====================
 
 # parameter結集
-viz_init_params={"acceptable":acceptable}
-viz_init_params.update(grid_param)
-
+viz_init_params = {"acceptable": acceptable, **grid_param}
 # zwoasiのインポートと環境変数設定
 env_filename = project_root / "lib" / "ASICamera2.dll"
 os.environ["ZWO_ASI_LIB"] = str(env_filename)
@@ -54,9 +52,9 @@ camera.set_image_type(asi.ASI_IMG_RAW8)
 camera.start_video_capture()
 width, height, binning, img_type = camera.get_roi_format()
 
-#変数初期化
+# 変数初期化
 frame_count = 0
-target_fps = 30.0 # カメラの露出時間
+target_fps = 30.0  # カメラの露出時間
 
 buffer = deque(maxlen=500)
 
@@ -65,7 +63,7 @@ try:
     print("loading...")
 
     # 描画クラスを初期化
-    viz = Visualizer(width, height,**viz_init_params)
+    viz = Visualizer(width, height, **viz_init_params)
 
     print("complete loading")
     print(
@@ -77,10 +75,10 @@ try:
             frame = camera.capture_video_frame(timeout=500)
         except asi.ZWO_CaptureError:
             continue
-        
+
         img = np.frombuffer(frame, dtype=np.uint8).reshape(height, width)
 
-        frame_count+=1
+        frame_count += 1
 
         # 計算処理
         cx, cy, r = MIN2(img)
@@ -89,25 +87,27 @@ try:
         buf_arr = np.array(buffer)
         recent_pts = buf_arr[-buf_lookback:]
 
-        if len(recent_pts)<2:
+        if len(recent_pts) > 2:
             # west_angle may return None (e.g. not enough points); handle that safely
-            robust_angle, vectorYX = west_angle(
-                recent_pts
-            )  # NOTE:fpsと対応させることでより移動に即した矢印が作製可能に
-        else: 
+            result = west_angle(recent_pts)  # NOTE:timestamp を追加
+            robust_angle, vectorYX = result # pyright: ignore[reportGeneralTypeIssues]
+        else:
             robust_angle = False
             vectorYX = (0.0, 0.0)
-        
-        
 
         # 描画更新
         viz.update(
-            img, cx, cy, r, recent_pts, robust_angle,
+            img,
+            cx,
+            cy,
+            r,
+            recent_pts,
+            robust_angle,
             frame_idx=frame_count,
             total_frames="∞",
-            target_fps=target_fps
+            target_fps=target_fps,
         )
-        
+
         # 終了判定
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
