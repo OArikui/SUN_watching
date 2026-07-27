@@ -146,3 +146,115 @@ logging.basicConfig(
 - **logging モジュール API**（詳細）  [Python](https://docs.python.org/ja/3/library/logging.html)  
 
 ---
+
+# with modules
+**結論：ログに「どの module から出たログか」を入れるには、`%(name)s` をフォーマットに入れる。**  
+これが Python logging の正式な方法で、複数ファイルのプロジェクトでも確実に判別できる。
+
+---
+
+## 🎯 まず最重要ポイント（これだけで解決）
+ログフォーマットに **`%(name)s`** を入れると、  
+`logger = logging.getLogger(__name__)` で設定した **モジュール名** が自動で入る。
+
+```python
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
+```
+
+ログ例：
+
+```
+2026-07-28 00:15:12 [INFO] processor: 平均値=0.512
+2026-07-28 00:15:12 [INFO] main: メイン処理終了
+```
+
+これで **どの module から出たログか一目で分かる**。
+
+---
+
+## 🧩 モジュール構成での実例（あなたの画像処理プロジェクト向け）
+
+### main.py
+```python
+import logging
+from processor import process_image
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
+
+logger = logging.getLogger(__name__)
+
+def main():
+    logger.info("メイン処理開始")
+    process_image("sun.png")
+    logger.info("メイン処理終了")
+
+if __name__ == "__main__":
+    main()
+```
+
+### processor.py
+```python
+import logging
+import numpy as np
+
+logger = logging.getLogger(__name__)
+
+def process_image(path):
+    logger.info(f"画像読み込み: {path}")
+    arr = np.random.rand(100, 100)
+    logger.debug(f"shape={arr.shape}")
+    logger.info(f"平均値={arr.mean()}")
+```
+
+ログファイルにはこう出る：
+
+```
+[INFO] main: メイン処理開始
+[INFO] processor: 画像読み込み: sun.png
+[INFO] processor: 平均値=0.512
+[INFO] main: メイン処理終了
+```
+
+---
+
+## 🔍 さらに細かく識別したい場合（高度なフォーマット）
+### 1. ファイル名を入れる
+```python
+format="%(asctime)s [%(levelname)s] %(filename)s:%(lineno)d %(name)s: %(message)s"
+```
+
+例：
+
+```
+processor.py:12 processor: 平均値=0.512
+```
+
+### 2. 関数名を入れる
+```python
+format="%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s"
+```
+
+---
+
+## 🧠 よくある落とし穴（あなたの環境で起きやすい）
+- **basicConfig を複数回呼ぶとフォーマットが反映されない**  
+  → 最初の1回だけ有効
+- **logger = logging.getLogger(__name__) を使わずに root logger を使ってしまう**  
+  → すべてのログが同じ名前になる
+- **tqdm と logging が混ざってログが崩れる**  
+  → tqdm.write() を使うと綺麗に共存できる
+
+---
+
+## 📌 まとめ
+- ログフォーマットに **`%(name)s`** を入れる  
+- 各モジュールで **`logger = logging.getLogger(__name__)`** を使う  
+- これでログファイルから **どの module のログか確実に判別できる**
+
+---

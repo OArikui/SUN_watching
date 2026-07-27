@@ -1,8 +1,16 @@
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.patches import Arc, Polygon, Circle
-from matplotlib.transforms import Affine2D
-from matplotlib.widgets import Slider
+import logging
+import traceback
+
+try:
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from matplotlib.patches import Arc, Polygon, Circle
+    from matplotlib.transforms import Affine2D
+    from matplotlib.widgets import Slider
+except ImportError:
+    logging.error("Failed to import standard module")
+    logging.error(traceback.format_exc())
+    raise
 
 __all__ = ["OpenCircleArrow", "Visualizer"]
 
