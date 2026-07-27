@@ -89,15 +89,16 @@ try:
         buf_arr = np.array(buffer)
         recent_pts = buf_arr[-buf_lookback:]
 
-        # west_angle may return None (e.g. not enough points); handle that safely
-        result = west_angle(
-            recent_pts
-        )  # NOTE:fpsと対応させることでより移動に即した矢印が作製可能に
-        if result is None:
+        if len(recent_pts)<2:
+            # west_angle may return None (e.g. not enough points); handle that safely
+            robust_angle, vectorYX = west_angle(
+                recent_pts
+            )  # NOTE:fpsと対応させることでより移動に即した矢印が作製可能に
+        else: 
             robust_angle = False
             vectorYX = (0.0, 0.0)
-        else:
-            robust_angle, vectorYX = result
+        
+        
 
         # 描画更新
         viz.update(
