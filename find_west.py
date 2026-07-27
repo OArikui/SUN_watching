@@ -2,33 +2,35 @@ import logging
 import traceback
 import datetime
 
-logfile=f"app_{datetime.now().strftime("%Y-%m-%d")}.log"
+logfile = f"app_{datetime.now().strftime('%Y-%m-%d')}.log"
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s",
-    filename=logfile, 
-    filemode="a"        
+    filename=logfile,
+    filemode="a",
 )
 
 logger = logging.getLogger(__name__)
 
 logger.info("=== start processing ===")
 
+
 def cancel_process():
     logging.info("=== cancel processing ===")
     sys.exit()
 
+
 try:
-    import os# noqa: E402
-    import sys# noqa: E402
-    import cv2# noqa: E402
-    import numpy as np# noqa: E402
-    import zwoasi as asi# noqa: E402
-    from time import time# noqa: E402
-    from pathlib import Path# noqa: E402
-    from collections import deque# noqa: E402
-    from jsonschema import validate, ValidationError# noqa: E402
+    import os  # noqa: E402
+    import sys  # noqa: E402
+    import cv2  # noqa: E402
+    import numpy as np  # noqa: E402
+    import zwoasi as asi  # noqa: E402
+    from time import time  # noqa: E402
+    from pathlib import Path  # noqa: E402
+    from collections import deque  # noqa: E402
+    from jsonschema import validate, ValidationError  # noqa: E402
 except ImportError:
     logging.error("Failed to import standard module")
     logging.error(traceback.format_exc())
@@ -45,11 +47,11 @@ if str(project_root) not in sys.path:
 try:
     from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2  # noqa: E402
     from lib.RANSAC import calculate_west_angle_robust as west_angle  # noqa: E402
-    from lib.drawer import Visualizer,viz_schema # noqa: E402
+    from lib.drawer import Visualizer, viz_schema  # noqa: E402
     from lib.camera_utils import connect_camera  # noqa: E402
 except ImportError:
     logging.error("Failed to import custom module")
-    logging.error(traceback.format_exc())   
+    logging.error(traceback.format_exc())
     cancel_process()
 
 logging.info("all custom modules imported successfully")
@@ -74,7 +76,7 @@ grid_param = {
 logging.info("validating schema visualizer parameters")
 try:
     viz_init_params = {"acceptable": acceptable, **grid_param}
-    validate(instance=viz_init_params, schema=viz_schema)#TODO:drawerにschemaを設置
+    validate(instance=viz_init_params, schema=viz_schema)  # TODO:drawerにschemaを設置
 except ValidationError as e:
     logging.error("visualizer parameters validation failed")
     logging.error("Validation error: %s", e)
@@ -135,11 +137,11 @@ try:
 
         buffer_t.append(time())
         buf_t_arr = np.array(buffer_t)
-        recent_timestamps=buf_t_arr[-buf_lookback:]
+        recent_timestamps = buf_t_arr[-buf_lookback:]
         if len(recent_pts) > 2:
             # west_angle may return None (e.g. not enough points); handle that safely
-            result = west_angle(recent_pts,recent_timestamps)
-            robust_angle, vectorYX = result # pyright: ignore[reportGeneralTypeIssues]
+            result = west_angle(recent_pts, recent_timestamps)
+            robust_angle, vectorYX = result  # pyright: ignore[reportGeneralTypeIssues]
         else:
             robust_angle = False
             vectorYX = (0.0, 0.0)

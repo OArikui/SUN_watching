@@ -24,7 +24,7 @@ def calculate_west_angle_robust(
         Optional[Tuple[float, Tuple[float, float]]]:
             - angle_deg (float): 移動方向の角度（-180 ~ 180度）
             - (vy, vx) (Tuple[float, float]): y方向およびx方向の推定速度
-    
+
     Raises:
         Exception: 与えられた点の数が2つ未満で線を近似できない場合に例外を発生させる。
     """
@@ -32,8 +32,8 @@ def calculate_west_angle_robust(
 
     # 角度計算には最低2点が必要
     if len(points) < 2:
-        raise ValueError ("")#NEXT:エラーメッセージを挿入
-        return False,(0.0,0.0)
+        raise ValueError("")  # NEXT:エラーメッセージを挿入
+        return False, (0.0, 0.0)
 
     # 時間インデックス t の作成と2次元配列化 (n_samples, 1)
     if time_stomps is None or len(time_stomps) != len(points):

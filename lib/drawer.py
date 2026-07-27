@@ -135,7 +135,17 @@ class OpenCircleArrow:
 
 # 2. Visualizer クラス (メイン描画マネージャー)
 class Visualizer:
-    def __init__(self, width, height, acceptable=1, grid_color="#FFFFFF", grid_ny=2, grid_nx=4, grid_r=300, grid_alpha=0.4):
+    def __init__(
+        self,
+        width,
+        height,
+        acceptable=1,
+        grid_color="#FFFFFF",
+        grid_ny=2,
+        grid_nx=4,
+        grid_r=300,
+        grid_alpha=0.4,
+    ):
         self.width = width
         self.height = height
         self.acceptable = acceptable
@@ -163,28 +173,40 @@ class Visualizer:
             label="circle center track",
         )
 
-        # グリッドの描画 
+        # グリッドの描画
         self.grid_lines = []
-        
 
         # 縦分割数 (grid_ny) に応じて横線を描画
         for y_val in np.linspace(0, height, grid_ny + 1)[1:-1]:
             (line,) = self.ax.plot(
-                [0, width], [y_val, y_val], color=grid_color, linewidth=3, alpha=grid_alpha
+                [0, width],
+                [y_val, y_val],
+                color=grid_color,
+                linewidth=3,
+                alpha=grid_alpha,
             )
             self.grid_lines.append(line)
-            
+
         # 横分割数 (grid_nx) に応じて縦線を描画
         for x_val in np.linspace(0, width, grid_nx + 1)[1:-1]:
             (line,) = self.ax.plot(
-                [x_val, x_val], [0, height], color=grid_color, linewidth=3, alpha=grid_alpha
+                [x_val, x_val],
+                [0, height],
+                color=grid_color,
+                linewidth=3,
+                alpha=grid_alpha,
             )
             self.grid_lines.append(line)
-            
+
         # 画像中心に半径 grid_r の正円を描画
         center_x, center_y = width / 2, height / 2
         self.grid_circle = Circle(
-            (center_x, center_y), grid_r, fill=False, edgecolor=grid_color, linewidth=3, alpha=grid_alpha
+            (center_x, center_y),
+            grid_r,
+            fill=False,
+            edgecolor=grid_color,
+            linewidth=3,
+            alpha=grid_alpha,
         )
         self.ax.add_patch(self.grid_circle)
 
@@ -206,31 +228,30 @@ class Visualizer:
             linestyle="dashed",
         )
 
-         # HUD（表示パネル）のカスタマイズ用設定辞書
+        # HUD（表示パネル）のカスタマイズ用設定辞書
         self.hud_style = {
-            "x": 0.02,                  # 画面左端からの位置 (0.0 ~ 1.0)
-            "y": 0.98,                  # 画面下端からの位置 (0.0 ~ 1.0)
-            "ha": "left",               # 水平方向の揃え (left, center, right)
-            "va": "top",                # 垂直方向の揃え (top, center, bottom)
-            "fontsize": 13,             # 文字サイズ
-            "color": "#00FF00",         # 文字色
-            "family": "monospace",      # フォントスタイル (等幅フォントを推奨)
-            "bbox": dict(               # 背景パネルの設定
-                facecolor='black',
-                alpha=0.5,
-                edgecolor='none',
-                boxstyle='round,pad=0.5'
-            )
+            "x": 0.02,  # 画面左端からの位置 (0.0 ~ 1.0)
+            "y": 0.98,  # 画面下端からの位置 (0.0 ~ 1.0)
+            "ha": "left",  # 水平方向の揃え (left, center, right)
+            "va": "top",  # 垂直方向の揃え (top, center, bottom)
+            "fontsize": 13,  # 文字サイズ
+            "color": "#00FF00",  # 文字色
+            "family": "monospace",  # フォントスタイル (等幅フォントを推奨)
+            "bbox": dict(  # 背景パネルの設定
+                facecolor="black", alpha=0.5, edgecolor="none", boxstyle="round,pad=0.5"
+            ),
         }
 
         self.info_text = self.fig.text(
-            self.hud_style["x"], self.hud_style["y"], "",
+            self.hud_style["x"],
+            self.hud_style["y"],
+            "",
             ha=self.hud_style["ha"],
             va=self.hud_style["va"],
             fontsize=self.hud_style["fontsize"],
             color=self.hud_style["color"],
             family=self.hud_style["family"],
-            bbox=self.hud_style["bbox"]
+            bbox=self.hud_style["bbox"],
         )
 
         # FPS計測用の変数
@@ -246,7 +267,18 @@ class Visualizer:
             tri_color="purple",
         )
 
-    def update(self, img, cx, cy, r, recent_pts, robust_angle, frame_idx=None,total_frames=None,target_fps=None):
+    def update(
+        self,
+        img,
+        cx,
+        cy,
+        r,
+        recent_pts,
+        robust_angle,
+        frame_idx=None,
+        total_frames=None,
+        target_fps=None,
+    ):
         """計算結果を受け取り、画面を更新する"""
         self.ax_img.set_data(img)
         self.ax_min2.set_center((cx, cy))  # pyright: ignore[reportAttributeAccessIssue]
@@ -284,20 +316,20 @@ class Visualizer:
 
         self.ax_sunline.set_color(uxc[1])
 
-         # 実際のFPSを計算
+        # 実際のFPSを計算
         now = time.time()
         dt = now - self.prev_time
         self.prev_time = now
         actual_fps = 1.0 / dt if dt > 0 else 0.0
 
-         # 表示テキストのフォーマット (桁数を揃えて視認性を向上)
+        # 表示テキストのフォーマット (桁数を揃えて視認性を向上)
         text_lines = [
             f"Angle      : {west_angle:7.2f} °",
             f"MIN2 Stat  : X={cx:.1f} Y={cy:.1f} R={r:.1f}",
             f"Frames     : {frame_idx} / {total_frames}",
             f"Traj Points: {len(recent_pts)}",
             f"Actual FPS : {actual_fps:7.2f}",
-            f"Target FPS : {target_fps:7.2f}"
+            f"Target FPS : {target_fps:7.2f}",
         ]
         self.info_text.set_text("\n".join(text_lines))
         # 描画を反映
@@ -426,7 +458,7 @@ if __name__ == "__main__":
             else:
                 print("データが少なすぎます。")
                 sys.exit(1)
-            
+
             # UI確認のため Visualizer を初期化
             # NOTE: グリッドの分割数などを変えたい場合は以下のように引数を指定します。
             # viz = Visualizer(width, height, acceptable, grid_ny=4, grid_nx=6, grid_r=400, grid_alpha=0.5)
