@@ -7,6 +7,22 @@ from time import time
 from pathlib import Path
 from collections import deque
 
+import logging
+import datetime
+logfile=f"app_{datetime.now().strftime("%Y-%m-%d")}.log"
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    filename=logfile, 
+    filemode="a"        
+)
+
+
+logger = logging.getLogger(__name__)
+
+logger.info("=== start processing ===")
+
 # 0. 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
 project_root = current_dir
@@ -133,3 +149,5 @@ finally:
     if "viz" in locals():
         viz.close()
     print("カメラを安全に切断しました。")
+
+logger.log("=== finish processing ===")
