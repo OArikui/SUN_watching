@@ -6,7 +6,7 @@ logfile=f"app_{datetime.now().strftime("%Y-%m-%d")}.log"
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s",
+    format="%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s",
     filename=logfile, 
     filemode="a"        
 )
@@ -66,9 +66,17 @@ grid_param = {
 }
 
 # =====================
+# parameter light 結集
+logging.info("checking schema visualizer parameters")
+try:
+    viz_init_params = {"acceptable": acceptable, **grid_param}
+    validate(instance=viz_init_params, schema=viz_schema)#TODO:drawerにschemaを設置
+except ValidationError as e:
+    logging.error("Validation error: %s", e)
+    raise
 
-# parameter結集
-viz_init_params = {"acceptable": acceptable, **grid_param}
+logging.info("got visualizer's parameters successfully")
+
 # zwoasiのインポートと環境変数設定
 env_filename = project_root / "lib" / "ASICamera2.dll"
 os.environ["ZWO_ASI_LIB"] = str(env_filename)
