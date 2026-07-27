@@ -133,6 +133,87 @@ class OpenCircleArrow:
         self.draw()
 
 
+VISUALIZER_SCHEMA: dict = { 
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Visualizer Parameters Schema",
+    "type": "object",
+    "properties": {
+        "constructor": {
+            "type": "object",
+            "description": "Visualizer クラスのコンストラクタに渡すパラメータ",
+            "properties": {
+                "width": {"type": "integer", "minimum": 1},
+                "height": {"type": "integer", "minimum": 1},
+                "acceptable": {"type": "number", "default": 1},
+                "grid_color": {
+                    "type": "string",
+                    "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+                    "default": "#FFFFFF",
+                },
+                "grid_ny": {"type": "integer", "minimum": 0, "default": 2},
+                "grid_nx": {"type": "integer", "minimum": 0, "default": 4},
+                "grid_r": {"type": "number", "minimum": 0, "default": 300},
+                "grid_alpha": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 0.4,
+                },
+            },
+        },
+        "update": {
+            "type": "object",
+            "description": "Visualizer.update に渡すパラメータ",
+            "properties": {
+                "img": {
+                    "oneOf": [
+                        {"type": "string"},
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 255,
+                                },
+                            },
+                        },
+                    ]
+                },
+                "cx": {"type": "number"},
+                "cy": {"type": "number"},
+                "r": {"type": "number", "minimum": 0},
+                "recent_pts": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {"type": "number"},
+                    },
+                },
+                "robust_angle": {"type": "number", "minimum": -180, "maximum": 180},
+                "frame_idx": {
+                    "oneOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]
+                },
+                "total_frames": {
+                    "oneOf": [{"type": "integer", "minimum": 1}, {"type": "null"}]
+                },
+                "target_fps": {
+                    "oneOf": [{"type": "number", "minimum": 0}, {"type": "null"}]
+                },
+            },
+        },
+    },
+    "additionalProperties": False,
+}
+
+
+def get_visualizer_schema() -> dict:
+    """スキーマを返すヘルパー関数"""
+    return VISUALIZER_SCHEMA
+
+
 # 2. Visualizer クラス (メイン描画マネージャー)
 class Visualizer:
     def __init__(

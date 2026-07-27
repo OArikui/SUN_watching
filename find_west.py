@@ -47,7 +47,8 @@ if str(project_root) not in sys.path:
 try:
     from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2  # noqa: E402
     from lib.RANSAC import calculate_west_angle_robust as west_angle  # noqa: E402
-    from lib.drawer import Visualizer, viz_schema  # noqa: E402
+    from lib.drawer import Visualizer  # noqa: E402
+    import lib.drawer as drawer
     from lib.camera_utils import connect_camera  # noqa: E402
 except ImportError:
     logging.error("Failed to import custom module")
@@ -76,7 +77,7 @@ grid_param = {
 logging.info("validating schema visualizer parameters")
 try:
     viz_init_params = {"acceptable": acceptable, **grid_param}
-    validate(instance=viz_init_params, schema=viz_schema)  # TODO:drawerにschemaを設置
+    validate(instance=viz_init_params, schema=drawer.get_visualizer_schema())
 except ValidationError as e:
     logging.error("visualizer parameters validation failed")
     logging.error("Validation error: %s", e)
