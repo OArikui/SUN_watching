@@ -8,16 +8,23 @@ if "__main__" == __name__:
 else:
     logger.info("--- starting as module process ---")
 try:
-    import matplotlib.pyplot as plt
-    import numpy as np
-    from matplotlib.patches import Arc, Circle, Polygon
-    from matplotlib.widgets import Slider
+    import time
 except ImportError:
     logger.error("Failed to import standard module")
     logger.error(traceback.format_exc())
     raise
 
-logger.info("standard modules imported successfully")
+try:
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from matplotlib.patches import Arc, Circle, Polygon
+    from matplotlib.widgets import Slider
+except ImportError:
+    logger.error("Failed to import third-party module")
+    logger.error(traceback.format_exc())
+    raise
+
+logger.info("Third-party modules imported successfully")
 
 __all__ = ["OpenCircleArrow", "Visualizer"]
 
