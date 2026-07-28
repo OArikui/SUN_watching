@@ -12,6 +12,7 @@ try:
     import os
     import sys
     import time
+
     import zwoasi as asi
 except ImportError:
     logger.error("Failed to import standard module")
@@ -26,7 +27,7 @@ def connect_camera(dll_path):
     """
     # 1. DLLパスの存在確認
     if not os.path.exists(dll_path):
-        print(f"【エラー】DLLファイルが見つかりません。")
+        print("【エラー】DLLファイルが見つかりません。")
         print(f"指定されたパス: {dll_path}")
         print("上記パスに 64bit版の ASICamera2.dll を配置してください。")
         input("\nEnterキーを押して終了します...")
@@ -40,7 +41,8 @@ def connect_camera(dll_path):
         except (asi.ZWO_Error, AttributeError):  # ★ ここに AttributeError を追加
             asi.init(str(dll_path))
         print("SDKの初期化に成功しました。")
-    except Exception as e:
+    except (asi.ZWO_Error, OSError) as e:
+        # ASI SDK固有のエラーやOS関連のエラーを捕捉
         print(f"SDKの初期化に失敗しました（32bit/64bitの不一致など）: {e}")
         input("\nEnterキーを押して終了します...")
         sys.exit(1)
@@ -53,7 +55,8 @@ def connect_camera(dll_path):
         while True:
             try:
                 cameras = asi.list_cameras()
-            except:
+            except (asi.ZWO_Error, OSError):
+                # list_cameras が失敗する可能性があるため空リストにする
                 cameras = []
 
             if len(cameras) > 0:
@@ -79,7 +82,13 @@ def connect_camera(dll_path):
         camera.disable_dark_subtract()
 
         return camera
-    except Exception as e:
+    except asi.ZWO_Error as e:
+        print(f"カメラの初期化中にASiエラーが発生しました: {e}")
+        input("\nEnterキーを押して終了します...")
+        sys.exit(1)
+    except Exception as e:  # noqa: BLE001
+        # その他の予期しない例外はログに記録して終了
+        logger.error("Unexpected error initializing camera: %s", traceback.format_exc())
         print(f"カメラの初期化中にエラーが発生しました: {e}")
         input("\nEnterキーを押して終了します...")
         sys.exit(1)

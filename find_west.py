@@ -137,6 +137,7 @@ target_fps = 30.0  # カメラの露出時間
 buffer_c = deque(maxlen=500)
 buffer_t = deque(maxlen=500)
 
+viz=None
 # 3. リアルタイム処理ループ
 try:
     print("loading...")
@@ -209,7 +210,7 @@ finally:
     else:
         logger.info("No camera instance to release.")
     cv2.destroyAllWindows()
-    if "viz" in locals():
+    if "viz" in locals() and viz is not None:
         viz.close()
     print("Camera successfully disconnected.")
 

@@ -10,8 +10,7 @@ else:
 try:
     import matplotlib.pyplot as plt
     import numpy as np
-    from matplotlib.patches import Arc, Polygon, Circle
-    from matplotlib.transforms import Affine2D
+    from matplotlib.patches import Arc, Circle, Polygon
     from matplotlib.widgets import Slider
 except ImportError:
     logger.error("Failed to import standard module")
@@ -326,9 +325,9 @@ class Visualizer:
             "fontsize": 13,  # 文字サイズ
             "color": "#00FF00",  # 文字色
             "family": "monospace",  # フォントスタイル (等幅フォントを推奨)
-            "bbox": dict(  # 背景パネルの設定
-                facecolor="black", alpha=0.5, edgecolor="none", boxstyle="round,pad=0.5"
-            ),
+            "bbox": {  # 背景パネルの設定
+                "facecolor": "black", "alpha": 0.5, "edgecolor": "none", "boxstyle": "round,pad=0.5"
+            },
         }
 
         self.info_text = self.fig.text(
@@ -438,10 +437,10 @@ logger.info("--- finish ---")
 
 # テスト・デモ実行用
 if __name__ == "__main__":
-    from tkinter.filedialog import askopenfile
-    import time
     import sys
+    import time
     from pathlib import Path
+    from tkinter.filedialog import askopenfile
 
     demo_mode = "2"
     if demo_mode == "1":
@@ -512,9 +511,8 @@ if __name__ == "__main__":
                         "\n"
                     )
                 ]
-            except Exception as e:
+            except (ValueError, IndexError) as e:
                 print(f"format error: {e}")
-            # TODO:executerのformatで受け取り
         else:
             print("your typo or yet")
 
