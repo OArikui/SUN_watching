@@ -34,9 +34,32 @@ print("Initializing forced termination procedure…")
 from typing import NoReturn
 
 
-def cancel_process() -> NoReturn:
-    logger.info("=== process canceled ===")
-    sys.exit()
+def cancel_process(camera=None, viz=None) -> NoReturn:
+    logger.info("===== canceling process and cleaning up =====")
+
+    try:
+        # 渡されたリソースを解放
+        if camera is not None:
+            try:
+                camera.stop_video_capture()
+                camera.close()
+                logger.debug("Camera closed in cancel_process.")
+            except (asi.ZWO_CaptureError, OSError) as e:
+                logger.error(f"Failed to close camera: {e}")
+
+        cv2.destroyAllWindows()
+
+        if viz is not None:
+            try:
+                viz.close()
+                logger.info("Visualizer closed in cancel_process.")
+            except Exception as e:  # noqa: BLE001
+                logger.error(f"Failed to close viz: {e}")
+
+    except Exception as e:  # noqa: BLE001
+        logger.error(f"Failed to release resources: {e}")
+    logger.info("===== FINISHED =====")
+    sys.exit(1)
 
 
 logger.info("====== start processing ======")
@@ -68,7 +91,7 @@ except ImportError:
 else:
     logger.info("Third-party modules imported successfully.")
 
-# 0. 階層エラー対策 (パスの自動追加)
+# 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
 project_root = current_dir
 if str(project_root) not in sys.path:
@@ -159,7 +182,7 @@ if camera is not None:
         )
     except asi.ZWO_Error as e:
         logger.error(f"Failed to configure camera properties: {e}")
-        cancel_process()
+        cancel_process(camera=camera)
 
     logger.info("Starting video capture...")
     try:
@@ -170,7 +193,7 @@ if camera is not None:
         )
     except asi.ZWO_Error as e:
         logger.critical(f"Failed to start video capture or retrieve ROI: {e}")
-        cancel_process()
+        cancel_process(camera=camera)
 
 # 変数初期化
 logger.debug("Initializing visualization variables...")
@@ -183,7 +206,8 @@ viz = None
 # リアルタイム処理ループ
 try:
     if camera is None:
-        raise RuntimeError("Camera not initialized")
+        logger.critical(f"Cannot proceed without initialized camera")
+        cancel_process(camera=camera)
     logger.info("Initializing Visualizer instance...")
 
     # 描画クラスを初期化
@@ -257,10 +281,6 @@ try:
             logger.info("Visualization loop terminated (window closed).")
             logger.debug(f"Total frames processed: {frame_count}")
             break
-
-except RuntimeError as e:
-    logger.critical(f"Cannot proceed without initialized camera: {e}")
-
 finally:
     # 例外発生時も確実にリソースを解放
     logger.info("Releasing camera and resources...")
@@ -281,4 +301,4 @@ finally:
         logger.info("Visualizer resources released.")
     logger.info("Camera successfully disconnected.")
 
-logger.info("=== processing finished ===")
+logger.info("===== processing finished =====")
