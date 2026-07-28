@@ -7,9 +7,9 @@ import datetime
 import logging
 import traceback
 
-logfile = f"app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
+logfile = f"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
 
-
+#NEXT:consoleにINFO以上を出力
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s",
@@ -72,6 +72,7 @@ else:
 
 # ==================
 # パラメータ設定
+#TODO:viz_param_additional properties log参照
 # analyzing
 acceptable = 1  # 許容誤差(degree 0~)
 buf_lookback = 100  # 前何フレームを軌道推定に使うか (frame 2~)
