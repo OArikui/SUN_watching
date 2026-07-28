@@ -1,6 +1,3 @@
-# TODO:loglevel DEBUGとINFOを区別
-# TODO:すべてに例外処理
-
 print("Booting up the system…")
 print("Setting up logger…")
 import datetime
@@ -206,7 +203,7 @@ viz = None
 # リアルタイム処理ループ
 try:
     if camera is None:
-        logger.critical(f"Cannot proceed without initialized camera")
+        logger.critical("Cannot proceed without initialized camera")
         cancel_process(camera=camera)
     logger.info("Initializing Visualizer instance...")
 
