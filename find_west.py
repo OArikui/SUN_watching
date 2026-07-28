@@ -17,7 +17,7 @@ logger.info("=== start processing ===")
 
 
 def cancel_process():
-    logging.info("=== cancel processing ===")
+    logger.info("=== cancel processing ===")
     sys.exit()
 
 
@@ -32,11 +32,11 @@ try:
     from collections import deque  # noqa: E402
     from jsonschema import validate, ValidationError  # noqa: E402
 except ImportError:
-    logging.error("Failed to import standard module")
-    logging.error(traceback.format_exc())
+    logger.error("Failed to import standard module")
+    logger.error(traceback.format_exc())
     cancel_process()
 
-logging.info("all standard modules imported successfully")
+logger.info("all standard modules imported successfully")
 
 # 0. 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
@@ -51,11 +51,11 @@ try:
     import lib.drawer as drawer
     from lib.camera_utils import connect_camera  # noqa: E402
 except ImportError:
-    logging.error("Failed to import custom module")
-    logging.error(traceback.format_exc())
+    logger.error("Failed to import custom module")
+    logger.error(traceback.format_exc())
     cancel_process()
 
-logging.info("all custom modules imported successfully")
+logger.info("all custom modules imported successfully")
 
 # ==================
 # パラメータ設定
@@ -74,13 +74,13 @@ grid_param = {
 
 # =====================
 # parameter light 結集
-logging.info("validating schema visualizer parameters")
+logger.info("validating schema visualizer parameters")
 try:
     viz_init_params = {"acceptable": acceptable, **grid_param}
     validate(instance=viz_init_params, schema=drawer.get_visualizer_schema())
 except ValidationError as e:
-    logging.error("visualizer parameters validation failed")
-    logging.error("Validation error: %s", e)
+    logger.error("visualizer parameters validation failed")
+    logger.error("Validation error: %s", e)
     cancel_process()
 
 logging.info("got visualizer's parameters successfully")

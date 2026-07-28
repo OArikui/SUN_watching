@@ -1,6 +1,8 @@
 import logging
 import traceback
 
+logger = logging.getLogger(__name__)
+
 try:
     import matplotlib.pyplot as plt
     import numpy as np
@@ -8,9 +10,11 @@ try:
     from matplotlib.transforms import Affine2D
     from matplotlib.widgets import Slider
 except ImportError:
-    logging.error("Failed to import standard module")
-    logging.error(traceback.format_exc())
+    logger.error("Failed to import standard module")
+    logger.error(traceback.format_exc())
     raise
+
+logger.info("standard modules imported successfully")
 
 __all__ = ["OpenCircleArrow", "Visualizer"]
 
