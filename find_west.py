@@ -43,6 +43,7 @@ current_dir = Path(__file__).resolve().parent
 project_root = current_dir
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
+logger.info("_____add env path")
 
 try:
     from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2  # noqa: E402
@@ -56,6 +57,7 @@ except ImportError:
     cancel_process()
 
 logger.info("all custom modules imported successfully")
+
 
 # ==================
 # パラメータ設定
@@ -73,6 +75,8 @@ grid_param = {
 }
 
 # =====================
+
+
 # parameter light 結集
 logger.info("validating schema visualizer parameters")
 try:
@@ -86,11 +90,20 @@ except ValidationError as e:
 logging.info("got visualizer's parameters successfully")
 
 # zwoasiのインポートと環境変数設定
-env_filename = project_root / "lib" / "ASICamera2.dll"
-os.environ["ZWO_ASI_LIB"] = str(env_filename)
+try:
+    env_filename = project_root / "lib" / "ASICamera2.dll"
+    os.environ["ZWO_ASI_LIB"] = str(env_filename)
+except _____ :
+    logger.critical(f"_____loading zwoasi SDK failed (env_filename={str(env_filename)})")
+logger.info("_____successful")
 
 # 1. & 2. モジュールを使用してカメラを接続（待機ループ実行）
-camera = connect_camera(str(env_filename))
+logger.info("_____camera connecting...")
+try:
+    camera = connect_camera(str(env_filename))
+except:
+    logger.critical("_____connecting camera failed")
+logger.info("_____successful")
 
 # プロジェクト特有のカメラ設定
 camera.set_control_value(asi.ASI_EXPOSURE, 30000)
