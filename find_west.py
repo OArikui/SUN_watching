@@ -1,3 +1,6 @@
+#TODO:loglevel DEBUGとINFOを区別
+#TODO:すべてに例外処理
+
 print("Booting up the system…")
 print("Setting up logger…")
 import datetime
