@@ -90,7 +90,6 @@ else:
 
 # ==================
 # パラメータ設定
-# TODO:viz_param_additional properties log参照
 # analyzing
 acceptable = 1  # 許容誤差(degree 0~)
 buf_lookback = 100  # 前何フレームを軌道推定に使うか (frame 2~)
@@ -110,7 +109,7 @@ grid_param = {
 # parameter light 結集
 logger.info("Validating visualizer schema parameters.")
 try:
-    viz_init_params = {"acceptable": acceptable, **grid_param}
+    viz_init_params = {"constructor":grid_param}
     validate(instance=viz_init_params, schema=drawer.get_visualizer_schema())
 except ValidationError as e:
     logger.error("visualizer parameters validation failed")
@@ -159,7 +158,7 @@ try:
     print("loading...")
 
     # 描画クラスを初期化
-    viz = Visualizer(width, height, **viz_init_params)
+    viz = Visualizer(width, height, **viz_init_params["constructor"])
 
     print("complete loading")
     print(
