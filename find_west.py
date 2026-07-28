@@ -5,7 +5,7 @@ import datetime
 logfile = f"app_{datetime.now().strftime('%Y-%m-%d')}.log"
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s",
     filename=logfile,
     filemode="a",
@@ -13,14 +13,14 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-logger.info("=== start processing ===")
+logger.info("====== start processing ======")
 
 
 def cancel_process():
-    logger.info("=== cancel processing ===")
+    logger.info("====== cancel processing ======")
     sys.exit()
 
-
+logger.info("_____importing modules...")
 try:
     import os  # noqa: E402
     import sys  # noqa: E402
@@ -36,14 +36,14 @@ except ImportError:
     logger.error(traceback.format_exc())
     cancel_process()
 
-logger.info("all standard modules imported successfully")
+logger.debug("all standard modules imported successfully")
 
 # 0. 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
 project_root = current_dir
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-logger.info("_____add env path")
+logger.debug(f"_____add env path:{project_root}")
 
 try:
     from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2  # noqa: E402
@@ -56,7 +56,7 @@ except ImportError:
     logger.error(traceback.format_exc())
     cancel_process()
 
-logger.info("all custom modules imported successfully")
+logger.debug("all custom modules imported successfully")
 
 
 # ==================
@@ -87,7 +87,7 @@ except ValidationError as e:
     logger.error("Validation error: %s", e)
     cancel_process()
 
-logging.info("got visualizer's parameters successfully")
+logging.debug("got visualizer's parameters successfully")
 
 # zwoasiのインポートと環境変数設定
 try:
@@ -95,7 +95,7 @@ try:
     os.environ["ZWO_ASI_LIB"] = str(env_filename)
 except _____ :
     logger.critical(f"_____loading zwoasi SDK failed (env_filename={str(env_filename)})")
-logger.info("_____successful")
+logger.debug("_____successful")
 
 # 1. & 2. モジュールを使用してカメラを接続（待機ループ実行）
 logger.info("_____camera connecting...")
