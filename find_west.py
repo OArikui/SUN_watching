@@ -230,6 +230,7 @@ try:
             cx, cy, r = MIN2(img)
         except Exception as e:  # TODO:MIN2独自のERRORを作製,整理
             logger.warning(f"MIN2 processing error: {e}")
+            continue
 
         buffer_c.append([cx, cy])
         buf_c_arr = np.array(buffer_c)
@@ -278,6 +279,9 @@ try:
             logger.info("Visualization loop terminated (window closed).")
             logger.debug(f"Total frames processed: {frame_count}")
             break
+except KeyboardInterrupt as e:
+    logger.info(f"keyboard Interrupt :{e}")
+    cancel_process(camera=camera,viz=viz)
 finally:
     # 例外発生時も確実にリソースを解放
     logger.info("Releasing camera and resources...")
