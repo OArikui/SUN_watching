@@ -17,7 +17,7 @@ logger.info("=== start processing ===")
 
 
 def cancel_process():
-    logger.info("=== cancel processing ===")
+    logger.info("=== process canceled ===")
     sys.exit()
 
 
@@ -32,18 +32,18 @@ try:
     from collections import deque  # noqa: E402
     from jsonschema import validate, ValidationError  # noqa: E402
 except ImportError:
-    logger.error("Failed to import standard module")
+    logger.error("Failed to import standard modules.")
     logger.error(traceback.format_exc())
     cancel_process()
-
-logger.info("all standard modules imported successfully")
+else:
+    logger.info("All standard modules imported successfully.")
 
 # 0. 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
 project_root = current_dir
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-logger.info("_____add env path")
+logger.info("Appended project root to system path.")
 
 try:
     from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2  # noqa: E402
@@ -55,8 +55,8 @@ except ImportError:
     logger.error("Failed to import custom module")
     logger.error(traceback.format_exc())
     cancel_process()
-
-logger.info("all custom modules imported successfully")
+else:
+    logger.info("all custom modules imported successfully")
 
 
 # ==================
@@ -78,7 +78,7 @@ grid_param = {
 
 
 # parameter light 結集
-logger.info("validating schema visualizer parameters")
+logger.info("Validating visualizer schema parameters.")
 try:
     viz_init_params = {"acceptable": acceptable, **grid_param}
     validate(instance=viz_init_params, schema=drawer.get_visualizer_schema())
@@ -86,24 +86,27 @@ except ValidationError as e:
     logger.error("visualizer parameters validation failed")
     logger.error("Validation error: %s", e)
     cancel_process()
-
-logging.info("got visualizer's parameters successfully")
+else:
+    logger.info("Visualizer parameters validated successfully.")
 
 # zwoasiのインポートと環境変数設定
 try:
     env_filename = project_root / "lib" / "ASICamera2.dll"
     os.environ["ZWO_ASI_LIB"] = str(env_filename)
-except _____ :
-    logger.critical(f"_____loading zwoasi SDK failed (env_filename={str(env_filename)})")
-logger.info("_____successful")
+except Exception as e:
+    logger.critical(f"Failed to set ZWO_ASI_LIB environment variable (env_filename={str(env_filename)}): {e}")
+    cancel_process()
+else:
+    logger.info("Successfully set ZWO_ASI_LIB environment variable.")
 
-# 1. & 2. モジュールを使用してカメラを接続（待機ループ実行）
-logger.info("_____camera connecting...")
+logger.info("Attempting to connect to the camera...")
 try:
     camera = connect_camera(str(env_filename))
-except:
-    logger.critical("_____connecting camera failed")
-logger.info("_____successful")
+except Exception as e:
+    logger.critical(f"Failed to connect to the camera: {e}")
+    cancel_process()
+else:
+    logger.info("Successfully connected to the camera.")
 
 # プロジェクト特有のカメラ設定
 camera.set_control_value(asi.ASI_EXPOSURE, 30000)
@@ -194,4 +197,4 @@ finally:
         viz.close()
     print("カメラを安全に切断しました。")
 
-logger.log("=== finish processing ===")
+logger.info("=== processing finished ===")
