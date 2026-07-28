@@ -1,3 +1,5 @@
+print("Booting up the system…")
+print("Setting up logger…")
 import datetime
 import logging
 import traceback
@@ -13,8 +15,8 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-
-logger.info("=== start processing ===")
+print(f"log={logfile}")
+print("Initializing forced termination procedure…")
 from typing import NoReturn
 
 
@@ -23,6 +25,7 @@ def cancel_process() -> NoReturn:
     sys.exit()
 
 
+logger.info("=== start processing ===")
 
 
 try:
