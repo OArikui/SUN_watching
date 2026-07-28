@@ -1,11 +1,28 @@
-import math
-from typing import List, Optional, Tuple, Union
-import numpy as np
-import matplotlib.pyplot as plt
-from numpy.typing import NDArray
-from sklearn.linear_model import RANSACRegressor
-
 version = 1.00
+
+import logging
+import traceback
+
+logger = logging.getLogger(__name__)
+
+if "__main__" == __name__:
+    logger.info("--- starting as main process ---")
+else:
+    logger.info("--- starting as module process ---")
+
+try:
+    import math
+    from typing import List, Optional, Tuple, Union
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from numpy.typing import NDArray
+    from sklearn.linear_model import RANSACRegressor
+except ImportError:
+    logger.error("Failed to import standard module")
+    logger.error(traceback.format_exc())
+    raise
+
+logger.info("standard modules imported successfully")
 
 
 def calculate_west_angle_robust(
@@ -168,3 +185,5 @@ if __name__ == "__main__":
 
     # 表示
     plt.show()
+
+logger.info("--- finish ---")

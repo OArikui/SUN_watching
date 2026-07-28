@@ -1,8 +1,24 @@
-import os
-import sys
-import time
-import zwoasi as asi
+import logging
+import traceback
 
+logger = logging.getLogger(__name__)
+
+if "__main__" == __name__:
+    logger.info("--- starting as main process ---")
+else:
+    logger.info("--- starting as module process ---")
+
+try:
+    import os
+    import sys
+    import time
+    import zwoasi as asi
+except ImportError:
+    logger.error("Failed to import standard module")
+    logger.error(traceback.format_exc())
+    raise
+
+logger.info("standard modules imported successfully")
 
 def connect_camera(dll_path):
     """
@@ -67,3 +83,5 @@ def connect_camera(dll_path):
         print(f"カメラの初期化中にエラーが発生しました: {e}")
         input("\nEnterキーを押して終了します...")
         sys.exit(1)
+
+logger.info("--- finish ---")

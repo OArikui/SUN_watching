@@ -3,6 +3,10 @@ import traceback
 
 logger = logging.getLogger(__name__)
 
+if "__main__" == __name__:
+    logger.info("--- starting as main process ---")
+else:
+    logger.info("--- starting as module process ---")
 try:
     import matplotlib.pyplot as plt
     import numpy as np
@@ -430,6 +434,7 @@ class Visualizer:
         """描画リソースを安全に閉じる"""
         plt.close(self.fig)
 
+logger.info("--- finish ---")
 
 # テスト・デモ実行用
 if __name__ == "__main__":
