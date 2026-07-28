@@ -1,5 +1,5 @@
-#TODO:loglevel DEBUGとINFOを区別
-#TODO:すべてに例外処理
+# TODO:loglevel DEBUGとINFOを区別
+# TODO:すべてに例外処理
 
 print("Booting up the system…")
 print("Setting up logger…")
@@ -7,17 +7,28 @@ import datetime
 import logging
 import traceback
 
-logfile = f"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
-
-#NEXT:consoleにINFO以上を出力
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s",
-    filename=logfile,
-    filemode="a",
-)
+logfile = fr"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(
+    "%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s"
+)
+
+# console INFO以上
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+# file すべて
+file_handler = logging.FileHandler(filename=logfile, mode="a", encoding="utf-8")
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+
 print(f"log={logfile}")
 print("Initializing forced termination procedure…")
 from typing import NoReturn
@@ -72,7 +83,7 @@ else:
 
 # ==================
 # パラメータ設定
-#TODO:viz_param_additional properties log参照
+# TODO:viz_param_additional properties log参照
 # analyzing
 acceptable = 1  # 許容誤差(degree 0~)
 buf_lookback = 100  # 前何フレームを軌道推定に使うか (frame 2~)
@@ -138,7 +149,7 @@ target_fps = 30.0  # カメラの露出時間
 buffer_c = deque(maxlen=500)
 buffer_t = deque(maxlen=500)
 
-viz=None
+viz = None
 # 3. リアルタイム処理ループ
 try:
     print("loading...")
