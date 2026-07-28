@@ -41,12 +41,13 @@ def cancel_process() -> NoReturn:
 
 logger.info("====== start processing ======")
 
-logger.info("_____importing modules...")
+logger.info("Importing standard modules...")
 try:
     import os
     import sys
     from collections import deque
     from pathlib import Path
+    from pprint import pformat
     from time import time
 except ImportError:
     logger.error("Failed to import standard modules.")
@@ -58,14 +59,14 @@ else:
 try:
     import cv2
     import numpy as np
-    import zwoasi as asi
+    import zwoasi as asi  # pyright: ignore[reportMissingImports]
     from jsonschema import ValidationError, validate
 except ImportError:
-    logger.error("Failed to import third party module")
+    logger.error("Failed to import third-party modules.")
     logger.error(traceback.format_exc())
     raise
 else:
-    logger.info("third party modules imported successfully")
+    logger.info("Third-party modules imported successfully.")
 
 # 0. 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
@@ -81,11 +82,11 @@ try:
     from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2
     from lib.RANSAC import calculate_west_angle_robust as west_angle
 except ImportError:
-    logger.error("Failed to import custom module")
+    logger.error("Failed to import custom modules.")
     logger.error(traceback.format_exc())
     cancel_process()
 else:
-    logger.debug("all custom modules imported successfully")
+    logger.debug("All custom modules imported successfully.")
 
 
 # ==================
@@ -93,6 +94,7 @@ else:
 # analyzing
 acceptable = 1  # 許容誤差(degree 0~)
 buf_lookback = 100  # 前何フレームを軌道推定に使うか (frame 2~)
+target_fps = 30
 
 # interface
 grid_param = {
@@ -109,7 +111,7 @@ grid_param = {
 # parameter light 結集
 logger.info("Validating visualizer schema parameters.")
 try:
-    viz_init_params = {"constructor":grid_param}
+    viz_init_params = {"constructor": grid_param}
     validate(instance=viz_init_params, schema=drawer.get_visualizer_schema())
 except ValidationError as e:
     logger.error("visualizer parameters validation failed")
@@ -122,12 +124,13 @@ else:
 
 
 logger.info("Attempting to connect to the camera...")
+camera = None
 try:
     env_filename = project_root / "lib" / "ASICamera2.dll"
     os.environ["ZWO_ASI_LIB"] = str(env_filename)
     logger.debug(f"Successfully set ZWO_ASI_LIB environment variable:{env_filename}")
     camera = connect_camera(str(env_filename))
-except KeyboardInterrupt :
+except KeyboardInterrupt:
     logger.info("Connection wait interrupted by user.")
     cancel_process()
 except asi.ZWO_CaptureError as e:
@@ -136,39 +139,65 @@ except asi.ZWO_CaptureError as e:
 else:
     logger.info("Successfully connected to the camera.")
 
-# プロジェクト特有のカメラ設定
-camera.set_control_value(asi.ASI_EXPOSURE, 30000)
-camera.set_control_value(asi.ASI_GAIN, 150)
-camera.set_control_value(asi.ASI_BANDWIDTHOVERLOAD, 40)
-camera.set_image_type(asi.ASI_IMG_RAW8)
+if camera is not None:
+    # プロジェクト特有のカメラ設定
+    try:
+        camera_properties = {
+            "exposure": 30000,
+            "gain": 150,
+            "band_width": 40,
+            "image_type": asi.ASI_IMG_RAW8,
+        }
+        camera.set_control_value(asi.ASI_EXPOSURE, camera_properties["exposure"])
+        camera.set_control_value(asi.ASI_GAIN, camera_properties["gain"])
+        camera.set_control_value(
+            asi.ASI_BANDWIDTHOVERLOAD, camera_properties["band_width"]
+        )
+        camera.set_image_type(camera_properties["image_type"])
+        logger.debug(
+            f"Camera properties configured successfully:\n{pformat(camera_properties)}"
+        )
+    except asi.ZWO_Error as e:
+        logger.error(f"Failed to configure camera properties: {e}")
+        cancel_process()
 
-camera.start_video_capture()
-width, height, binning, img_type = camera.get_roi_format()
+    logger.info("Starting video capture...")
+    try:
+        camera.start_video_capture()
+        width, height, binning, img_type = camera.get_roi_format()
+        logger.debug(
+            f"Capture status retrieved: width={width}, height={height}, binning={binning}, img_type={img_type}"
+        )
+    except asi.ZWO_Error as e:
+        logger.critical(f"Failed to start video capture or retrieve ROI: {e}")
+        cancel_process()
 
 # 変数初期化
+logger.debug("Initializing visualization variables...")
 frame_count = 0
-target_fps = 30.0  # カメラの露出時間
-
 buffer_c = deque(maxlen=500)
 buffer_t = deque(maxlen=500)
-
+cx, cy, r = 0, 0, 1
 viz = None
-# 3. リアルタイム処理ループ
+
+# リアルタイム処理ループ
 try:
-    print("loading...")
+    if camera is None:
+        raise RuntimeError("Camera not initialized")
+    logger.info("Initializing Visualizer instance...")
 
     # 描画クラスを初期化
     viz = Visualizer(width, height, **viz_init_params["constructor"])
 
-    print("complete loading")
-    print(
-        "リアルタイム処理を開始します。'q' キーで終了するか、グラフウィンドウを閉じてください。"
+    logger.info(
+        "Starting real-time visualization. Press 'q' or close the window to exit."
     )
 
     while True:
         try:
             frame = camera.capture_video_frame(timeout=500)
-        except asi.ZWO_CaptureError:
+        except asi.ZWO_CaptureError as e:
+            logger.warning(f"Frame capture failed or timed out: {e}")
             continue
 
         img = np.frombuffer(frame, dtype=np.uint8).reshape(height, width)
@@ -176,7 +205,11 @@ try:
         frame_count += 1
 
         # 計算処理
-        cx, cy, r = MIN2(img)
+        try:
+            cx, cy, r = MIN2(img)
+        except Exception as e:  # TODO:MIN2独自のERRORを作製,整理
+            logger.warning(f"MIN2 processing error: {e}")
+
         buffer_c.append([cx, cy])
         buf_c_arr = np.array(buffer_c)
         recent_pts = buf_c_arr[-buf_lookback:]
@@ -184,49 +217,68 @@ try:
         buffer_t.append(time())
         buf_t_arr = np.array(buffer_t)
         recent_timestamps = buf_t_arr[-buf_lookback:]
+
         if len(recent_pts) > 2:
-            # west_angle may return None (e.g. not enough points); handle that safely
-            result = west_angle(recent_pts, recent_timestamps)
-            robust_angle, vectorYX = result  # pyright: ignore[reportGeneralTypeIssues]
+            try:
+                result = west_angle(recent_pts, recent_timestamps)
+                robust_angle, vectorYX = result  # pyright: ignore[reportGeneralTypeIssues]
+            except (ValueError, TypeError, RuntimeError) as e:
+                logger.warning(f"Error calculating robust west angle: {e}")
         else:
+            logger.debug("Insufficient points for angle calculation (buffer <= 2).")
             robust_angle = False
             vectorYX = (0.0, 0.0)
 
         # 描画更新
-        viz.update(
-            img,
-            cx,
-            cy,
-            r,
-            recent_pts,
-            robust_angle,
-            frame_idx=frame_count,
-            total_frames="∞",
-            target_fps=target_fps,
-        )
+        try:
+            viz.update(
+                img,
+                cx,
+                cy,
+                r,
+                recent_pts,
+                robust_angle,
+                frame_idx=frame_count,
+                total_frames="∞",
+                target_fps=target_fps,
+            )
+
+        except Exception as e:  # noqa: BLE001 :visualizerのerrorは多岐にわたる
+            logger.warning(f"Visualizer update failed: {e}")
 
         # 終了判定
         if cv2.waitKey(1) & 0xFF == ord("q"):
+            logger.info("Visualization loop terminated by user (keyboard input).")
+            logger.debug(f"Total frames processed: {frame_count}")
             break
 
         # ウィンドウが閉じられたかどうかも Visualizer に判定させる
         if not viz.is_alive():
+            logger.info("Visualization loop terminated (window closed).")
+            logger.debug(f"Total frames processed: {frame_count}")
             break
+
+except RuntimeError as e:
+    logger.critical(f"Cannot proceed without initialized camera: {e}")
 
 finally:
     # 例外発生時も確実にリソースを解放
-    print("Releasing camera and resources...")
-    if "camera" in locals():
+    logger.info("Releasing camera and resources...")
+
+    if camera is not None:
         try:
             camera.stop_video_capture()
             camera.close()
+            logger.debug("Camera stopped and closed successfully.")
         except (asi.ZWO_CaptureError, OSError) as e:
             logger.error(f"Failed to release resources: {e}")
     else:
         logger.info("No camera instance to release.")
+
     cv2.destroyAllWindows()
     if "viz" in locals() and viz is not None:
         viz.close()
-    print("Camera successfully disconnected.")
+        logger.info("Visualizer resources released.")
+    logger.info("Camera successfully disconnected.")
 
 logger.info("=== processing finished ===")
