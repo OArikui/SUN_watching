@@ -7,7 +7,7 @@ import datetime
 import logging
 import traceback
 
-logfile = fr"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
+logfile = rf"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -48,17 +48,24 @@ try:
     from collections import deque
     from pathlib import Path
     from time import time
-
-    import cv2
-    import numpy as np
-    import zwoasi as asi
-    from jsonschema import ValidationError, validate
 except ImportError:
     logger.error("Failed to import standard modules.")
     logger.error(traceback.format_exc())
     cancel_process()
 else:
     logger.debug("All standard modules imported successfully.")
+
+try:
+    import cv2
+    import numpy as np
+    import zwoasi as asi
+    from jsonschema import ValidationError, validate
+except ImportError:
+    logger.error("Failed to import third party module")
+    logger.error(traceback.format_exc())
+    raise
+else:
+    logger.info("third party modules imported successfully")
 
 # 0. 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
@@ -113,20 +120,17 @@ else:
     logger.debug("Visualizer parameters validated successfully.")
 
 # zwoasiのインポートと環境変数設定
-env_filename = project_root / "lib" / "ASICamera2.dll"
-try:
-    os.environ["ZWO_ASI_LIB"] = str(env_filename)
-except asi.ZWO_CaptureError as e:
-    logger.critical(
-        f"Failed to set ZWO_ASI_LIB... (env_filename={env_filename!s}): {e}"
-    )
-    cancel_process()
-else:
-    logger.debug("Successfully set ZWO_ASI_LIB environment variable.")
+
 
 logger.info("Attempting to connect to the camera...")
 try:
+    env_filename = project_root / "lib" / "ASICamera2.dll"
+    os.environ["ZWO_ASI_LIB"] = str(env_filename)
+    logger.debug(f"Successfully set ZWO_ASI_LIB environment variable:{env_filename}")
     camera = connect_camera(str(env_filename))
+except KeyboardInterrupt :
+    logger.info("Connection wait interrupted by user.")
+    cancel_process()
 except asi.ZWO_CaptureError as e:
     logger.critical(f"Failed to connect to the camera: {e}")
     cancel_process()
