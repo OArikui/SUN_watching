@@ -1,66 +1,89 @@
+# TODO:loglevel DEBUGとINFOを区別
+# TODO:すべてに例外処理
+
+print("Booting up the system…")
+print("Setting up logger…")
+import datetime
 import logging
 import traceback
-import datetime
 
-logfile = f"app_{datetime.now().strftime('%Y-%m-%d')}.log"
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s",
-    filename=logfile,
-    filemode="a",
-)
+logfile = fr"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(
+    "%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s"
+)
+
+# console INFO以上
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+# file すべて
+file_handler = logging.FileHandler(filename=logfile, mode="a", encoding="utf-8")
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+
+print(f"log={logfile}")
+print("Initializing forced termination procedure…")
+from typing import NoReturn
+
+
+def cancel_process() -> NoReturn:
+    logger.info("=== process canceled ===")
+    sys.exit()
+
 
 logger.info("====== start processing ======")
 
-
-def cancel_process():
-    logger.info("====== cancel processing ======")
-    sys.exit()
-
 logger.info("_____importing modules...")
 try:
-    import os  # noqa: E402
-    import sys  # noqa: E402
-    import cv2  # noqa: E402
-    import numpy as np  # noqa: E402
-    import zwoasi as asi  # noqa: E402
-    from time import time  # noqa: E402
-    from pathlib import Path  # noqa: E402
-    from collections import deque  # noqa: E402
-    from jsonschema import validate, ValidationError  # noqa: E402
+    import os
+    import sys
+    from collections import deque
+    from pathlib import Path
+    from time import time
+
+    import cv2
+    import numpy as np
+    import zwoasi as asi
+    from jsonschema import ValidationError, validate
 except ImportError:
-    logger.error("Failed to import standard module")
+    logger.error("Failed to import standard modules.")
     logger.error(traceback.format_exc())
     cancel_process()
-
-logger.debug("all standard modules imported successfully")
+else:
+    logger.debug("All standard modules imported successfully.")
 
 # 0. 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
 project_root = current_dir
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-logger.debug(f"_____add env path:{project_root}")
+logger.debug(f"Appended project root to system path:{project_root}")
 
 try:
-    from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2  # noqa: E402
-    from lib.RANSAC import calculate_west_angle_robust as west_angle  # noqa: E402
-    from lib.drawer import Visualizer  # noqa: E402
-    import lib.drawer as drawer
-    from lib.camera_utils import connect_camera  # noqa: E402
+    from lib import drawer
+    from lib.camera_utils import connect_camera
+    from lib.drawer import Visualizer
+    from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2
+    from lib.RANSAC import calculate_west_angle_robust as west_angle
 except ImportError:
     logger.error("Failed to import custom module")
     logger.error(traceback.format_exc())
     cancel_process()
-
-logger.debug("all custom modules imported successfully")
+else:
+    logger.debug("all custom modules imported successfully")
 
 
 # ==================
 # パラメータ設定
+# TODO:viz_param_additional properties log参照
 # analyzing
 acceptable = 1  # 許容誤差(degree 0~)
 buf_lookback = 100  # 前何フレームを軌道推定に使うか (frame 2~)
@@ -78,7 +101,7 @@ grid_param = {
 
 
 # parameter light 結集
-logger.info("validating schema visualizer parameters")
+logger.info("Validating visualizer schema parameters.")
 try:
     viz_init_params = {"acceptable": acceptable, **grid_param}
     validate(instance=viz_init_params, schema=drawer.get_visualizer_schema())
@@ -86,24 +109,29 @@ except ValidationError as e:
     logger.error("visualizer parameters validation failed")
     logger.error("Validation error: %s", e)
     cancel_process()
-
-logging.debug("got visualizer's parameters successfully")
+else:
+    logger.debug("Visualizer parameters validated successfully.")
 
 # zwoasiのインポートと環境変数設定
+env_filename = project_root / "lib" / "ASICamera2.dll"
 try:
-    env_filename = project_root / "lib" / "ASICamera2.dll"
     os.environ["ZWO_ASI_LIB"] = str(env_filename)
-except _____ :
-    logger.critical(f"_____loading zwoasi SDK failed (env_filename={str(env_filename)})")
-logger.debug("_____successful")
+except asi.ZWO_CaptureError as e:
+    logger.critical(
+        f"Failed to set ZWO_ASI_LIB... (env_filename={env_filename!s}): {e}"
+    )
+    cancel_process()
+else:
+    logger.debug("Successfully set ZWO_ASI_LIB environment variable.")
 
-# 1. & 2. モジュールを使用してカメラを接続（待機ループ実行）
-logger.info("_____camera connecting...")
+logger.info("Attempting to connect to the camera...")
 try:
     camera = connect_camera(str(env_filename))
-except:
-    logger.critical("_____connecting camera failed")
-logger.info("_____successful")
+except asi.ZWO_CaptureError as e:
+    logger.critical(f"Failed to connect to the camera: {e}")
+    cancel_process()
+else:
+    logger.info("Successfully connected to the camera.")
 
 # プロジェクト特有のカメラ設定
 camera.set_control_value(asi.ASI_EXPOSURE, 30000)
@@ -121,6 +149,7 @@ target_fps = 30.0  # カメラの露出時間
 buffer_c = deque(maxlen=500)
 buffer_t = deque(maxlen=500)
 
+viz = None
 # 3. リアルタイム処理ループ
 try:
     print("loading...")
@@ -183,15 +212,18 @@ try:
 
 finally:
     # 例外発生時も確実にリソースを解放
-    print("カメラとリソースを解放しています...")
-    try:
-        camera.stop_video_capture()
-        camera.close()
-    except:  # noqa: E722
-        pass
+    print("Releasing camera and resources...")
+    if "camera" in locals():
+        try:
+            camera.stop_video_capture()
+            camera.close()
+        except (asi.ZWO_CaptureError, OSError) as e:
+            logger.error(f"Failed to release resources: {e}")
+    else:
+        logger.info("No camera instance to release.")
     cv2.destroyAllWindows()
-    if "viz" in locals():
+    if "viz" in locals() and viz is not None:
         viz.close()
-    print("カメラを安全に切断しました。")
+    print("Camera successfully disconnected.")
 
-logger.log("=== finish processing ===")
+logger.info("=== processing finished ===")

@@ -12,9 +12,10 @@ else:
 
 try:
     import math
-    from typing import List, Optional, Tuple, Union
-    import numpy as np
+    import sys
+
     import matplotlib.pyplot as plt
+    import numpy as np
     from numpy.typing import NDArray
     from sklearn.linear_model import RANSACRegressor
 except ImportError:
@@ -26,9 +27,9 @@ logger.info("standard modules imported successfully")
 
 
 def calculate_west_angle_robust(
-    p_lst: Union[List[List[float]], NDArray[np.float64]],
-    time_stomps: Optional[Union[List[float], NDArray[np.float32]]] = None,
-) -> Optional[Tuple[float, Tuple[float, float]]]:
+    p_lst: list[list[float]] | NDArray[np.float64],
+    time_stomps: list[float] | NDArray[np.float32] | None = None,
+) -> tuple[float, tuple[float, float]] | None:
     """時系列の座標リストから、外れ値（ノイズ）に強い移動方向（角度）と速度ベクトルを算出する。
 
     デカルト座標系（右: 0度、上: 90度、左: 180/-180度、下: -90度）
@@ -109,6 +110,7 @@ if __name__ == "__main__":
 
     if result is None:
         print("データが不足しています")
+        sys.exit()
     else:
         robust_angle, (vy, vx) = result
         print(f"単純計算の角度: {simple_angle:.2f} 度")
@@ -156,19 +158,19 @@ if __name__ == "__main__":
     try:
         len_robust = math.hypot(
             vx,
-            vy,  # pyright: ignore[reportPossiblyUnboundVariable]
+            vy,  
         )
         plt.quiver(
             center_x,
             center_y,
-            (vx / len_robust) * 3,  # pyright: ignore[reportPossiblyUnboundVariable]
-            (vy / len_robust) * 3,  # pyright: ignore[reportPossiblyUnboundVariable]
+            (vx / len_robust) * 3,  
+            (vy / len_robust) * 3,  
             angles="xy",
             scale_units="xy",
             scale=1,
             color="darkblue",
             width=0.008,
-            label=f"RANSAC Vector ({robust_angle:.1f}°)",  # pyright: ignore[reportPossiblyUnboundVariable]
+            label=f"RANSAC Vector ({robust_angle:.1f}°)",  
         )
     except NameError:
         # robust_angleが定義されていない場合（データ不足など）

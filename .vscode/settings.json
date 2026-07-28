@@ -44,8 +44,10 @@
         "vmin",
         "waittime",
         "xdata",
+        "xlabel",
         "xlim",
         "ydata",
+        "ylabel",
         "ylim",
         "zorder",
         "zwoasi"
