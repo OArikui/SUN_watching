@@ -1,8 +1,9 @@
+import datetime
 import logging
 import traceback
-import datetime
 
-logfile = f"app_{datetime.now().strftime('%Y-%m-%d')}.log"
+logfile = f"app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -14,23 +15,27 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 logger.info("=== start processing ===")
+from typing import NoReturn
 
 
-def cancel_process():
+def cancel_process() -> NoReturn:
     logger.info("=== process canceled ===")
     sys.exit()
 
 
+
+
 try:
-    import os  # noqa: E402
-    import sys  # noqa: E402
-    import cv2  # noqa: E402
-    import numpy as np  # noqa: E402
-    import zwoasi as asi  # noqa: E402
-    from time import time  # noqa: E402
-    from pathlib import Path  # noqa: E402
-    from collections import deque  # noqa: E402
-    from jsonschema import validate, ValidationError  # noqa: E402
+    import os
+    import sys
+    from collections import deque
+    from pathlib import Path
+    from time import time
+
+    import cv2
+    import numpy as np
+    import zwoasi as asi
+    from jsonschema import ValidationError, validate
 except ImportError:
     logger.error("Failed to import standard modules.")
     logger.error(traceback.format_exc())
@@ -46,11 +51,11 @@ if str(project_root) not in sys.path:
 logger.info("Appended project root to system path.")
 
 try:
-    from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2  # noqa: E402
-    from lib.RANSAC import calculate_west_angle_robust as west_angle  # noqa: E402
-    from lib.drawer import Visualizer  # noqa: E402
-    import lib.drawer as drawer
-    from lib.camera_utils import connect_camera  # noqa: E402
+    from lib import drawer
+    from lib.camera_utils import connect_camera
+    from lib.drawer import Visualizer
+    from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2
+    from lib.RANSAC import calculate_west_angle_robust as west_angle
 except ImportError:
     logger.error("Failed to import custom module")
     logger.error(traceback.format_exc())
@@ -90,11 +95,13 @@ else:
     logger.info("Visualizer parameters validated successfully.")
 
 # zwoasiのインポートと環境変数設定
+env_filename = project_root / "lib" / "ASICamera2.dll"
 try:
-    env_filename = project_root / "lib" / "ASICamera2.dll"
     os.environ["ZWO_ASI_LIB"] = str(env_filename)
-except Exception as e:
-    logger.critical(f"Failed to set ZWO_ASI_LIB environment variable (env_filename={str(env_filename)}): {e}")
+except asi.ZWO_CaptureError as e:
+    logger.critical(
+        f"Failed to set ZWO_ASI_LIB... (env_filename={env_filename!s}): {e}"
+    )
     cancel_process()
 else:
     logger.info("Successfully set ZWO_ASI_LIB environment variable.")
@@ -102,7 +109,7 @@ else:
 logger.info("Attempting to connect to the camera...")
 try:
     camera = connect_camera(str(env_filename))
-except Exception as e:
+except asi.ZWO_CaptureError as e:
     logger.critical(f"Failed to connect to the camera: {e}")
     cancel_process()
 else:
@@ -186,15 +193,18 @@ try:
 
 finally:
     # 例外発生時も確実にリソースを解放
-    print("カメラとリソースを解放しています...")
-    try:
-        camera.stop_video_capture()
-        camera.close()
-    except:  # noqa: E722
-        pass
+    print("Releasing camera and resources...")
+    if "camera" in locals():
+        try:
+            camera.stop_video_capture()
+            camera.close()
+        except (asi.ZWO_CaptureError, OSError) as e:
+            logger.error(f"Failed to release resources: {e}")
+    else:
+        logger.info("No camera instance to release.")
     cv2.destroyAllWindows()
     if "viz" in locals():
         viz.close()
-    print("カメラを安全に切断しました。")
+    print("Camera successfully disconnected.")
 
 logger.info("=== processing finished ===")
