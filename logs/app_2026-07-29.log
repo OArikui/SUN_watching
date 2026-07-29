@@ -264,3 +264,119 @@
 2026-07-29 13:31:15,048 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
 2026-07-29 13:31:21,040 [INFO] __main__ <module>: Visualization loop terminated (window closed).
 2026-07-29 13:31:21,040 [DEBUG] __main__ <module>: Total frames processed: 62
+2026-07-29 14:36:57,834 [INFO] __main__ <module>: ====== start processing ======
+2026-07-29 14:36:57,834 [INFO] __main__ <module>: Importing standard modules...
+2026-07-29 14:36:57,854 [DEBUG] __main__ <module>: All standard modules imported successfully.
+2026-07-29 14:36:58,061 [INFO] __main__ <module>: Third-party modules imported successfully.
+2026-07-29 14:36:58,061 [DEBUG] __main__ <module>: Appended project root to system path:C:\projects\SUN_watching
+2026-07-29 14:36:59,579 [DEBUG] __main__ <module>: All custom modules imported successfully.
+2026-07-29 14:36:59,579 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-29 14:36:59,581 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
+2026-07-29 14:36:59,581 [INFO] __main__ <module>: Attempting to connect to the camera...
+2026-07-29 14:36:59,581 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\projects\SUN_watching\lib\ASICamera2.dll
+2026-07-29 14:36:59,831 [INFO] __main__ <module>: Successfully connected to the camera.
+2026-07-29 14:36:59,878 [DEBUG] __main__ <module>: Camera properties configured successfully:
+{'band_width': 40, 'exposure': 30000, 'gain': 150, 'image_type': 0}
+2026-07-29 14:36:59,878 [INFO] __main__ <module>: Starting video capture...
+2026-07-29 14:36:59,878 [DEBUG] __main__ <module>: Capture status retrieved: width=1608, height=1104, binning=1, img_type=0
+2026-07-29 14:36:59,879 [DEBUG] __main__ <module>: Initializing visualization variables...
+2026-07-29 14:36:59,879 [INFO] __main__ <module>: Initializing Visualizer instance...
+2026-07-29 14:37:00,136 [INFO] __main__ <module>: Starting real-time visualization. Press 'q' or close the window to exit.
+2026-07-29 14:37:00,139 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 14:37:00,248 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 14:37:01,485 [INFO] __main__ <module>: Visualization loop terminated (window closed).
+2026-07-29 14:37:01,485 [DEBUG] __main__ <module>: Total frames processed: 14
+2026-07-29 14:37:29,464 [INFO] __main__ <module>: ====== start processing ======
+2026-07-29 14:37:29,464 [INFO] __main__ <module>: Importing standard modules...
+2026-07-29 14:37:29,480 [DEBUG] __main__ <module>: All standard modules imported successfully.
+2026-07-29 14:37:29,686 [INFO] __main__ <module>: Third-party modules imported successfully.
+2026-07-29 14:37:29,687 [DEBUG] __main__ <module>: Appended project root to system path:C:\projects\SUN_watching
+2026-07-29 14:37:31,104 [DEBUG] __main__ <module>: All custom modules imported successfully.
+2026-07-29 14:37:31,104 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-29 14:37:31,106 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
+2026-07-29 14:37:31,106 [INFO] __main__ <module>: Attempting to connect to the camera...
+2026-07-29 14:37:31,107 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\projects\SUN_watching\lib\ASICamera2.dll
+2026-07-29 14:37:31,354 [INFO] __main__ <module>: Successfully connected to the camera.
+2026-07-29 14:37:31,401 [DEBUG] __main__ <module>: Camera properties configured successfully:
+{'band_width': 40, 'exposure': 30000, 'gain': 150, 'image_type': 0}
+2026-07-29 14:37:31,401 [INFO] __main__ <module>: Starting video capture...
+2026-07-29 14:37:31,401 [DEBUG] __main__ <module>: Capture status retrieved: width=1608, height=1104, binning=1, img_type=0
+2026-07-29 14:37:31,401 [DEBUG] __main__ <module>: Initializing visualization variables...
+2026-07-29 14:37:31,401 [INFO] __main__ <module>: Initializing Visualizer instance...
+2026-07-29 14:37:31,636 [INFO] __main__ <module>: Starting real-time visualization. Press 'q' or close the window to exit.
+2026-07-29 14:37:31,639 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 14:37:31,738 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 14:37:32,944 [INFO] __main__ <module>: Visualization loop terminated (window closed).
+2026-07-29 14:37:32,944 [DEBUG] __main__ <module>: Total frames processed: 13
+2026-07-29 14:38:01,063 [INFO] __main__ <module>: ====== start processing ======
+2026-07-29 14:38:01,063 [INFO] __main__ <module>: Importing standard modules...
+2026-07-29 14:38:01,080 [DEBUG] __main__ <module>: All standard modules imported successfully.
+2026-07-29 14:38:01,272 [INFO] __main__ <module>: Third-party modules imported successfully.
+2026-07-29 14:38:01,272 [DEBUG] __main__ <module>: Appended project root to system path:C:\projects\SUN_watching
+2026-07-29 14:38:02,687 [DEBUG] __main__ <module>: All custom modules imported successfully.
+2026-07-29 14:38:02,687 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-29 14:38:02,689 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
+2026-07-29 14:38:02,689 [INFO] __main__ <module>: Attempting to connect to the camera...
+2026-07-29 14:38:02,689 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\projects\SUN_watching\lib\ASICamera2.dll
+2026-07-29 14:38:02,945 [INFO] __main__ <module>: Successfully connected to the camera.
+2026-07-29 14:38:02,992 [DEBUG] __main__ <module>: Camera properties configured successfully:
+{'band_width': 40, 'exposure': 30000, 'gain': 150, 'image_type': 0}
+2026-07-29 14:38:02,992 [INFO] __main__ <module>: Starting video capture...
+2026-07-29 14:38:02,992 [DEBUG] __main__ <module>: Capture status retrieved: width=1608, height=1104, binning=1, img_type=0
+2026-07-29 14:38:02,992 [DEBUG] __main__ <module>: Initializing visualization variables...
+2026-07-29 14:38:02,993 [INFO] __main__ <module>: Initializing Visualizer instance...
+2026-07-29 14:38:03,216 [INFO] __main__ <module>: Starting real-time visualization. Press 'q' or close the window to exit.
+2026-07-29 14:38:03,218 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 14:38:03,342 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 14:38:05,777 [INFO] __main__ <module>: Visualization loop terminated (window closed).
+2026-07-29 14:38:05,777 [DEBUG] __main__ <module>: Total frames processed: 24
+2026-07-29 14:38:58,799 [INFO] __main__ <module>: ====== start processing ======
+2026-07-29 14:38:58,799 [INFO] __main__ <module>: Importing standard modules...
+2026-07-29 14:38:58,816 [DEBUG] __main__ <module>: All standard modules imported successfully.
+2026-07-29 14:38:59,015 [INFO] __main__ <module>: Third-party modules imported successfully.
+2026-07-29 14:38:59,016 [DEBUG] __main__ <module>: Appended project root to system path:C:\projects\SUN_watching
+2026-07-29 14:39:00,509 [DEBUG] __main__ <module>: All custom modules imported successfully.
+2026-07-29 14:39:00,509 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-29 14:39:00,511 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
+2026-07-29 14:39:00,511 [INFO] __main__ <module>: Attempting to connect to the camera...
+2026-07-29 14:39:00,512 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\projects\SUN_watching\lib\ASICamera2.dll
+2026-07-29 14:39:00,770 [INFO] __main__ <module>: Successfully connected to the camera.
+2026-07-29 14:39:00,816 [DEBUG] __main__ <module>: Camera properties configured successfully:
+{'band_width': 40, 'exposure': 30000, 'gain': 150, 'image_type': 0}
+2026-07-29 14:39:00,817 [INFO] __main__ <module>: Starting video capture...
+2026-07-29 14:39:00,817 [DEBUG] __main__ <module>: Capture status retrieved: width=1608, height=1104, binning=1, img_type=0
+2026-07-29 14:39:00,817 [DEBUG] __main__ <module>: Initializing visualization variables...
+2026-07-29 14:39:00,817 [INFO] __main__ <module>: Initializing Visualizer instance...
+2026-07-29 14:39:01,047 [INFO] __main__ <module>: Starting real-time visualization. Press 'q' or close the window to exit.
+2026-07-29 14:39:01,050 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 14:39:01,155 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 14:39:02,005 [INFO] __main__ <module>: Visualization loop terminated (window closed).
+2026-07-29 14:39:02,005 [DEBUG] __main__ <module>: Total frames processed: 9
+2026-07-29 14:40:38,849 [INFO] __main__ <module>: ====== start processing ======
+2026-07-29 14:40:38,849 [INFO] __main__ <module>: Importing standard modules...
+2026-07-29 14:40:38,871 [DEBUG] __main__ <module>: All standard modules imported successfully.
+2026-07-29 14:40:39,076 [INFO] __main__ <module>: Third-party modules imported successfully.
+2026-07-29 14:40:39,077 [DEBUG] __main__ <module>: Appended project root to system path:C:\projects\SUN_watching
+2026-07-29 14:40:40,536 [DEBUG] __main__ <module>: All custom modules imported successfully.
+2026-07-29 14:40:40,537 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-29 14:40:40,539 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
+2026-07-29 14:40:40,539 [INFO] __main__ <module>: Attempting to connect to the camera...
+2026-07-29 14:40:40,539 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\projects\SUN_watching\lib\ASICamera2.dll
+2026-07-29 14:40:40,793 [INFO] __main__ <module>: Successfully connected to the camera.
+2026-07-29 14:40:40,840 [DEBUG] __main__ <module>: Camera properties configured successfully:
+{'band_width': 40, 'exposure': 30000, 'gain': 150, 'image_type': 0}
+2026-07-29 14:40:40,840 [INFO] __main__ <module>: Starting video capture...
+2026-07-29 14:40:40,841 [DEBUG] __main__ <module>: Capture status retrieved: width=1608, height=1104, binning=1, img_type=0
+2026-07-29 14:40:40,841 [DEBUG] __main__ <module>: Initializing visualization variables...
+2026-07-29 14:40:40,841 [INFO] __main__ <module>: Initializing Visualizer instance...
+2026-07-29 14:40:41,074 [INFO] __main__ <module>: Starting real-time visualization. Press 'q' or close the window to exit.
+2026-07-29 14:40:41,077 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 14:40:41,182 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 14:40:42,364 [INFO] __main__ <module>: Visualization loop terminated (window closed).
+2026-07-29 14:40:42,364 [DEBUG] __main__ <module>: Total frames processed: 13
+2026-07-29 14:40:42,364 [DEBUG] __main__ <module>: _____正しく終了 総フレーム数:13,フレーム落ち:0,時間:1.52
+2026-07-29 14:40:42,364 [INFO] __main__ <module>: Releasing camera and resources...
+2026-07-29 14:40:42,377 [DEBUG] __main__ <module>: Camera stopped and closed successfully.
+2026-07-29 14:40:42,377 [INFO] __main__ <module>: Visualizer resources released.
+2026-07-29 14:40:42,378 [INFO] __main__ <module>: Camera successfully disconnected.
+2026-07-29 14:40:42,378 [INFO] __main__ <module>: ===== processing finished =====

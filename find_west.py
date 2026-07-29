@@ -283,18 +283,14 @@ try:
             logger.debug(f"Total frames processed: {frame_count}")
             break
 except KeyboardInterrupt as e:
-    _____かかった時間=str(time()-st_time)
-    logger.info(f"keyboard Interrupt :{e}")
-    logger.debug(f"_____キーボードインターらプとで終了 総フレーム数:{frame_count},フレーム落ち:{_____落ちフレーム数},時間:{_____かかった時間:f2}")
-    cancel_process(camera=camera,viz=viz)
+    elapsed_time = float(time() - st_time)
+        f"Terminated by keyboard interrupt. Total frames: {frame_count}, Dropped: {dropped_frames}, Time: {elapsed_time:.2f}s"
 except RuntimeError as e:
-    _____かかった時間=str(time()-st_time)
-    logger.info(f"_____{e}")
-    logger.debug(f"_____エラーで終了 総フレーム数:{frame_count},フレーム落ち:{_____落ちフレーム数},時間:{_____かかった時間:f2}")
-    cancel_process(camera=camera,viz=viz)
+    elapsed_time = float(time() - st_time)
+        f"Terminated with error. Total frames: {frame_count}, Dropped: {dropped_frames}, Time: {elapsed_time:.2f}s"
 else:
-    _____かかった時間=str(time()-st_time)
-    logger.debug(f"_____正しく終了 総フレーム数:{frame_count},フレーム落ち:{_____落ちフレーム数},時間:{_____かかった時間:f2}")
+    elapsed_time = float(time() - st_time)
+        f"Completed successfully. Total frames: {frame_count}, Dropped: {dropped_frames}, Time: {elapsed_time:.2f}s"
     # 例外発生時も確実にリソースを解放
     logger.info("Releasing camera and resources...")
 
