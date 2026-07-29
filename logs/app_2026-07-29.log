@@ -380,31 +380,3 @@
 2026-07-29 14:40:42,377 [INFO] __main__ <module>: Visualizer resources released.
 2026-07-29 14:40:42,378 [INFO] __main__ <module>: Camera successfully disconnected.
 2026-07-29 14:40:42,378 [INFO] __main__ <module>: ===== processing finished =====
-2026-07-29 15:00:31,393 [INFO] __main__ <module>: ===== Processing started =====
-2026-07-29 15:00:31,394 [INFO] __main__ <module>: Importing standard modules...
-2026-07-29 15:00:31,410 [DEBUG] __main__ <module>: All standard modules imported successfully.
-2026-07-29 15:00:31,613 [INFO] __main__ <module>: Third-party modules imported successfully.
-2026-07-29 15:00:31,614 [DEBUG] __main__ <module>: Appended project root to system path:C:\projects\SUN_watching
-2026-07-29 15:00:33,172 [DEBUG] __main__ <module>: All custom modules imported successfully.
-2026-07-29 15:00:33,172 [INFO] __main__ <module>: Validating visualizer schema parameters.
-2026-07-29 15:00:33,174 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
-2026-07-29 15:00:33,174 [INFO] __main__ <module>: Attempting to connect to the camera...
-2026-07-29 15:00:33,174 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\projects\SUN_watching\lib\ASICamera2.dll
-2026-07-29 15:00:33,425 [INFO] __main__ <module>: Successfully connected to the camera.
-2026-07-29 15:00:33,473 [DEBUG] __main__ <module>: Camera properties configured successfully:
-{'band_width': 40, 'exposure': 30000, 'gain': 150, 'image_type': 0}
-2026-07-29 15:00:33,474 [INFO] __main__ <module>: Starting video capture...
-2026-07-29 15:00:33,474 [DEBUG] __main__ <module>: Capture status retrieved: width=1608, height=1104, binning=1, img_type=0
-2026-07-29 15:00:33,474 [DEBUG] __main__ <module>: Initializing visualization variables...
-2026-07-29 15:00:33,474 [INFO] __main__ <module>: Initializing Visualizer instance...
-2026-07-29 15:00:33,764 [INFO] __main__ <module>: Starting real-time visualization. Press 'q' or close the window to exit.
-2026-07-29 15:00:33,767 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
-2026-07-29 15:00:33,877 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
-2026-07-29 15:00:58,954 [INFO] __main__ <module>: Visualization loop terminated (window closed).
-2026-07-29 15:00:58,955 [DEBUG] __main__ <module>: Total frames processed: 258
-2026-07-29 15:00:58,955 [DEBUG] __main__ <module>: Completed successfully. Total frames: 258, Dropped: 0, Time: 25.48s
-2026-07-29 15:00:58,955 [INFO] __main__ <module>: Releasing camera and resources...
-2026-07-29 15:00:58,973 [DEBUG] __main__ <module>: Camera stopped and closed successfully.
-2026-07-29 15:00:58,973 [INFO] __main__ <module>: Visualizer resources released.
-2026-07-29 15:00:58,973 [INFO] __main__ <module>: Camera successfully disconnected.
-2026-07-29 15:00:58,973 [INFO] __main__ <module>: ===== Processing finished =====
