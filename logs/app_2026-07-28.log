@@ -1,0 +1,170 @@
+2026-07-28 14:43:02,814 [INFO] __main__ <module>: === start processing ===
+2026-07-28 14:43:03,144 [WARNING] root <module>: ASI SDK library not found
+2026-07-28 14:43:03,433 [INFO] __main__ <module>: All standard modules imported successfully.
+2026-07-28 14:43:03,433 [INFO] __main__ <module>: Appended project root to system path.
+2026-07-28 14:43:03,449 [INFO] lib.drawer <module>: --- starting as module process ---
+2026-07-28 14:43:04,124 [INFO] lib.drawer <module>: standard modules imported successfully
+2026-07-28 14:43:04,124 [INFO] lib.drawer <module>: --- finish ---
+2026-07-28 14:43:04,126 [INFO] lib.camera_utils <module>: --- starting as module process ---
+2026-07-28 14:43:04,126 [INFO] lib.camera_utils <module>: standard modules imported successfully
+2026-07-28 14:43:04,127 [INFO] lib.camera_utils <module>: --- finish ---
+2026-07-28 14:43:04,130 [INFO] lib.RANSAC <module>: --- starting as module process ---
+2026-07-28 14:43:11,926 [INFO] lib.RANSAC <module>: standard modules imported successfully
+2026-07-28 14:43:11,926 [INFO] lib.RANSAC <module>: --- finish ---
+2026-07-28 14:43:11,927 [INFO] __main__ <module>: all custom modules imported successfully
+2026-07-28 14:43:11,927 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-28 14:43:11,929 [ERROR] __main__ <module>: visualizer parameters validation failed
+2026-07-28 14:43:11,929 [ERROR] __main__ <module>: Validation error: Additional properties are not allowed ('acceptable', 'grid_alpha', 'grid_color', 'grid_nx', 'grid_ny', 'grid_r' were unexpected)
+
+Failed validating 'additionalProperties' in schema:
+    {'$schema': 'http://json-schema.org/draft-07/schema#',
+     'title': 'Visualizer Parameters Schema',
+     'type': 'object',
+     'properties': {'constructor': {'type': 'object',
+                                    'description': 'Visualizer '
+                                                   'クラスのコンストラクタに渡すパラメータ',
+                                    'properties': {'width': {'type': 'integer',
+                                                             'minimum': 1},
+                                                   'height': {'type': 'integer',
+                                                              'minimum': 1},
+                                                   'acceptable': {'type': 'number',
+                                                                  'default': 1},
+                                                   'grid_color': {'type': 'string',
+                                                                  'pattern': '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+                                                                  'default': '#FFFFFF'},
+                                                   'grid_ny': {'type': 'integer',
+                                                               'minimum': 0,
+                                                               'default': 2},
+                                                   'grid_nx': {'type': 'integer',
+                                                               'minimum': 0,
+                                                               'default': 4},
+                                                   'grid_r': {'type': 'number',
+                                                              'minimum': 0,
+                                                              'default': 300},
+                                                   'grid_alpha': {'type': 'number',
+                                                                  'minimum': 0,
+                                                                  'maximum': 1,
+                                                                  'default': 0.4}}},
+                    'update': {'type': 'object',
+                               'description': 'Visualizer.update に渡すパラメータ',
+                               'properties': {'img': {'oneOf': [{'type': 'string'},
+                                                                {'type': 'array',
+                                                                 'items': {'type': 'array',
+                                                                           'items': {'type': 'integer',
+                                                                                     'minimum': 0,
+                                                                                     'maximum': 255}}}]},
+                                              'cx': {'type': 'number'},
+                                              'cy': {'type': 'number'},
+                                              'r': {'type': 'number',
+                                                    'minimum': 0},
+                                              'recent_pts': {'type': 'array',
+                                                             'items': {'type': 'array',
+                                                                       'minItems': 2,
+                                                                       'items': {'type': 'number'}}},
+                                              'robust_angle': {'type': 'number',
+                                                               'minimum': -180,
+                                                               'maximum': 180},
+                                              'frame_idx': {'oneOf': [{'type': 'integer',
+                                                                       'minimum': 0},
+                                                                      {'type': 'null'}]},
+                                              'total_frames': {'oneOf': [{'type': 'integer',
+                                                                          'minimum': 1},
+                                                                         {'type': 'null'}]},
+                                              'target_fps': {'oneOf': [{'type': 'number',
+                                                                        'minimum': 0},
+                                                                       {'type': 'null'}]}}}},
+     'additionalProperties': False}
+
+On instance:
+    {'acceptable': 1,
+     'grid_color': '#FFFFFF',
+     'grid_alpha': 0.4,
+     'grid_ny': 2,
+     'grid_nx': 4,
+     'grid_r': 300}
+2026-07-28 14:43:11,931 [INFO] __main__ cancel_process: === process canceled ===
+2026-07-28 14:44:22,096 [INFO] __main__ <module>: === start processing ===
+2026-07-28 14:44:22,215 [WARNING] root <module>: ASI SDK library not found
+2026-07-28 14:44:22,297 [INFO] __main__ <module>: All standard modules imported successfully.
+2026-07-28 14:44:22,298 [INFO] __main__ <module>: Appended project root to system path.
+2026-07-28 14:44:22,299 [INFO] lib.drawer <module>: --- starting as module process ---
+2026-07-28 14:44:22,574 [INFO] lib.drawer <module>: standard modules imported successfully
+2026-07-28 14:44:22,574 [INFO] lib.drawer <module>: --- finish ---
+2026-07-28 14:44:22,575 [INFO] lib.camera_utils <module>: --- starting as module process ---
+2026-07-28 14:44:22,575 [INFO] lib.camera_utils <module>: standard modules imported successfully
+2026-07-28 14:44:22,575 [INFO] lib.camera_utils <module>: --- finish ---
+2026-07-28 14:44:22,576 [INFO] lib.RANSAC <module>: --- starting as module process ---
+2026-07-28 14:44:23,664 [INFO] lib.RANSAC <module>: standard modules imported successfully
+2026-07-28 14:44:23,664 [INFO] lib.RANSAC <module>: --- finish ---
+2026-07-28 14:44:23,664 [INFO] __main__ <module>: all custom modules imported successfully
+2026-07-28 14:44:23,664 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-28 14:44:23,666 [ERROR] __main__ <module>: visualizer parameters validation failed
+2026-07-28 14:44:23,666 [ERROR] __main__ <module>: Validation error: Additional properties are not allowed ('acceptable', 'grid_alpha', 'grid_color', 'grid_nx', 'grid_ny', 'grid_r' were unexpected)
+
+Failed validating 'additionalProperties' in schema:
+    {'$schema': 'http://json-schema.org/draft-07/schema#',
+     'title': 'Visualizer Parameters Schema',
+     'type': 'object',
+     'properties': {'constructor': {'type': 'object',
+                                    'description': 'Visualizer '
+                                                   'クラスのコンストラクタに渡すパラメータ',
+                                    'properties': {'width': {'type': 'integer',
+                                                             'minimum': 1},
+                                                   'height': {'type': 'integer',
+                                                              'minimum': 1},
+                                                   'acceptable': {'type': 'number',
+                                                                  'default': 1},
+                                                   'grid_color': {'type': 'string',
+                                                                  'pattern': '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+                                                                  'default': '#FFFFFF'},
+                                                   'grid_ny': {'type': 'integer',
+                                                               'minimum': 0,
+                                                               'default': 2},
+                                                   'grid_nx': {'type': 'integer',
+                                                               'minimum': 0,
+                                                               'default': 4},
+                                                   'grid_r': {'type': 'number',
+                                                              'minimum': 0,
+                                                              'default': 300},
+                                                   'grid_alpha': {'type': 'number',
+                                                                  'minimum': 0,
+                                                                  'maximum': 1,
+                                                                  'default': 0.4}}},
+                    'update': {'type': 'object',
+                               'description': 'Visualizer.update に渡すパラメータ',
+                               'properties': {'img': {'oneOf': [{'type': 'string'},
+                                                                {'type': 'array',
+                                                                 'items': {'type': 'array',
+                                                                           'items': {'type': 'integer',
+                                                                                     'minimum': 0,
+                                                                                     'maximum': 255}}}]},
+                                              'cx': {'type': 'number'},
+                                              'cy': {'type': 'number'},
+                                              'r': {'type': 'number',
+                                                    'minimum': 0},
+                                              'recent_pts': {'type': 'array',
+                                                             'items': {'type': 'array',
+                                                                       'minItems': 2,
+                                                                       'items': {'type': 'number'}}},
+                                              'robust_angle': {'type': 'number',
+                                                               'minimum': -180,
+                                                               'maximum': 180},
+                                              'frame_idx': {'oneOf': [{'type': 'integer',
+                                                                       'minimum': 0},
+                                                                      {'type': 'null'}]},
+                                              'total_frames': {'oneOf': [{'type': 'integer',
+                                                                          'minimum': 1},
+                                                                         {'type': 'null'}]},
+                                              'target_fps': {'oneOf': [{'type': 'number',
+                                                                        'minimum': 0},
+                                                                       {'type': 'null'}]}}}},
+     'additionalProperties': False}
+
+On instance:
+    {'acceptable': 1,
+     'grid_color': '#FFFFFF',
+     'grid_alpha': 0.4,
+     'grid_ny': 2,
+     'grid_nx': 4,
+     'grid_r': 300}
+2026-07-28 14:44:23,667 [INFO] __main__ cancel_process: === process canceled ===

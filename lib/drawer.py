@@ -1,9 +1,30 @@
-import time
-import matplotlib.pyplot as plt
-import numpy as np
-from matplotlib.patches import Arc, Polygon, Circle
-from matplotlib.transforms import Affine2D
-from matplotlib.widgets import Slider
+import logging
+import traceback
+
+logger = logging.getLogger(__name__)
+
+if "__main__" == __name__:
+    logger.info("--- starting as main process ---")
+else:
+    logger.info("--- starting as module process ---")
+try:
+    import time
+except ImportError:
+    logger.error("Failed to import standard module")
+    logger.error(traceback.format_exc())
+    raise
+
+try:
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from matplotlib.patches import Arc, Circle, Polygon
+    from matplotlib.widgets import Slider
+except ImportError:
+    logger.error("Failed to import third-party module")
+    logger.error(traceback.format_exc())
+    raise
+
+logger.info("Third-party modules imported successfully")
 
 __all__ = ["OpenCircleArrow", "Visualizer"]
 
@@ -126,9 +147,100 @@ class OpenCircleArrow:
         self.draw()
 
 
+VISUALIZER_SCHEMA: dict = { 
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Visualizer Parameters Schema",
+    "type": "object",
+    "properties": {
+        "constructor": {
+            "type": "object",
+            "description": "Visualizer クラスのコンストラクタに渡すパラメータ",
+            "properties": {
+                "width": {"type": "integer", "minimum": 1},
+                "height": {"type": "integer", "minimum": 1},
+                "acceptable": {"type": "number", "default": 1},
+                "grid_color": {
+                    "type": "string",
+                    "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+                    "default": "#FFFFFF",
+                },
+                "grid_ny": {"type": "integer", "minimum": 0, "default": 2},
+                "grid_nx": {"type": "integer", "minimum": 0, "default": 4},
+                "grid_r": {"type": "number", "minimum": 0, "default": 300},
+                "grid_alpha": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 0.4,
+                },
+            },
+        },
+        "update": {
+            "type": "object",
+            "description": "Visualizer.update に渡すパラメータ",
+            "properties": {
+                "img": {
+                    "oneOf": [
+                        {"type": "string"},
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 255,
+                                },
+                            },
+                        },
+                    ]
+                },
+                "cx": {"type": "number"},
+                "cy": {"type": "number"},
+                "r": {"type": "number", "minimum": 0},
+                "recent_pts": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "minItems": 2,
+                        "items": {"type": "number"},
+                    },
+                },
+                "robust_angle": {"type": "number", "minimum": -180, "maximum": 180},
+                "frame_idx": {
+                    "oneOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]
+                },
+                "total_frames": {
+                    "oneOf": [{"type": "integer", "minimum": 1}, {"type": "null"}]
+                },
+                "target_fps": {
+                    "oneOf": [{"type": "number", "minimum": 0}, {"type": "null"}]
+                },
+            },
+        },
+    },
+    "additionalProperties": False,
+}
+
+
+def get_visualizer_schema() -> dict:
+    """スキーマを返すヘルパー関数"""
+    return VISUALIZER_SCHEMA
+
+
 # 2. Visualizer クラス (メイン描画マネージャー)
 class Visualizer:
-    def __init__(self, width, height, acceptable=1, grid_color="#FFFFFF", grid_ny=2, grid_nx=4, grid_r=300, grid_alpha=0.4):
+    def __init__(
+        self,
+        width,
+        height,
+        acceptable=1,
+        grid_color="#FFFFFF",
+        grid_ny=2,
+        grid_nx=4,
+        grid_r=300,
+        grid_alpha=0.4,
+    ):
         self.width = width
         self.height = height
         self.acceptable = acceptable
@@ -156,28 +268,40 @@ class Visualizer:
             label="circle center track",
         )
 
-        # グリッドの描画 
+        # グリッドの描画
         self.grid_lines = []
-        
 
         # 縦分割数 (grid_ny) に応じて横線を描画
         for y_val in np.linspace(0, height, grid_ny + 1)[1:-1]:
             (line,) = self.ax.plot(
-                [0, width], [y_val, y_val], color=grid_color, linewidth=3, alpha=grid_alpha
+                [0, width],
+                [y_val, y_val],
+                color=grid_color,
+                linewidth=3,
+                alpha=grid_alpha,
             )
             self.grid_lines.append(line)
-            
+
         # 横分割数 (grid_nx) に応じて縦線を描画
         for x_val in np.linspace(0, width, grid_nx + 1)[1:-1]:
             (line,) = self.ax.plot(
-                [x_val, x_val], [0, height], color=grid_color, linewidth=3, alpha=grid_alpha
+                [x_val, x_val],
+                [0, height],
+                color=grid_color,
+                linewidth=3,
+                alpha=grid_alpha,
             )
             self.grid_lines.append(line)
-            
+
         # 画像中心に半径 grid_r の正円を描画
         center_x, center_y = width / 2, height / 2
         self.grid_circle = Circle(
-            (center_x, center_y), grid_r, fill=False, edgecolor=grid_color, linewidth=3, alpha=grid_alpha
+            (center_x, center_y),
+            grid_r,
+            fill=False,
+            edgecolor=grid_color,
+            linewidth=3,
+            alpha=grid_alpha,
         )
         self.ax.add_patch(self.grid_circle)
 
@@ -199,31 +323,30 @@ class Visualizer:
             linestyle="dashed",
         )
 
-         # HUD（表示パネル）のカスタマイズ用設定辞書
+        # HUD（表示パネル）のカスタマイズ用設定辞書
         self.hud_style = {
-            "x": 0.02,                  # 画面左端からの位置 (0.0 ~ 1.0)
-            "y": 0.98,                  # 画面下端からの位置 (0.0 ~ 1.0)
-            "ha": "left",               # 水平方向の揃え (left, center, right)
-            "va": "top",                # 垂直方向の揃え (top, center, bottom)
-            "fontsize": 13,             # 文字サイズ
-            "color": "#00FF00",         # 文字色
-            "family": "monospace",      # フォントスタイル (等幅フォントを推奨)
-            "bbox": dict(               # 背景パネルの設定
-                facecolor='black',
-                alpha=0.5,
-                edgecolor='none',
-                boxstyle='round,pad=0.5'
-            )
+            "x": 0.02,  # 画面左端からの位置 (0.0 ~ 1.0)
+            "y": 0.98,  # 画面下端からの位置 (0.0 ~ 1.0)
+            "ha": "left",  # 水平方向の揃え (left, center, right)
+            "va": "top",  # 垂直方向の揃え (top, center, bottom)
+            "fontsize": 13,  # 文字サイズ
+            "color": "#00FF00",  # 文字色
+            "family": "monospace",  # フォントスタイル (等幅フォントを推奨)
+            "bbox": {  # 背景パネルの設定
+                "facecolor": "black", "alpha": 0.5, "edgecolor": "none", "boxstyle": "round,pad=0.5"
+            },
         }
 
         self.info_text = self.fig.text(
-            self.hud_style["x"], self.hud_style["y"], "",
+            self.hud_style["x"],
+            self.hud_style["y"],
+            "",
             ha=self.hud_style["ha"],
             va=self.hud_style["va"],
             fontsize=self.hud_style["fontsize"],
             color=self.hud_style["color"],
             family=self.hud_style["family"],
-            bbox=self.hud_style["bbox"]
+            bbox=self.hud_style["bbox"],
         )
 
         # FPS計測用の変数
@@ -239,7 +362,18 @@ class Visualizer:
             tri_color="purple",
         )
 
-    def update(self, img, cx, cy, r, recent_pts, robust_angle, frame_idx=None,total_frames=None,target_fps=None):
+    def update(
+        self,
+        img,
+        cx,
+        cy,
+        r,
+        recent_pts,
+        robust_angle,
+        frame_idx=None,
+        total_frames=None,
+        target_fps=None,
+    ):
         """計算結果を受け取り、画面を更新する"""
         self.ax_img.set_data(img)
         self.ax_min2.set_center((cx, cy))  # pyright: ignore[reportAttributeAccessIssue]
@@ -277,20 +411,20 @@ class Visualizer:
 
         self.ax_sunline.set_color(uxc[1])
 
-         # 実際のFPSを計算
+        # 実際のFPSを計算
         now = time.time()
         dt = now - self.prev_time
         self.prev_time = now
         actual_fps = 1.0 / dt if dt > 0 else 0.0
 
-         # 表示テキストのフォーマット (桁数を揃えて視認性を向上)
+        # 表示テキストのフォーマット (桁数を揃えて視認性を向上)
         text_lines = [
             f"Angle      : {west_angle:7.2f} °",
             f"MIN2 Stat  : X={cx:.1f} Y={cy:.1f} R={r:.1f}",
             f"Frames     : {frame_idx} / {total_frames}",
             f"Traj Points: {len(recent_pts)}",
             f"Actual FPS : {actual_fps:7.2f}",
-            f"Target FPS : {target_fps:7.2f}"
+            f"Target FPS : {target_fps:7.2f}",
         ]
         self.info_text.set_text("\n".join(text_lines))
         # 描画を反映
@@ -306,13 +440,14 @@ class Visualizer:
         """描画リソースを安全に閉じる"""
         plt.close(self.fig)
 
+logger.info("--- finish ---")
 
 # テスト・デモ実行用
 if __name__ == "__main__":
-    from tkinter.filedialog import askopenfile
-    import time
     import sys
+    import time
     from pathlib import Path
+    from tkinter.filedialog import askopenfile
 
     demo_mode = "2"
     if demo_mode == "1":
@@ -383,9 +518,8 @@ if __name__ == "__main__":
                         "\n"
                     )
                 ]
-            except Exception as e:
+            except (ValueError, IndexError) as e:
                 print(f"format error: {e}")
-            # TODO:executerのformatで受け取り
         else:
             print("your typo or yet")
 
@@ -419,7 +553,7 @@ if __name__ == "__main__":
             else:
                 print("データが少なすぎます。")
                 sys.exit(1)
-            
+
             # UI確認のため Visualizer を初期化
             # NOTE: グリッドの分割数などを変えたい場合は以下のように引数を指定します。
             # viz = Visualizer(width, height, acceptable, grid_ny=4, grid_nx=6, grid_r=400, grid_alpha=0.5)
