@@ -229,3 +229,16 @@
 2026-07-29 02:05:46,705 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
 2026-07-29 02:05:47,067 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
 2026-07-29 02:05:47,435 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 10:00:19,848 [INFO] __main__ <module>: ====== start processing ======
+2026-07-29 10:00:19,848 [INFO] __main__ <module>: Importing standard modules...
+2026-07-29 10:00:19,863 [DEBUG] __main__ <module>: All standard modules imported successfully.
+2026-07-29 10:00:20,061 [INFO] __main__ <module>: Third-party modules imported successfully.
+2026-07-29 10:00:20,062 [DEBUG] __main__ <module>: Appended project root to system path:C:\projects\SUN_watching
+2026-07-29 10:00:21,435 [DEBUG] __main__ <module>: All custom modules imported successfully.
+2026-07-29 10:00:21,436 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-29 10:00:21,438 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
+2026-07-29 10:00:21,438 [INFO] __main__ <module>: Attempting to connect to the camera...
+2026-07-29 10:00:21,438 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\projects\SUN_watching\lib\ASICamera2.dll
+2026-07-29 10:01:07,403 [INFO] __main__ <module>: Connection wait interrupted by user.
+2026-07-29 10:01:07,403 [INFO] __main__ cancel_process: ===== canceling process and cleaning up =====
+2026-07-29 10:01:07,405 [INFO] __main__ cancel_process: ===== FINISHED =====
