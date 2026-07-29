@@ -155,7 +155,7 @@ except KeyboardInterrupt:
     cancel_process()
 except asi.ZWO_CaptureError as e:
     logger.critical(f"Failed to connect to the camera: {e}")
-    cancel_process()
+    cancel_process(camera=camera)
 else:
     logger.info("Successfully connected to the camera.")
 
@@ -195,6 +195,8 @@ if camera is not None:
 # 変数初期化
 logger.debug("Initializing visualization variables...")
 frame_count = 0
+_____落ちフレーム数 =0
+st_time=time()
 buffer_c = deque(maxlen=500)
 buffer_t = deque(maxlen=500)
 cx, cy, r = 0, 0, 1
@@ -203,8 +205,7 @@ viz = None
 # リアルタイム処理ループ
 try:
     if camera is None:
-        logger.critical("Cannot proceed without initialized camera")
-        cancel_process(camera=camera)
+        raise RuntimeError("Cannot proceed without initialized camera")
     logger.info("Initializing Visualizer instance...")
 
     # 描画クラスを初期化
@@ -219,6 +220,7 @@ try:
             frame = camera.capture_video_frame(timeout=500)
         except asi.ZWO_CaptureError as e:
             logger.warning(f"Frame capture failed or timed out: {e}")
+            _____落ちフレーム数+=1
             continue
 
         img = np.frombuffer(frame, dtype=np.uint8).reshape(height, width)
@@ -230,6 +232,7 @@ try:
             cx, cy, r = MIN2(img)
         except Exception as e:  # TODO:MIN2独自のERRORを作製,整理
             logger.warning(f"MIN2 processing error: {e}")
+            _____落ちフレーム数+=1
             continue
 
         buffer_c.append([cx, cy])
@@ -280,9 +283,18 @@ try:
             logger.debug(f"Total frames processed: {frame_count}")
             break
 except KeyboardInterrupt as e:
+    _____かかった時間=str(time()-st_time)
     logger.info(f"keyboard Interrupt :{e}")
+    logger.debug(f"_____キーボードインターらプとで終了 総フレーム数:{frame_count},フレーム落ち:{_____落ちフレーム数},時間:{_____かかった時間:f2}")
     cancel_process(camera=camera,viz=viz)
-finally:
+except RuntimeError as e:
+    _____かかった時間=str(time()-st_time)
+    logger.info(f"_____{e}")
+    logger.debug(f"_____エラーで終了 総フレーム数:{frame_count},フレーム落ち:{_____落ちフレーム数},時間:{_____かかった時間:f2}")
+    cancel_process(camera=camera,viz=viz)
+else:
+    _____かかった時間=str(time()-st_time)
+    logger.debug(f"_____正しく終了 総フレーム数:{frame_count},フレーム落ち:{_____落ちフレーム数},時間:{_____かかった時間:f2}")
     # 例外発生時も確実にリソースを解放
     logger.info("Releasing camera and resources...")
 
