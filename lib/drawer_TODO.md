@@ -32,13 +32,13 @@
 
 ### LOGの追加
 
-- [x] ERROR
-- [x] INFO
-- [x] WARNING
+- [ ] ERROR
+- [ ] INFO
+- [ ] WARNING
 
 ### option.txt
 
-- [x] 表示軌跡数
+- [ ] 表示軌跡数
 - [ ] MIN2 param
 - [ ] CamNum -> default None
 - [ ] pixel 分解能　-> 秒角表示可能
