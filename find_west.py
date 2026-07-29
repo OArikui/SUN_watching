@@ -58,6 +58,7 @@ def cancel_process(camera=None, viz=None) -> NoReturn:
     except Exception as e:  # noqa: BLE001
         logger.error(f"Failed to release resources: {e}")
     logger.info("===== FINISHED =====")
+    input("\nPress Enter to exit...")
     sys.exit(1)
 
 
@@ -90,6 +91,13 @@ except ImportError:
 else:
     logger.info("Third-party modules imported successfully.")
 
+if getattr(sys, 'frozen', False):
+    # PyInstallerでexe化されて実行されている場合
+    project_root = Path(sys._MEIPASS)
+else:
+    # 通常のPythonスクリプトとして実行されている場合
+    current_dir = Path(__file__).resolve().parent
+    project_root = current_dir
 # 階層エラー対策 (パスの自動追加)
 current_dir = Path(__file__).resolve().parent
 project_root = current_dir
@@ -325,3 +333,4 @@ else:
     logger.info("Camera successfully disconnected.")
 
 logger.info("===== Processing finished =====")
+input("\nPress Enter to exit...")
