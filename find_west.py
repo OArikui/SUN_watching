@@ -2,11 +2,14 @@ print("Booting up the system…")
 print("Setting up logger…")
 import datetime
 import logging
+import os
 import traceback
 
 logfile = (
     rf"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
 )
+
+os.makedirs("logs", exist_ok=True)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
