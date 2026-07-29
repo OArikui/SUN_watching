@@ -212,6 +212,12 @@ buffer_t = deque(maxlen=500)
 cx, cy, r = 0, 0, 1
 viz = None
 
+current_date_str = datetime.datetime.now().strftime('%Y-%m-%d')
+min2_data_file = project_root / "logs" / f"min2_data_{current_date_str}.csv"
+
+if not min2_data_file.exists():
+    with open(min2_data_file, "w", encoding="utf-8") as f:
+        f.write("frame_count,timestamp,cx,cy,r\n")
 # リアルタイム処理ループ
 try:
     if camera is None:
@@ -240,6 +246,8 @@ try:
         # 計算処理
         try:
             cx, cy, r = MIN2(img)
+            with open(min2_data_file, "a", encoding="utf-8") as f:
+                f.write(f"{frame_count},{time()},{cx},{cy},{r}\n")
         except Exception as e:  # TODO:MIN2独自のERRORを作製,整理
             logger.warning(f"MIN2 processing error: {e}")
             dropped_frames += 1
