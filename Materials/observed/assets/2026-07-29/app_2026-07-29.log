@@ -1,0 +1,208 @@
+2026-07-29 15:55:06,671 [INFO] __main__ <module>: ===== Processing started =====
+2026-07-29 15:55:06,672 [INFO] __main__ <module>: Importing standard modules...
+2026-07-29 15:55:06,673 [DEBUG] __main__ <module>: All standard modules imported successfully.
+2026-07-29 15:55:06,898 [INFO] __main__ <module>: Third-party modules imported successfully.
+2026-07-29 15:55:06,899 [DEBUG] __main__ <module>: Appended project root to system path:C:\Users\s0740005\Downloads\find_west.v1.00\SUN_watching-convert_exe\dist\SUN_watching_app\_internal
+2026-07-29 15:55:11,549 [DEBUG] __main__ <module>: All custom modules imported successfully.
+2026-07-29 15:55:11,549 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-29 15:55:11,553 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
+2026-07-29 15:55:11,553 [INFO] __main__ <module>: Attempting to connect to the camera...
+2026-07-29 15:55:11,553 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\Users\s0740005\Downloads\find_west.v1.00\SUN_watching-convert_exe\dist\SUN_watching_app\_internal\lib\ASICamera2.dll
+2026-07-29 15:55:19,906 [INFO] __main__ <module>: Successfully connected to the camera.
+2026-07-29 15:55:19,961 [DEBUG] __main__ <module>: Camera properties configured successfully:
+{'band_width': 40, 'exposure': 30000, 'gain': 150, 'image_type': 0}
+2026-07-29 15:55:19,961 [INFO] __main__ <module>: Starting video capture...
+2026-07-29 15:55:19,962 [DEBUG] __main__ <module>: Capture status retrieved: width=1608, height=1104, binning=1, img_type=0
+2026-07-29 15:55:19,962 [DEBUG] __main__ <module>: Initializing visualization variables...
+2026-07-29 15:55:19,963 [INFO] __main__ <module>: Initializing Visualizer instance...
+2026-07-29 15:55:20,795 [INFO] __main__ <module>: Starting real-time visualization. Press 'q' or close the window to exit.
+2026-07-29 15:55:20,802 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 15:55:20,922 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 15:55:27,027 [INFO] __main__ <module>: Visualization loop terminated (window closed).
+2026-07-29 15:55:27,027 [DEBUG] __main__ <module>: Total frames processed: 51
+2026-07-29 15:55:27,027 [DEBUG] __main__ <module>: Completed successfully. Total frames: 51, Dropped: 0, Time: 7.06s
+2026-07-29 15:55:27,027 [INFO] __main__ <module>: Releasing camera and resources...
+2026-07-29 15:55:27,070 [DEBUG] __main__ <module>: Camera stopped and closed successfully.
+2026-07-29 15:55:27,072 [INFO] __main__ <module>: Visualizer resources released.
+2026-07-29 15:55:27,072 [INFO] __main__ <module>: Camera successfully disconnected.
+2026-07-29 15:55:27,072 [INFO] __main__ <module>: ===== Processing finished =====
+2026-07-29 16:12:06,528 [INFO] __main__ <module>: ===== Processing started =====
+2026-07-29 16:12:06,529 [INFO] __main__ <module>: Importing standard modules...
+2026-07-29 16:12:06,530 [DEBUG] __main__ <module>: All standard modules imported successfully.
+2026-07-29 16:12:06,765 [INFO] __main__ <module>: Third-party modules imported successfully.
+2026-07-29 16:12:06,765 [DEBUG] __main__ <module>: Appended project root to system path:C:\Users\s0740005\Downloads\find_west.v1.00\SUN_watching-convert_exe\dist\SUN_watching_app\_internal
+2026-07-29 16:12:10,958 [DEBUG] __main__ <module>: All custom modules imported successfully.
+2026-07-29 16:12:10,959 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-29 16:12:10,963 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
+2026-07-29 16:12:10,963 [INFO] __main__ <module>: Attempting to connect to the camera...
+2026-07-29 16:12:10,964 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\Users\s0740005\Downloads\find_west.v1.00\SUN_watching-convert_exe\dist\SUN_watching_app\_internal\lib\ASICamera2.dll
+2026-07-29 16:12:14,324 [INFO] __main__ <module>: Successfully connected to the camera.
+2026-07-29 16:12:14,387 [DEBUG] __main__ <module>: Camera properties configured successfully:
+{'band_width': 40, 'exposure': 30000, 'gain': 150, 'image_type': 0}
+2026-07-29 16:12:14,388 [INFO] __main__ <module>: Starting video capture...
+2026-07-29 16:12:14,389 [DEBUG] __main__ <module>: Capture status retrieved: width=1608, height=1104, binning=1, img_type=0
+2026-07-29 16:12:14,389 [DEBUG] __main__ <module>: Initializing visualization variables...
+2026-07-29 16:12:14,389 [INFO] __main__ <module>: Initializing Visualizer instance...
+2026-07-29 16:12:14,917 [INFO] __main__ <module>: Starting real-time visualization. Press 'q' or close the window to exit.
+2026-07-29 16:12:14,925 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 16:12:15,146 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 16:16:57,302 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:57,387 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:57,487 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:57,598 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:57,731 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:57,911 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:58,047 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:58,193 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:58,345 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:58,528 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:58,729 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:58,959 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:59,195 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:59,427 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:59,649 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:16:59,945 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:00,257 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:00,532 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:00,829 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:15,681 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:16,822 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:18,420 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:19,946 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:24,154 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:28,230 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:31,943 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:35,366 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:39,010 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:17:42,334 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:19:07,966 [INFO] __main__ <module>: Keyboard interrupt: 
+2026-07-29 16:19:07,968 [DEBUG] __main__ <module>: Terminated by keyboard interrupt. Total frames: 1246, Dropped: 29, Time: 413.58s
+2026-07-29 16:19:07,968 [INFO] __main__ cancel_process: ===== canceling process and cleaning up =====
+2026-07-29 16:19:08,001 [DEBUG] __main__ cancel_process: Camera closed in cancel_process.
+2026-07-29 16:19:08,015 [INFO] __main__ cancel_process: Visualizer closed in cancel_process.
+2026-07-29 16:19:08,017 [INFO] __main__ cancel_process: ===== FINISHED =====
+2026-07-29 16:21:20,465 [INFO] __main__ <module>: ===== Processing started =====
+2026-07-29 16:21:20,466 [INFO] __main__ <module>: Importing standard modules...
+2026-07-29 16:21:20,467 [DEBUG] __main__ <module>: All standard modules imported successfully.
+2026-07-29 16:21:20,691 [INFO] __main__ <module>: Third-party modules imported successfully.
+2026-07-29 16:21:20,693 [DEBUG] __main__ <module>: Appended project root to system path:C:\Users\s0740005\Downloads\find_west.v1.00\SUN_watching-convert_exe\dist\SUN_watching_app\_internal
+2026-07-29 16:21:24,985 [DEBUG] __main__ <module>: All custom modules imported successfully.
+2026-07-29 16:21:24,986 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-29 16:21:24,991 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
+2026-07-29 16:21:24,991 [INFO] __main__ <module>: Attempting to connect to the camera...
+2026-07-29 16:21:24,992 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\Users\s0740005\Downloads\find_west.v1.00\SUN_watching-convert_exe\dist\SUN_watching_app\_internal\lib\ASICamera2.dll
+2026-07-29 16:21:30,421 [INFO] __main__ <module>: Successfully connected to the camera.
+2026-07-29 16:21:30,481 [DEBUG] __main__ <module>: Camera properties configured successfully:
+{'band_width': 40, 'exposure': 30000, 'gain': 150, 'image_type': 0}
+2026-07-29 16:21:30,481 [INFO] __main__ <module>: Starting video capture...
+2026-07-29 16:21:30,482 [DEBUG] __main__ <module>: Capture status retrieved: width=1608, height=1104, binning=1, img_type=0
+2026-07-29 16:21:30,483 [DEBUG] __main__ <module>: Initializing visualization variables...
+2026-07-29 16:21:30,483 [INFO] __main__ <module>: Initializing Visualizer instance...
+2026-07-29 16:21:31,378 [INFO] __main__ <module>: Starting real-time visualization. Press 'q' or close the window to exit.
+2026-07-29 16:21:31,386 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 16:21:31,585 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 16:21:38,345 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:38,476 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:38,635 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:38,840 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:39,047 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:39,262 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:39,490 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:39,735 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:40,040 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:40,307 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:40,611 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:40,970 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:41,329 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:41,684 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:42,095 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:42,455 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:42,870 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:43,230 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:43,648 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:44,199 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:44,427 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:44,650 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:44,950 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:45,168 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:45,424 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:45,675 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:46,468 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:47,293 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:48,122 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:48,983 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:49,938 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:50,703 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:51,633 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:52,584 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:53,474 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:54,392 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:55,364 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:56,375 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:21:58,321 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:22:00,111 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:22:01,855 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:22:03,865 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:22:06,167 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:22:08,290 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:22:32,206 [INFO] __main__ <module>: Keyboard interrupt: 
+2026-07-29 16:22:32,207 [DEBUG] __main__ <module>: Terminated by keyboard interrupt. Total frames: 79, Dropped: 44, Time: 61.72s
+2026-07-29 16:22:32,207 [INFO] __main__ cancel_process: ===== canceling process and cleaning up =====
+2026-07-29 16:22:32,224 [DEBUG] __main__ cancel_process: Camera closed in cancel_process.
+2026-07-29 16:22:32,238 [INFO] __main__ cancel_process: Visualizer closed in cancel_process.
+2026-07-29 16:22:32,239 [INFO] __main__ cancel_process: ===== FINISHED =====
+2026-07-29 16:23:06,062 [INFO] __main__ <module>: ===== Processing started =====
+2026-07-29 16:23:06,062 [INFO] __main__ <module>: Importing standard modules...
+2026-07-29 16:23:06,064 [DEBUG] __main__ <module>: All standard modules imported successfully.
+2026-07-29 16:23:06,388 [INFO] __main__ <module>: Third-party modules imported successfully.
+2026-07-29 16:23:06,390 [DEBUG] __main__ <module>: Appended project root to system path:C:\Users\s0740005\Downloads\find_west.v1.00\SUN_watching-convert_exe\dist\SUN_watching_app\_internal
+2026-07-29 16:23:10,087 [DEBUG] __main__ <module>: All custom modules imported successfully.
+2026-07-29 16:23:10,087 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-29 16:23:10,091 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
+2026-07-29 16:23:10,091 [INFO] __main__ <module>: Attempting to connect to the camera...
+2026-07-29 16:23:10,091 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\Users\s0740005\Downloads\find_west.v1.00\SUN_watching-convert_exe\dist\SUN_watching_app\_internal\lib\ASICamera2.dll
+2026-07-29 16:24:50,682 [INFO] __main__ <module>: Successfully connected to the camera.
+2026-07-29 16:24:50,753 [DEBUG] __main__ <module>: Camera properties configured successfully:
+{'band_width': 40, 'exposure': 30000, 'gain': 150, 'image_type': 0}
+2026-07-29 16:24:50,754 [INFO] __main__ <module>: Starting video capture...
+2026-07-29 16:24:50,755 [DEBUG] __main__ <module>: Capture status retrieved: width=1608, height=1104, binning=1, img_type=0
+2026-07-29 16:24:50,755 [DEBUG] __main__ <module>: Initializing visualization variables...
+2026-07-29 16:24:50,755 [INFO] __main__ <module>: Initializing Visualizer instance...
+2026-07-29 16:24:51,560 [INFO] __main__ <module>: Starting real-time visualization. Press 'q' or close the window to exit.
+2026-07-29 16:24:51,577 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 16:24:51,905 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 16:25:35,712 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:25:36,407 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:25:36,630 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:27:31,297 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:27:32,565 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:27:32,779 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:27:33,038 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:27:33,305 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:27:33,578 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:27:37,099 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:27:37,848 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:35:52,587 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:35:52,837 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:35:53,123 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:35:55,745 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:35:56,708 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:35:57,533 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:35:57,928 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:35:58,959 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:35:59,417 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:36:00,283 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:36:00,785 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:36:01,359 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:36:02,417 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:36:03,478 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:36:04,590 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:36:05,652 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 16:37:59,576 [INFO] __main__ <module>: Visualization loop terminated (window closed).
+2026-07-29 16:37:59,578 [DEBUG] __main__ <module>: Total frames processed: 2448
+2026-07-29 16:37:59,579 [DEBUG] __main__ <module>: Completed successfully. Total frames: 2448, Dropped: 27, Time: 788.82s
+2026-07-29 16:37:59,579 [INFO] __main__ <module>: Releasing camera and resources...
+2026-07-29 16:37:59,612 [DEBUG] __main__ <module>: Camera stopped and closed successfully.
+2026-07-29 16:37:59,614 [INFO] __main__ <module>: Visualizer resources released.
+2026-07-29 16:37:59,615 [INFO] __main__ <module>: Camera successfully disconnected.
+2026-07-29 16:37:59,616 [INFO] __main__ <module>: ===== Processing finished =====
