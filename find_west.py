@@ -4,7 +4,9 @@ import datetime
 import logging
 import traceback
 
-logfile = rf"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
+logfile = (
+    rf"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -59,7 +61,7 @@ def cancel_process(camera=None, viz=None) -> NoReturn:
     sys.exit(1)
 
 
-logger.info("====== start processing ======")
+logger.info("===== Processing started =====")
 
 logger.info("Importing standard modules...")
 try:
@@ -195,8 +197,8 @@ if camera is not None:
 # 変数初期化
 logger.debug("Initializing visualization variables...")
 frame_count = 0
-_____落ちフレーム数 =0
-st_time=time()
+dropped_frames = 0
+st_time = time()
 buffer_c = deque(maxlen=500)
 buffer_t = deque(maxlen=500)
 cx, cy, r = 0, 0, 1
@@ -220,7 +222,7 @@ try:
             frame = camera.capture_video_frame(timeout=500)
         except asi.ZWO_CaptureError as e:
             logger.warning(f"Frame capture failed or timed out: {e}")
-            _____落ちフレーム数+=1
+            dropped_frames += 1
             continue
 
         img = np.frombuffer(frame, dtype=np.uint8).reshape(height, width)
@@ -232,7 +234,7 @@ try:
             cx, cy, r = MIN2(img)
         except Exception as e:  # TODO:MIN2独自のERRORを作製,整理
             logger.warning(f"MIN2 processing error: {e}")
-            _____落ちフレーム数+=1
+            dropped_frames += 1
             continue
 
         buffer_c.append([cx, cy])
@@ -246,7 +248,9 @@ try:
         if len(recent_pts) > 2:
             try:
                 result = west_angle(recent_pts, recent_timestamps)
-                robust_angle, vectorYX = result  # pyright: ignore[reportGeneralTypeIssues]
+                robust_angle, vectorYX = (
+                    result  # pyright: ignore[reportGeneralTypeIssues]
+                )
             except (ValueError, TypeError, RuntimeError) as e:
                 logger.warning(f"Error calculating robust west angle: {e}")
         else:
@@ -284,13 +288,23 @@ try:
             break
 except KeyboardInterrupt as e:
     elapsed_time = float(time() - st_time)
+    logger.info(f"Keyboard interrupt: {e}")
+    logger.debug(
         f"Terminated by keyboard interrupt. Total frames: {frame_count}, Dropped: {dropped_frames}, Time: {elapsed_time:.2f}s"
+    )
+    cancel_process(camera=camera, viz=viz)
 except RuntimeError as e:
     elapsed_time = float(time() - st_time)
+    logger.error(f"Runtime error occurred: {e}")
+    logger.debug(
         f"Terminated with error. Total frames: {frame_count}, Dropped: {dropped_frames}, Time: {elapsed_time:.2f}s"
+    )
+    cancel_process(camera=camera, viz=viz)
 else:
     elapsed_time = float(time() - st_time)
+    logger.debug(
         f"Completed successfully. Total frames: {frame_count}, Dropped: {dropped_frames}, Time: {elapsed_time:.2f}s"
+    )
     # 例外発生時も確実にリソースを解放
     logger.info("Releasing camera and resources...")
 
@@ -310,4 +324,4 @@ else:
         logger.info("Visualizer resources released.")
     logger.info("Camera successfully disconnected.")
 
-logger.info("===== processing finished =====")
+logger.info("===== Processing finished =====")
