@@ -78,7 +78,7 @@ def connect_camera(dll_path):
     except KeyboardInterrupt:
         logger.info("Connection wait interrupted by user.")
         raise
-    
+
     logger.info("Camera acquired successfully.")
     # 4. カメラの初期化と基本設定
     try:

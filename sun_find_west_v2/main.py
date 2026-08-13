@@ -4,9 +4,7 @@ import datetime
 import logging
 import traceback
 
-logfile = (
-    rf"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
-)
+logfile = rf"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -90,17 +88,13 @@ except ImportError:
     raise
 else:
     logger.info("Third-party modules imported successfully.")
-    
-from utils import get_parents
 
-src=get_parents(__file__,point="SRC")
 try:
     import drawer
     from camera_utils import connect_camera
     from drawer import Visualizer
+    from MIN2ver2 import MIN2_ignore_sunspots as MIN2
     from RANSAC import calculate_west_angle_robust as west_angle
-
-    from src.lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2
 except ImportError:
     logger.error("Failed to import custom modules.")
     logger.error(traceback.format_exc())
@@ -146,7 +140,7 @@ else:
 logger.info("Attempting to connect to the camera...")
 camera = None
 try:
-    env_filename = src / "lib" / "ASICamera2.dll"
+    env_filename = Path(__file__).parent / "camera" / "bin" / "ASICamera2.dll"
     os.environ["ZWO_ASI_LIB"] = str(env_filename)
     logger.debug(f"Successfully set ZWO_ASI_LIB environment variable:{env_filename}")
     camera = connect_camera(str(env_filename))
@@ -246,9 +240,7 @@ try:
         if len(recent_pts) > 2:
             try:
                 result = west_angle(recent_pts, recent_timestamps)
-                robust_angle, vectorYX = (
-                    result  # pyright: ignore[reportGeneralTypeIssues]
-                )
+                robust_angle, vectorYX = result  # pyright: ignore[reportGeneralTypeIssues]
             except (ValueError, TypeError, RuntimeError) as e:
                 logger.warning(f"Error calculating robust west angle: {e}")
         else:
