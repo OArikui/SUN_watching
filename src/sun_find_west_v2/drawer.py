@@ -531,7 +531,7 @@ if __name__ == "__main__":
                 sys.path.insert(0, str(project_root))
 
             try:
-                from lib.RANSAC import calculate_west_angle_robust as west_angle
+                from RANSAC import calculate_west_angle_robust as west_angle
             except ImportError:
                 try:
                     from RANSAC import calculate_west_angle_robust as west_angle

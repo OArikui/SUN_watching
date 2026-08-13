@@ -83,26 +83,24 @@ try:
     import numpy as np
     import zwoasi as asi  # pyright: ignore[reportMissingImports]
     from jsonschema import ValidationError, validate
+
 except ImportError:
     logger.error("Failed to import third-party modules.")
     logger.error(traceback.format_exc())
     raise
 else:
     logger.info("Third-party modules imported successfully.")
+    
+from utils import get_parents
 
-# 階層エラー対策 (パスの自動追加)
-current_dir = Path(__file__).resolve().parent
-project_root = current_dir
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
-logger.debug(f"Appended project root to system path:{project_root}")
-
+src=get_parents(__file__,point="SRC")
 try:
-    from lib import drawer
-    from lib.camera_utils import connect_camera
-    from lib.drawer import Visualizer
-    from lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2
-    from lib.RANSAC import calculate_west_angle_robust as west_angle
+    import drawer
+    from camera_utils import connect_camera
+    from drawer import Visualizer
+    from RANSAC import calculate_west_angle_robust as west_angle
+
+    from src.lib.MIN2ver2 import MIN2_ignore_sunspots as MIN2
 except ImportError:
     logger.error("Failed to import custom modules.")
     logger.error(traceback.format_exc())
@@ -148,7 +146,7 @@ else:
 logger.info("Attempting to connect to the camera...")
 camera = None
 try:
-    env_filename = project_root / "lib" / "ASICamera2.dll"
+    env_filename = src / "lib" / "ASICamera2.dll"
     os.environ["ZWO_ASI_LIB"] = str(env_filename)
     logger.debug(f"Successfully set ZWO_ASI_LIB environment variable:{env_filename}")
     camera = connect_camera(str(env_filename))
