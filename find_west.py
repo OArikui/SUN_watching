@@ -231,7 +231,7 @@ try:
 
         # 計算処理
         try:
-            cx, cy, r = MIN2(img)
+            (cx, cy), r = MIN2(img)
         except Exception as e:  # TODO:MIN2独自のERRORを作製,整理
             logger.warning(f"MIN2 processing error: {e}")
             dropped_frames += 1
