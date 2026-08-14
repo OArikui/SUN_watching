@@ -1,4 +1,4 @@
-print("Booting up the system…")
+﻿print("Booting up the system…")
 print("Setting up logger…")
 import datetime
 import logging
@@ -79,7 +79,7 @@ else:
 try:
     import cv2
     import numpy as np
-    import zwoasi as asi  # pyright: ignore[reportMissingImports]
+    import zwoasi as asi
     from jsonschema import ValidationError, validate
 
 except ImportError:
@@ -89,13 +89,22 @@ except ImportError:
 else:
     logger.info("Third-party modules imported successfully.")
 
+current = Path(__file__).resolve()
+
+# current.parent から最上階までループ
+for parent in [current.parent, *current.parents]:
+    if parent.name == "sun_find_west_v2":
+        parent_path = str(parent)
+        sys.path.append(parent_path)
+        break
+
 try:
-    import drawer
-    from camera_utils import connect_camera
-    from drawer import Visualizer
-    from MIN2ver2 import MIN2_ignore_sunspots as MIN2
-    from RANSAC import calculate_west_angle_robust as west_angle
-except ImportError:
+    from camera.controller import connect_camera
+    from core import drawer
+    from core.drawer import Visualizer
+    from core.MIN2ver2 import MIN2_ignore_sunspots as MIN2
+    from core.ransac import calculate_west_angle_robust as west_angle
+except ImportError as e:
     logger.error("Failed to import custom modules.")
     logger.error(traceback.format_exc())
     cancel_process()
@@ -140,10 +149,10 @@ else:
 logger.info("Attempting to connect to the camera...")
 camera = None
 try:
-    env_filename = Path(__file__).parent / "camera" / "bin" / "ASICamera2.dll"
-    os.environ["ZWO_ASI_LIB"] = str(env_filename)
+    env_filename = str(Path(parent_path) / "camera" / "bin" / "ASICamera2.dll")
+    os.environ["ZWO_ASI_LIB"] = env_filename
     logger.debug(f"Successfully set ZWO_ASI_LIB environment variable:{env_filename}")
-    camera = connect_camera(str(env_filename))
+    camera = connect_camera(env_filename)
 except KeyboardInterrupt:
     logger.info("Connection wait interrupted by user.")
     cancel_process()
