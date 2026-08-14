@@ -79,9 +79,7 @@ try:
 except:
 	logger.warn("__failed loading default_config")
 
-
-default_outline=json_loader(OUTLINE_JSON_PARH)
-def industrial(config_json:dict,default_json:dict,default_outline_json:dict)->dict:
+def industrial(config:dict,default_config:dict,default_outline_json:dict)->dict:
 	"no desc,no empty"
 	buried_no_desc={}
 
@@ -112,3 +110,9 @@ def industrial(config_json:dict,default_json:dict,default_outline_json:dict)->di
 			data_h1[hhk]=data_h2
 		buried_no_desc[hk]=data_h1
 	return buried_no_desc
+
+config=gem_config_json(CONFIG_TEXT_PATH,CONFIG_JSON_PATH)
+default=json_loader(DEFAULT_JSON_PATH)
+outline=json_loader(OUTLINE_JSON_PARH)
+
+parameter=industrial(config,default,outline)

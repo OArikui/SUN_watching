@@ -28,6 +28,8 @@ def json_saver(data: dict, filepath: Path) -> dict:
         with filepath.open("w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
 
+        sha256_file(filepath)
+
         logger.info(f"JSON saved successfully: {filepath}")
         return data
     except Exception:
