@@ -77,6 +77,11 @@ try:
 	logger.info("__sucessful default_config")
 except:
 	logger.warn("__failed loading default_config")
+
+no_desc={}
+
+for hk,hv in :
+
 # part3 if saving or loading failed,suggesting func1 to user(or error and finish process)
 
 # part3 else styling parameters as a argument

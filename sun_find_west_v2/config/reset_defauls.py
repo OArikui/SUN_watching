@@ -58,7 +58,7 @@ def reset_text(jsonpath: Path, textpath: Path) -> str:
                 v = str(v)
                 if len(v) < 5:
                     v += " " * (5 - len(v))
-                txt += f"{k} : {v}  \\{d}\n"
+                txt += f"{k} : {v}  /{d}\n"
 
     if not textpath.parent.exists():
         textpath.parent.mkdir(parents=True, exist_ok=True)
@@ -70,12 +70,28 @@ def reset_text(jsonpath: Path, textpath: Path) -> str:
     return txt
 
 
-DEFAULT_JSON_PATH = Path(
-    "E:/projects/SUN_watching/sun_find_west_v2/config/defaults/default_config.json"
-)
-DEFAULT_TEXT_PATH = Path(
-    "E:/projects/SUN_watching/sun_find_west_v2/config/defaults/default_config.txt"
-)
-SCHEMA_JSON_PARH = Path(
-    "E:/projects/SUN_watching/sun_find_west_v2/config/schemas/config_schema.json"
-)
+def generate_outlines(outlinepath: Path, defaultpath: Path) -> dict:
+    "generate outlines based on default json"
+    data = utils_json.json_loader(defaultpath)
+
+    outline = {}
+
+    for hk, hv in data.items():
+        ls_h2 = {}
+        for hhk, hhv in hv.items():
+            ls_h2[hhk] = list(hhv.keys())
+        outline[hk] = ls_h2
+
+    return utils_json.json_saver(data=outline, filepath=outlinepath)
+
+
+CONFIG_TEXT_PATH = Path("config/config/config.txt")
+CONFIG_JSON_PATH = Path("config/config/config.json")
+DEFAULT_JSON_PATH = Path("config/defaults/default_config.json")
+OUTLINE_JSON_PARH = Path("config/defaults/default_outline.json")
+CONFIG_SCHEMA_PATH = Path("config/schemas/config_schema.json")
+print("OUTLINE_JSON_PARH =", OUTLINE_JSON_PARH.resolve())
+
+reset_json(DEFAULT_JSON_PATH, CONFIG_SCHEMA_PATH)
+reset_text(DEFAULT_JSON_PATH, CONFIG_TEXT_PATH)
+generate_outlines(OUTLINE_JSON_PARH, DEFAULT_JSON_PATH)
