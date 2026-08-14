@@ -57,9 +57,6 @@ def gem_config_json(textpath: Path, jsonpath: Path)->dict:
 			data_h2={}
 	return json_saver(data=data_h1,jsonpath=jsonpath)
 
-# func1 setting the parameter with GUI
-
-# part2 saving parameter json from txtfile and load the json.(if not __name__=="__main__")
 try:
 	data=gem_config_json(CONFIG_TEXT_PATH,CONFIG_JSON_PATH)
 	logger.info("__sucessful jenelate json from text")
@@ -115,8 +112,3 @@ def industrial(config_json:dict,default_json:dict,default_outline_json:dict)->di
 			data_h1[hhk]=data_h2
 		buried_no_desc[hk]=data_h1
 	return buried_no_desc
-# part3 if saving or loading failed,suggesting func1 to user(or error and finish process)
-
-# part3 else styling parameters as a argument
-
-# (find_west:from find_west_setting import parameters)
