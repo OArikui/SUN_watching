@@ -12,6 +12,8 @@ if GUISET:
 
 logger = logging.getLogger(__name__)
 
+COMFIG_ROOT=Path(__file__).parent
+
 CONFIG_TEXT_PATH=Path("config/config/config.txt")
 CONFIG_JSON_PATH=Path("config/config/config.txt")
 DEFAULT_JSON_PATH=Path("config/defaults/default_config.json")
@@ -67,9 +69,11 @@ except (KeyError,ValueError):
 
 try:
 	logger.info("__loading config from json")
-	data=json_loader(CONFIG_JSON_PATH)
+	config=json_loader(CONFIG_JSON_PATH)
 except:
 	logger.error("__failed loading config from json")
+
+
 #   for bury the empty,prepare defult json
 
 try:
@@ -78,10 +82,39 @@ try:
 except:
 	logger.warn("__failed loading default_config")
 
-no_desc={}
 
-for hk,hv in :
+default_outline=json_loader(OUTLINE_JSON_PARH)
+def industrial(config_json:dict,default_json:dict,default_outline_json:dict)->dict:
+	"no desc,no empty"
+	buried_no_desc={}
 
+	for hk,hv in default_outline.items():
+		try:
+			parent_config=config[hk]
+		except KeyError:
+			logger.debug(f"__found not {hk},use default value")
+			buried_no_desc[hk]=default_config[hk]
+			continue
+
+		data_h1={}
+		for hhk,hhv in hv.items():
+			try:
+				current_config=parent_config[hhk]
+			except KeyError:
+				logger.debug(f"__found not {hk}>{hhk},use default value")
+				data_h1[hhk]=default_config[hk][hhk]
+				continue
+			data_h2={}
+			for k in hhv:
+				if k.endswith("-desc"):
+					continue
+				try:
+					data_h2[k]=current_config[k]
+				except:
+					data_h2[k]=default_config[hk][hkk][k]
+			data_h1[hhk]=data_h2
+		buried_no_desc[hk]=data_h1
+	return buried_no_desc
 # part3 if saving or loading failed,suggesting func1 to user(or error and finish process)
 
 # part3 else styling parameters as a argument
