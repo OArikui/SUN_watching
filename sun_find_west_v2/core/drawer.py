@@ -284,6 +284,55 @@ class Visualizer:
             tri_color="purple",
         )
 
+        self.sliders = {}
+
+    def add_slider(
+        self,
+        name: str,
+        key: int,
+        valmin: float,
+        valmax: float,
+        valinit: float,
+        on_change: callable = None,
+        label: str = None,
+        valfmt: str = None,  # 表示フォーマット (例: "%1.0f", "%1.2f")
+    ) -> Slider:
+        num_sliders = len(self.sliders)
+
+        bottom_margin = 0.15 + (num_sliders + 1) * 0.05
+        self.fig.subplots_adjust(bottom=bottom_margin)
+
+        y_pos = 0.05 + (num_sliders * 0.04)
+        ax_slider = self.fig.add_axes([0.2, y_pos, 0.6, 0.03])
+
+        user_label = label if label is not None else name
+        kwargs = {}
+        if valfmt is not None:
+            kwargs["valfmt"] = valfmt
+
+        slider = Slider(
+            ax_slider, user_label, valmin, valmax, valinit=valinit, **kwargs
+        )
+
+        if on_change is not None:
+            slider.on_changed(on_change)
+
+        self.sliders[name] = slider
+        return slider
+
+    def get_slider_val(self, name: str) -> float:
+        """指定した名前のスライダーの現在の値を取得する"""
+        if name in self.sliders:
+            return self.sliders[name].val
+        raise KeyError(f"__ENGSlider '{name}' は存在しません。")
+
+    def set_slider_val(self, name: str, val: float) -> None:
+        """指定した名前のスライダーの値をプログラムから更新する"""
+        if name in self.sliders:
+            self.sliders[name].set_val(val)
+        else:
+            raise KeyError(f"__ENGSlider '{name}' は存在しません。")
+
     def update(
         self,
         img,
