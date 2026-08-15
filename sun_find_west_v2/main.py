@@ -117,7 +117,6 @@ else:
 # analyzing
 acceptable = 1  # 許容誤差(degree 0~)
 buf_lookback = 100  # 前何フレームを軌道推定に使うか (frame 2~)
-target_fps = 30
 
 # interface
 grid_param = {
@@ -268,7 +267,6 @@ try:
                 robust_angle,
                 frame_idx=frame_count,
                 total_frames="∞",
-                target_fps=target_fps,
             )
 
         except Exception as e:  # noqa: BLE001 :visualizerのerrorは多岐にわたる

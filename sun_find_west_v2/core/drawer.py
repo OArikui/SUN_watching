@@ -294,7 +294,6 @@ class Visualizer:
         robust_angle,
         frame_idx=None,
         total_frames=None,
-        target_fps=None,
     ):
         """計算結果を受け取り、画面を更新する"""
         self.ax_img.set_data(img)
@@ -346,7 +345,6 @@ class Visualizer:
             f"Frames     : {frame_idx} / {total_frames}",
             f"Traj Points: {len(recent_pts)}",
             f"Actual FPS : {actual_fps:7.2f}",
-            f"Target FPS : {target_fps:7.2f}",
         ]
         self.info_text.set_text("\n".join(text_lines))
         # 描画を反映
