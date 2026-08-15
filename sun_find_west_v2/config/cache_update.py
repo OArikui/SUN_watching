@@ -80,7 +80,7 @@ def generate_outlinesJ_defaultJ(outlinepath: Path, defaultpath: Path) -> dict:
     for hk, hv in data.items():
         ls_h2 = {}
         for hhk, hhv in hv.items():
-            ls_h2[hhk] = list(hhv.keys())
+            ls_h2[hhk] = [k for k in hhv.keys() if not k.endswith("-desc")]
         outline[hk] = ls_h2
 
     return json_saver(outline, outlinepath)
@@ -91,7 +91,7 @@ def generate_configJ_configT(configpath: Path, textpath: Path) -> dict:
         logger.error(f"file not found:{str(textpath)}")
 
     with open(textpath, "r", encoding="utf-8") as f:
-        text = f.read().split("\n")
+        text = f.read().splitlines()
 
     stash = {}
     data_h1 = {}
@@ -99,14 +99,10 @@ def generate_configJ_configT(configpath: Path, textpath: Path) -> dict:
     h1 = ""
     h2 = ""
     for i, line in enumerate(text):
-        if ":" in line[:3]:
-            cleaned = ""
-            for c in line:
-                if c == " ":
-                    continue
-                cleaned += c
-            k, vd = tuple(cleaned.split(":"))
-            v, d = tuple(vd.split("/"))
+        if ":" in line:
+            kv, d = tuple(line.split("/"))
+            kv = kv.strip()
+            k, v = tuple(kv.split(":"))
             stash[k] = v
             stash[k + "-desc"] = d
         if line[:3] == "---":
@@ -119,11 +115,11 @@ def generate_configJ_configT(configpath: Path, textpath: Path) -> dict:
                 data_h1[h1] = data_h2
             h1 = line.split("===")[1]
             data_h2 = {}
-        if i == len(text) - 1:
-            if stash:
-                data_h2[h2] = stash
-            if data_h2:
-                data_h1[h1] = data_h2
+
+    if stash:
+        data_h2[h2] = stash
+    if data_h2:
+        data_h1[h1] = data_h2
     return json_saver(data=data_h1, jsonpath=configpath)
 
 

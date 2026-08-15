@@ -77,8 +77,6 @@ def industrial(config: dict, default_config: dict, default_outline: dict) -> dic
                 continue
             data_h2 = {}
             for k in hhv:
-                if k.endswith("-desc"):
-                    continue
                 getted = current_config.get(k, None)
                 if getted != None:
                     data_h2[k] = getted
