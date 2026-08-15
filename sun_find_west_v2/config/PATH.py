@@ -1,0 +1,5 @@
+CONFIG_TEXT_PATH = Path("config/config.txt")
+CONFIG_JSON_PATH = Path("cache/config.json")
+DEFAULT_JSON_PATH = Path("cache/default_config.json")
+OUTLINE_JSON_PARH = Path("cache/default_outline.json")
+CONFIG_SCHEMA_PATH = Path("schemas/config_schema.json")

@@ -3,9 +3,18 @@ import logging
 import datetime
 from pathlib import Path
 
-GUISET = False
+"""GUISET = False
 if GUISET:
-    logfile = f"logs/config_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"
+"""
+if __name__ == "__main__":
+    COFIG_ROOT = Path(__file__).parent.resolve()
+    sys.path.append(CONFiG_ROOT)
+
+    logfile = Path(f"logs/config_{datetime.datetime.now().strftime('%Y-%m-%d')}.log")
+
+    if not logfile.parent.exists():
+        logfile.parent.mkdir(parents=True, exist_ok=True)
+        logger.debug(f"Created directory: {textpath.parent}")
 
     logging.basicConfig(
         level=logging.INFO,
@@ -15,14 +24,6 @@ if GUISET:
     )
 
 logger = logging.getLogger(__name__)
-
-COMFIG_ROOT = Path(__file__).parent
-
-CONFIG_TEXT_PATH = Path("config/config/config.txt")
-CONFIG_JSON_PATH = Path("config/cache/config.json")
-DEFAULT_JSON_PATH = Path("config/cache/default_config.json")
-OUTLINE_JSON_PARH = Path("config/cache/default_outline.json")
-CONFIG_SCHEMA_PATH = Path("config/schemas/config_schema.json")
 
 from utils_json import json_saver, json_loader
 
