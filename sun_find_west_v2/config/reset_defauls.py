@@ -52,7 +52,7 @@ def reset_text(jsonpath: Path, textpath: Path) -> str:
                 if k.endswith("-desc"):
                     continue
                 desc_key = k + "-desc"
-                d = hhv[desc_key].split(":")[1]
+                d = hhv[desc_key]
                 if len(k) < 10:
                     k += " " * (10 - len(k))
                 v = str(v)
@@ -86,10 +86,10 @@ def generate_outlines(outlinepath: Path, defaultpath: Path) -> dict:
 
 
 CONFIG_TEXT_PATH = Path("config/config/config.txt")
-CONFIG_JSON_PATH = Path("config/config/config.json")
-DEFAULT_JSON_PATH = Path("config/defaults/default_config.json")
-OUTLINE_JSON_PARH = Path("config/defaults/default_outline.json")
-CONFIG_SCHEMA_PATH = Path("config/schemas/config_schema.json")
+CONFIG_JSON_PATH = Path("config/cache/config.json")
+DEFAULT_JSON_PATH = Path("config/cache/default_config.json")
+OUTLINE_JSON_PARH = Path("config/cache/default_outline.json")
+CONFIG_SCHEMA_PATH = Path("config/schema/config_schema.json")
 print("OUTLINE_JSON_PARH =", OUTLINE_JSON_PARH.resolve())
 
 reset_json(DEFAULT_JSON_PATH, CONFIG_SCHEMA_PATH)

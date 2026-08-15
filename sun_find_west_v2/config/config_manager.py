@@ -18,11 +18,11 @@ logger = logging.getLogger(__name__)
 
 COMFIG_ROOT = Path(__file__).parent
 
-CONFIG_TEXT_PATH=Path("config/config/config.txt")
-CONFIG_JSON_PATH=Path("config/config/config.txt")
-DEFAULT_JSON_PATH=Path("config/defaults/default_config.json")
-OUTLINE_JSON_PARH=Path("config/defaults/default_outline.json")
-CONFIG_SCHEMA_PATH=Path("config/schemas/config_schema.json")
+CONFIG_TEXT_PATH = Path("config/config/config.txt")
+CONFIG_JSON_PATH = Path("config/cache/config.json")
+DEFAULT_JSON_PATH = Path("config/cache/default_config.json")
+OUTLINE_JSON_PARH = Path("config/cache/default_outline.json")
+CONFIG_SCHEMA_PATH = Path("config/schemas/config_schema.json")
 
 from utils_json import json_saver, json_loader
 
