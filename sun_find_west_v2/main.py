@@ -80,7 +80,6 @@ try:
     import cv2
     import numpy as np
     import zwoasi as asi
-    from jsonschema import ValidationError, validate
 
 except ImportError:
     logger.error("Failed to import third-party modules.")
@@ -99,7 +98,7 @@ for parent in [current.parent, *current.parents]:
         break
 
 try:
-    from camera.controller import connect_camera
+    from camera.controller import connect_camera, apply_camera_config
     from core import drawer
     from core.drawer import Visualizer
     from core.MIN2ver2 import MIN2_ignore_sunspots as MIN2
@@ -111,39 +110,23 @@ except ImportError as e:
 else:
     logger.debug("All custom modules imported successfully.")
 
-
-# ==================
-# パラメータ設定
-# analyzing
-acceptable = 1  # 許容誤差(degree 0~)
-buf_lookback = 100  # 前何フレームを軌道推定に使うか (frame 2~)
-
-# interface
-grid_param = {
-    "grid_color": "#FFFFFF",  # grid_color(hex16)
-    "grid_alpha": 0.4,  # grid_alpha(0.0-1.0)
-    "grid_ny": 2,  # splitting y (2~)
-    "grid_nx": 4,  # splitting x (2~)
-    "grid_r": 300,  # center guide circle radian(pix)
-}
-
-# =====================
-
-
-# parameter light 結集
-logger.info("Validating visualizer schema parameters.")
 try:
-    viz_init_params = {"constructor": grid_param}
-    validate(instance=viz_init_params, schema=drawer.get_visualizer_schema())
-except ValidationError as e:
-    logger.error("visualizer parameters validation failed")
-    logger.error("Validation error: %s", e)
+    print("__loading parameter...")
+    from config_manager import parameter
+
+    camera_param = parameter["Camera"]
+    main_param = parameter["sun_find_west_v2"]
+    visualizer_constract_param = main_param["Visualizer"]
+    visualizer_constract_param["acceptable"] = main_param["Analyzer"]["acceptable"]
+
+except RuntimeError as e:
+    logger.exception("__filed to load parameter")
     cancel_process()
-else:
-    logger.debug("Visualizer parameters validated successfully.")
+logger.info("__sucessful __loading parameter")
+
+print("__setting parameter...")
 
 # zwoasiのインポートと環境変数設定
-
 
 logger.info("Attempting to connect to the camera...")
 camera = None
@@ -162,27 +145,11 @@ else:
     logger.info("Successfully connected to the camera.")
 
 if camera is not None:
-    # プロジェクト特有のカメラ設定
-    try:
-        camera_properties = {
-            "exposure": 30000,
-            "gain": 150,
-            "band_width": 40,
-            "image_type": asi.ASI_IMG_RAW8,
-        }
-        camera.set_control_value(asi.ASI_EXPOSURE, camera_properties["exposure"])
-        camera.set_control_value(asi.ASI_GAIN, camera_properties["gain"])
-        camera.set_control_value(
-            asi.ASI_BANDWIDTHOVERLOAD, camera_properties["band_width"]
-        )
-        camera.set_image_type(camera_properties["image_type"])
-        logger.debug(
-            f"Camera properties configured successfully:\n{pformat(camera_properties)}"
-        )
-    except asi.ZWO_Error as e:
-        logger.error(f"Failed to configure camera properties: {e}")
-        cancel_process(camera=camera)
+    flatten_param = {}
+    for hhv in camera_param.values():
+        flatten_param.update(hhv)
 
+    apply_camera_config(camera, flatten_param)
     logger.info("Starting video capture...")
     try:
         camera.start_video_capture()
@@ -193,6 +160,9 @@ if camera is not None:
     except asi.ZWO_Error as e:
         logger.critical(f"Failed to start video capture or retrieve ROI: {e}")
         cancel_process(camera=camera)
+
+# 変数読み込み
+buf_lookback = main_param["buf_lookback"]
 
 # 変数初期化
 logger.debug("Initializing visualization variables...")
