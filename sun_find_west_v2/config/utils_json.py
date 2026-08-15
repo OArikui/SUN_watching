@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
-from PATH import pathes
+from pathes import pathes
 
 globals().update(pathes)
 
@@ -64,5 +64,5 @@ def sha256_valid(filepath: Path) -> bool:
             expected = f.readlines()[-1]
     else:
         expected = None
-        logger.debug(f"__hash not found :{path}")
+        logger.debug(f"__hash not found :{Path}")
     return actual == expected

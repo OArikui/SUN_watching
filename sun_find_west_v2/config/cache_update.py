@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 from utils_json import sha256_file, json_loader, json_saver
-from PATH import pathes
+from pathes import pathes
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ def generate_outlinesJ_defaultJ(outlinepath: Path, defaultpath: Path) -> dict:
 
 def generate_configJ_configT(configpath: Path, textpath: Path) -> dict:
     if not textpath.exists():
-        logger.error(f"file not found:{str(textpath)}")
+        logger.error(f"file not found:{textpath!s}")
 
     with open(textpath, "r", encoding="utf-8") as f:
         text = f.read().splitlines()
