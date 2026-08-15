@@ -127,14 +127,20 @@ def generate_configJ_configT(configpath: Path, textpath: Path) -> dict:
     return json_saver(data=data_h1, filepath=configpath)
 
 
-def when_updated_schemaJ(pathes:dict,reset_userset:bool)->dict:
-    locals()+=pathes
-    sha256_file(CONFIG_SCHEMA_PATH)
-    generate_defaultJ_schemaJ(DEFAULT_JSON_PATH, CONFIG_SCHEMA_PATH)
-    generate_outlinesJ_defaultJ(OUTLINE_JSON_PARH, DEFAULT_JSON_PATH)
+def when_updated_schemaJ(pathes: dict, reset_userset: bool) -> dict:
+    sha256_file(pathes["CONFIG_SCHEMA_PATH"])
+    generate_defaultJ_schemaJ(pathes["DEFAULT_JSON_PATH"], pathes["CONFIG_SCHEMA_PATH"])
+    generate_outlinesJ_defaultJ(
+        pathes["OUTLINE_JSON_PARH"], pathes["DEFAULT_JSON_PATH"]
+    )
     logger.info("__sucessful update default&outline jsons")
     if reset_userset:
         logger.info("__reseting user setting")
-        generate_configT_defaultJ(CONFIG_TEXT_PATH,DEFAULT_JSON_PATH)
+        generate_configT_defaultJ(
+            pathes["CONFIG_TEXT_PATH"], pathes["DEFAULT_JSON_PATH"]
+        )
         logger.info("__sucessful reset user setting")
-    return json_loader(CONFIG_SCHEMA_PATH)
+    return json_loader(pathes["CONFIG_SCHEMA_PATH"])
+
+
+when_updated_schemaJ(pathes, True)

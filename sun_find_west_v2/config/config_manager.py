@@ -35,21 +35,24 @@ logger = logging.getLogger(__name__)
 from PATH import path
 from utils_json import json_saver, json_loader, sha256_valid
 
-globals()+=pathes
+globals().update(pathes)
 
-def file_update_check(pathes:dict,update_basedon_textconfig:bool)->bool:
-    nodiff=0
+
+def file_update_check(pathes: dict, update_basedon_textconfig: bool) -> bool:
+    nodiff = 0
     for filename, filepath in pathes.items():
         same = sha256_valid(filepath)
         if same:
-            nodiff+=1
+            nodiff += 1
         else:
             logger.debug(f"file is changed: {filepath}")
 
         if filename == "CONFIG_JSON_PATH" and update_basedon_textconfig:
             from cache_update import generate_configJ_configT
-            generate_configJ_configT(CONFIG_JSON_PATH,CONFIG_TEXT_PATH)
-    return nodiff==len(pathes)
+
+            generate_configJ_configT(CONFIG_JSON_PATH, CONFIG_TEXT_PATH)
+    return nodiff == len(pathes)
+
 
 def industrial(config: dict, default_config: dict, default_outline: dict) -> dict:
     "no desc,no empty"
@@ -112,6 +115,6 @@ try:
 except:
     logger.warn("__failed loading default_config")
 
-if "__main__"==__name__:
-    file_update_check(pathes,True)
+if "__main__" == __name__:
+    file_update_check(pathes, True)
 parameter = industrial(config, default_config, outline)

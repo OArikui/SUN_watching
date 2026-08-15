@@ -7,7 +7,9 @@ import datetime
 logger = logging.getLogger(__name__)
 
 from PATH import pathes
-globals()+=pathes
+
+globals().update(pathes)
+
 
 def json_loader(jsonpath: Path) -> dict:
     try:
