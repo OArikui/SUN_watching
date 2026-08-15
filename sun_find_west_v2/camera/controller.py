@@ -101,12 +101,27 @@ def connect_camera(dll_path):
         raise
 
 
-# 画像フォーマット文字列とzwoasi定数のマッピング
 IMG_TYPE_MAP = {
     "RAW8": asi.ASI_IMG_RAW8,
     "RAW16": asi.ASI_IMG_RAW16,
     "RGB24": asi.ASI_IMG_RGB24,
     "Y8": asi.ASI_IMG_Y8,
+}
+
+control_map = {
+    "exposure": asi.ASI_EXPOSURE,
+    "gain": asi.ASI_GAIN,
+    "offset": asi.ASI_OFFSET,
+    "gamma": asi.ASI_GAMMA,
+    "band_width": asi.ASI_BANDWIDTHOVERLOAD,
+    "high_speed_mode": asi.ASI_HIGH_SPEED_MODE,
+    "hardware_bin": asi.ASI_HARDWARE_BIN,
+    "flip": asi.ASI_FLIP,
+    "auto_max_gain": asi.ASI_AUTO_MAX_GAIN,
+    "auto_max_exp": asi.ASI_AUTO_MAX_EXP,
+    "auto_target_brightness": asi.ASI_AUTO_TARGET_BRIGHTNESS,
+    "target_temp": asi.ASI_TARGET_TEMP,
+    "cooler_on": asi.ASI_COOLER_ON,
 }
 
 
@@ -132,22 +147,6 @@ def apply_camera_config(cam: asi.Camera, config: dict):
 
     available_controls = cam.get_controls()
 
-    control_map = {
-        "exposure": asi.ASI_EXPOSURE,
-        "gain": asi.ASI_GAIN,
-        "offset": asi.ASI_OFFSET,
-        "gamma": asi.ASI_GAMMA,
-        "band_width": asi.ASI_BANDWIDTHOVERLOAD,
-        "high_speed_mode": asi.ASI_HIGH_SPEED_MODE,
-        "hardware_bin": asi.ASI_HARDWARE_BIN,
-        "flip": asi.ASI_FLIP,
-        "auto_max_gain": asi.ASI_AUTO_MAX_GAIN,
-        "auto_max_exp": asi.ASI_AUTO_MAX_EXP,
-        "auto_target_brightness": asi.ASI_AUTO_TARGET_BRIGHTNESS,
-        "target_temp": asi.ASI_TARGET_TEMP,
-        "cooler_on": asi.ASI_COOLER_ON,
-    }
-
     for key, control_type in control_map.items():
         if key in config:
             if control_type in available_controls:
@@ -171,6 +170,35 @@ def apply_camera_config(cam: asi.Camera, config: dict):
                 pass
 
     logger.info("__sucessful set camera config")
+
+
+def handle_config(cam: asi.Camera, key: int, val: float) -> None:
+    """
+    - 利用可能な変数 -
+    ASI_EXPOSURE
+    ASI_GAIN
+    ASI_OFFSET
+    ASI_BRIGHTNESS
+    ASI_GAMMA
+    ASI_WB_R
+    ASI_WB_B
+    ASI_BANDWIDTHOVERLOAD
+    ASI_HIGH_SPEED_MODE
+    ASI_HARDWARE_BIN
+    ASI_MONO_BIN
+    ASI_FLIP
+    ASI_AUTO_MAX_GAIN
+    ASI_AUTO_MAX_EXP
+    ASI_AUTO_TARGET_BRIGHTNESS
+    ASI_TARGET_TEMP
+    ASI_COOLER_ON
+    ASI_FAN_ON
+    ASI_ANTI_DEW_HEATER"""
+    try:
+        camset_control_value(key, int(val))
+        logger.debug(f"{key} updated to: {int(val)}")
+    except asi.ZWO_Error as e:
+        logger.error(f"Failed to update {key}: {e}")
 
 
 logger.info("--- finish ---")

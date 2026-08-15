@@ -98,7 +98,7 @@ for parent in [current.parent, *current.parents]:
         break
 
 try:
-    from camera.controller import connect_camera, apply_camera_config
+    from camera.controller import connect_camera, apply_camera_config, handle_config
     from core import drawer
     from core.drawer import Visualizer
     from core.MIN2ver2 import MIN2_ignore_sunspots as MIN2
@@ -126,7 +126,6 @@ logger.info("__sucessful __loading parameter")
 
 print("__setting parameter...")
 
-# zwoasiのインポートと環境変数設定
 
 logger.info("Attempting to connect to the camera...")
 camera = None
@@ -185,6 +184,26 @@ try:
 
     logger.info(
         "Starting real-time visualization. Press 'q' or close the window to exit."
+    )
+
+    viz.add_slider(
+        name="gain",
+        label="Gain (dB)",
+        valmin=0,
+        valmax=300,
+        valinit=150,
+        valfmt="%1.0f",  # 整数表示
+        on_change=lambda val: handle_config(camera, asi.ASI_GAIN, val),
+    )
+
+    viz.add_slider(
+        name="exposure",
+        label="Exposure (µs=1e-6s)",
+        valmin=1000,
+        valmax=100000,
+        valinit=30000,
+        valfmt="%1.0f",
+        on_change=lambda val: handle_config(camera, asi.ASI_EXPOSURE, val),
     )
 
     while True:
