@@ -101,4 +101,76 @@ def connect_camera(dll_path):
         raise
 
 
+# 画像フォーマット文字列とzwoasi定数のマッピング
+IMG_TYPE_MAP = {
+    "RAW8": asi.ASI_IMG_RAW8,
+    "RAW16": asi.ASI_IMG_RAW16,
+    "RGB24": asi.ASI_IMG_RGB24,
+    "Y8": asi.ASI_IMG_Y8,
+}
+
+
+def apply_camera_config(cam: asi.Camera, config: dict):
+    """ZWO ASIカメラの各種パラメータを一括で設定する関数
+
+    cam: 初期化済みの zwoasi.Camera インスタンス
+    config: パラメータ設定辞書
+    """
+    props = cam.get_camera_property()
+
+    width = config.get("width", "max")
+    if width == "max":
+        width = props["MaxWidth"]
+    height = config.get("height", "max")
+    if height == "max":
+        height = props["MaxHeight"]
+    bins = config.get("bins")
+    img_type_str = str(config.get("img_type", "RAW8")).upper()
+    img_type = IMG_TYPE_MAP.get(img_type_str, asi.ASI_IMG_RAW8)
+
+    cam.set_roi_format(width=width, height=height, bins=bins, image_type=img_type)
+
+    available_controls = cam.get_controls()
+
+    control_map = {
+        "exposure": asi.ASI_EXPOSURE,
+        "gain": asi.ASI_GAIN,
+        "offset": asi.ASI_OFFSET,
+        "gamma": asi.ASI_GAMMA,
+        "band_width": asi.ASI_BANDWIDTHOVERLOAD,
+        "high_speed_mode": asi.ASI_HIGH_SPEED_MODE,
+        "hardware_bin": asi.ASI_HARDWARE_BIN,
+        "flip": asi.ASI_FLIP,
+        "auto_max_gain": asi.ASI_AUTO_MAX_GAIN,
+        "auto_max_exp": asi.ASI_AUTO_MAX_EXP,
+        "auto_target_brightness": asi.ASI_AUTO_TARGET_BRIGHTNESS,
+        "target_temp": asi.ASI_TARGET_TEMP,
+        "cooler_on": asi.ASI_COOLER_ON,
+    }
+
+    for key, control_type in control_map.items():
+        if key in config:
+            if control_type in available_controls:
+                try:
+                    val = config[key]
+                except KeyError:
+                    logger.warning(
+                        f"__ENG{key}が設定されていません。カメラの初期値を採用します。"
+                    )
+                    continue
+                if isinstance(val, bool):
+                    val = int(val)
+                try:
+                    cam.set_control_value(control_type, val)
+                except asi.ZWO_Error as e:
+                    logger.exception(
+                        f" __ENG{key} の設定に失敗しました (範囲外の値などの可能性)"
+                    )
+            else:
+                logger.warning(f"__ENGこのカメラは{key}に対応していません")
+                pass
+
+    logger.info("__sucessful set camera config")
+
+
 logger.info("--- finish ---")
