@@ -6,7 +6,7 @@ import utils_json
 logger = logging.getLogger(__name__)
 
 
-def reset_json(jsonpath: Path, schemapath: Path) -> dict:
+def generate_defaultJ_schemaJ(defaultpath: Path, schemapath: Path) -> dict:
     "reset to schema"
     schema = utils_json.json_loader(schemapath)
 
@@ -33,15 +33,15 @@ def reset_json(jsonpath: Path, schemapath: Path) -> dict:
         logger.error(f"_ENG_スキーマの解析中にエラーが発生しました: {e}")
         raise
 
-    utils_json.json_saver(data=data, filepath=jsonpath)
+    utils_json.json_saver(data=data, filepath=defaultpath)
 
     return data
 
 
-def reset_text(jsonpath: Path, textpath: Path) -> str:
+def generate_configT_defaultJ(configpath: Path, textpath: Path) -> str:
     "reset to default json"
 
-    data = utils_json.json_loader(jsonpath)
+    data = utils_json.json_loader(configpath)
 
     txt = ""
     for hk, hv in data.items():
@@ -70,7 +70,7 @@ def reset_text(jsonpath: Path, textpath: Path) -> str:
     return txt
 
 
-def generate_outlines(outlinepath: Path, defaultpath: Path) -> dict:
+def generate_outlinesJ_defaultJ(outlinepath: Path, defaultpath: Path) -> dict:
     "generate outlines based on default json"
     data = utils_json.json_loader(defaultpath)
 
@@ -85,12 +85,46 @@ def generate_outlines(outlinepath: Path, defaultpath: Path) -> dict:
     return utils_json.json_saver(data=outline, filepath=outlinepath)
 
 
-CONFIG_TEXT_PATH = Path("config/config/config.txt")
-CONFIG_JSON_PATH = Path("config/cache/config.json")
-DEFAULT_JSON_PATH = Path("config/cache/default_config.json")
-OUTLINE_JSON_PARH = Path("config/cache/default_outline.json")
-CONFIG_SCHEMA_PATH = Path("config/schema/config_schema.json")
-print("OUTLINE_JSON_PARH =", OUTLINE_JSON_PARH.resolve())
+def generate_configJ_configT(textpath: Path, configpath: Path) -> dict:
+    if not textpath.exists():
+        logger.error(f"file not found:{str(textpath)}")
+
+    with open(textpath, "r", encoding="utf-8") as f:
+        text = f.read().split("\n")
+
+    stash = {}
+    data_h1 = {}
+    data_h2 = {}
+    h1 = ""
+    h2 = ""
+    for i, line in enumerate(text):
+        if ":" in line[:3]:
+            cleaned = ""
+            for c in line:
+                if c == " ":
+                    continue
+                cleaned += c
+            k, vd = tuple(cleaned.split(":"))
+            v, d = tuple(vd.split("/"))
+            stash[k] = v
+            stash[k + "-desc"] = d
+        if line[:3] == "---":
+            if stash:
+                data_h2[h2] = stash
+            h2 = line.split("---")[1]
+            stash = {}
+        if line[:3] == "===":
+            if data_h2:
+                data_h1[h1] = data_h2
+            h1 = line.split("===")[1]
+            data_h2 = {}
+        if i == len(text) - 1:
+            if stash:
+                data_h2[h2] = stash
+            if data_h2:
+                data_h1[h1] = data_h2
+    return json_saver(data=data_h1, filepath=configpath)
+
 
 reset_json(DEFAULT_JSON_PATH, CONFIG_SCHEMA_PATH)
 reset_text(DEFAULT_JSON_PATH, CONFIG_TEXT_PATH)

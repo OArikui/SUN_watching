@@ -1,6 +1,7 @@
 # part1 importing modules
 import logging
 import datetime
+import sys
 from pathlib import Path
 
 """GUISET = False
@@ -25,48 +26,14 @@ if __name__ == "__main__":
 
 logger = logging.getLogger(__name__)
 
+from PATH import (
+    CONFIG_TEXT_PATH,
+    CONFIG_JSON_PATH,
+    DEFAULT_JSON_PATH,
+    OUTLINE_JSON_PARH,
+    CONFIG_SCHEMA_PATH,
+)
 from utils_json import json_saver, json_loader
-
-
-def gem_config_json(textpath: Path, jsonpath: Path) -> dict:
-    if not textpath.exists():
-        logger.error(f"file not found:{str(textpath)}")
-
-    with open(textpath, "r", encoding="utf-8") as f:
-        text = f.read().split("\n")
-
-    stash = {}
-    data_h1 = {}
-    data_h2 = {}
-    h1 = ""
-    h2 = ""
-    for i, line in enumerate(text):
-        if ":" in line[:3]:
-            cleaned = ""
-            for c in line:
-                if c == " ":
-                    continue
-                cleaned += c
-            k, vd = tuple(cleaned.split(":"))
-            v, d = tuple(vd.split("/"))
-            stash[k] = v
-            stash[k + "-desc"] = d
-        if line[:3] == "---":
-            if stash:
-                data_h2[h2] = stash
-            h2 = line.split("---")[1]
-            stash = {}
-        if line[:3] == "===":
-            if data_h2:
-                data_h1[h1] = data_h2
-            h1 = line.split("===")[1]
-            data_h2 = {}
-        if i == len(text) - 1:
-            if stash:
-                data_h2[h2] = stash
-            if data_h2:
-                data_h1[h1] = data_h2
-    return json_saver(data=data_h1, filepath=jsonpath)
 
 
 def industrial(config: dict, default_config: dict, default_outline: dict) -> dict:

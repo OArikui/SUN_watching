@@ -5,10 +5,18 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+from PATH import (
+    CONFIG_TEXT_PATH,
+    CONFIG_JSON_PATH,
+    DEFAULT_JSON_PATH,
+    OUTLINE_JSON_PARH,
+    CONFIG_SCHEMA_PATH,
+)
 
-def json_loader(filepath: Path) -> dict:
+
+def json_loader(jsonpath: Path) -> dict:
     try:
-        with open(filepath, "r", encoding="utf-8-sig") as f:
+        with open(jsonpath, "r", encoding="utf-8-sig") as f:
             return json.load(f)
     except json.JSONDecodeError:
         logger.exception("JSON format error")
@@ -18,22 +26,22 @@ def json_loader(filepath: Path) -> dict:
         raise
 
 
-def json_saver(data: dict, filepath: Path) -> dict:
-    logger.info(f"Saving JSON to {filepath}")
+def json_saver(data: dict, jsonpath: Path) -> dict:
+    logger.info(f"Saving JSON to {jsonpath}")
     try:
-        if not filepath.parent.exists():
-            filepath.parent.mkdir(parents=True, exist_ok=True)
-            logger.debug(f"Created directory: {filepath.parent}")
+        if not jsonpath.parent.exists():
+            jsonpath.parent.mkdir(parents=True, exist_ok=True)
+            logger.debug(f"Created directory: {jsonpath.parent}")
 
-        with filepath.open("w", encoding="utf-8") as f:
+        with jsonpath.open("w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
 
-        sha256_file(filepath)
+        sha256_file(jsonpath)
 
-        logger.info(f"JSON saved successfully: {filepath}")
+        logger.info(f"JSON saved successfully: {jsonpath}")
         return data
     except Exception:
-        logger.exception(f"Failed to save JSON: {filepath}")
+        logger.exception(f"Failed to save JSON: {jsonpath}")
         raise
 
 
