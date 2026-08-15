@@ -45,9 +45,9 @@ def reset_text(jsonpath: Path, textpath: Path) -> str:
 
     txt = ""
     for hk, hv in data.items():
-        txt += f"==={hk}===\n"
+        txt += f"\n==={hk}===\n"
         for hhk, hhv in hv.items():
-            txt += f"---{hhk}---\n"
+            txt += f"\n---{hhk}---\n"
             for k, v in hhv.items():
                 if k.endswith("-desc"):
                     continue
