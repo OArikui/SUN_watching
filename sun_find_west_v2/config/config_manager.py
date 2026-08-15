@@ -131,4 +131,3 @@ except:
 
 
 parameter = industrial(config, default_config, outline)
-print(parameter)

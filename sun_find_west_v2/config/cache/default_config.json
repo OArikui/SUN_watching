@@ -32,5 +32,21 @@
             "img_type": "RAW8",
             "img_type-desc": "img_type: 画像フォーマット (ASI432MMはモノクロ専用。高速解析はRAW8、高階調は12bit RAW16)"
         }
+    },
+    "Visualizer": {
+        "constractor": {
+            "acceptable": 1,
+            "acceptable-desc": "許容角度(degree)",
+            "grid_color": "#FFFFFF",
+            "grid_color-desc": "画像グリッドの色(hex)",
+            "grid_ny": 2,
+            "grid_ny-desc": "画像グリッドの縦分割数",
+            "grid_nx": 4,
+            "grid_nx-desc": "画像グリッドの横分割数",
+            "grid_r": 300,
+            "grid_r-desc": "中心円の半径(pixel)",
+            "grid_alpha": 0.4,
+            "grid_alpha-desc": "画像グリッドの透明度(alpha)"
+        }
     }
 }
