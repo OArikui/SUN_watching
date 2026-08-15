@@ -7,6 +7,9 @@ from pathlib import Path
 """GUISET = False
 if GUISET:
 """
+
+update_basedon_textconfig = False
+
 if __name__ == "__main__":
     COFIG_ROOT = Path(__file__).parent.resolve()
     sys.path.append(CONFiG_ROOT)
@@ -23,17 +26,16 @@ if __name__ == "__main__":
         filename=logfile,
         filemode="a",
     )
+    # ========
+    update_basedon_textconfig = True
+    # ========
 
 logger = logging.getLogger(__name__)
 
-from PATH import (
-    CONFIG_TEXT_PATH,
-    CONFIG_JSON_PATH,
-    DEFAULT_JSON_PATH,
-    OUTLINE_JSON_PARH,
-    CONFIG_SCHEMA_PATH,
-)
-from utils_json import json_saver, json_loader
+from PATH import path
+from utils_json import json_saver, json_loader, sha256_valid
+
+globals()+=pathes
 
 
 def industrial(config: dict, default_config: dict, default_outline: dict) -> dict:

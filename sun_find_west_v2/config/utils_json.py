@@ -5,14 +5,8 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-from PATH import (
-    CONFIG_TEXT_PATH,
-    CONFIG_JSON_PATH,
-    DEFAULT_JSON_PATH,
-    OUTLINE_JSON_PARH,
-    CONFIG_SCHEMA_PATH,
-)
-
+from PATH import pathes
+globals()+=pathes
 
 def json_loader(jsonpath: Path) -> dict:
     try:
