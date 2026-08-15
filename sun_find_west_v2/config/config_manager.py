@@ -11,14 +11,10 @@ if GUISET:
 update_basedon_textconfig = False
 
 if __name__ == "__main__":
-    COFIG_ROOT = Path(__file__).parent.resolve()
-    sys.path.append(CONFiG_ROOT)
+    CONFIG_ROOT = Path(__file__).parent.resolve()
+    sys.path.append(CONFIG_ROOT)
 
     logfile = Path(f"logs/config_{datetime.datetime.now().strftime('%Y-%m-%d')}.log")
-
-    if not logfile.parent.exists():
-        logfile.parent.mkdir(parents=True, exist_ok=True)
-        logger.debug(f"Created directory: {textpath.parent}")
 
     logging.basicConfig(
         level=logging.INFO,
@@ -32,8 +28,13 @@ if __name__ == "__main__":
 
 logger = logging.getLogger(__name__)
 
-from PATH import path
+if not logfile.parent.exists():
+    logfile.parent.mkdir(parents=True, exist_ok=True)
+    logger.debug(f"Created directory: {textpath.parent}")
+
+from PATH import pathes
 from utils_json import json_saver, json_loader, sha256_valid
+from cache_update import generate_configJ_configT
 
 globals().update(pathes)
 
@@ -90,7 +91,7 @@ def industrial(config: dict, default_config: dict, default_outline: dict) -> dic
 
 # textをjson形式に変換し、jsonファイルを生成
 try:
-    gem_config_json(CONFIG_TEXT_PATH, CONFIG_JSON_PATH)
+    generate_configJ_configT(CONFIG_JSON_PATH, CONFIG_TEXT_PATH)
     logger.info("__sucessful jenelate json from text")
 except (KeyError, ValueError):
     logger.exception("__config text not TEKISETU")

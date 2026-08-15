@@ -124,7 +124,7 @@ def generate_configJ_configT(configpath: Path, textpath: Path) -> dict:
                 data_h2[h2] = stash
             if data_h2:
                 data_h1[h1] = data_h2
-    return json_saver(data=data_h1, filepath=configpath)
+    return json_saver(data=data_h1, jsonpath=configpath)
 
 
 def when_updated_schemaJ(pathes: dict, reset_userset: bool) -> dict:

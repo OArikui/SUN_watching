@@ -59,7 +59,7 @@ def sha256_file(filepath: Path, save: bool = True) -> str:
 def sha256_valid(filepath: Path) -> bool:
     actual = sha256_file(filepath, False)
     expect_path = Path(str(filepath) + "_valid")
-    if expect_path.exsist:
+    if expect_path.exists:
         with open(expect_path, "r", encoding="ascii") as f:
             expected = f.readlines()[-1]
     else:
