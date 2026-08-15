@@ -2,7 +2,7 @@ import json
 import logging
 import hashlib
 from pathlib import Path
-import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 

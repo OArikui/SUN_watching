@@ -1,15 +1,15 @@
 import logging
 from pathlib import Path
 
-import utils_json
-from utils_json import sha256_file
+from utils_json import sha256_file, json_loader, json_saver
+from PATH import pathes
 
 logger = logging.getLogger(__name__)
 
 
 def generate_defaultJ_schemaJ(defaultpath: Path, schemapath: Path) -> dict:
     "reset to schema"
-    schema = utils_json.json_loader(schemapath)
+    schema = json_loader(schemapath)
 
     if schema.get("type") != "object" or "properties" not in schema:
         msg = "_ENG_スキーマの形式が適切ではありません (ルートは 'properties' を持つ 'object' である必要があります)"
@@ -34,7 +34,7 @@ def generate_defaultJ_schemaJ(defaultpath: Path, schemapath: Path) -> dict:
         logger.error(f"_ENG_スキーマの解析中にエラーが発生しました: {e}")
         raise
 
-    utils_json.json_saver(data=data, filepath=defaultpath)
+    json_saver(data, defaultpath)
 
     return data
 
@@ -42,7 +42,7 @@ def generate_defaultJ_schemaJ(defaultpath: Path, schemapath: Path) -> dict:
 def generate_configT_defaultJ(configpath: Path, textpath: Path) -> str:
     "reset to default json"
 
-    data = utils_json.json_loader(configpath)
+    data = json_loader(configpath)
 
     txt = ""
     for hk, hv in data.items():
@@ -73,7 +73,7 @@ def generate_configT_defaultJ(configpath: Path, textpath: Path) -> str:
 
 def generate_outlinesJ_defaultJ(outlinepath: Path, defaultpath: Path) -> dict:
     "generate outlines based on default json"
-    data = utils_json.json_loader(defaultpath)
+    data = json_loader(defaultpath)
 
     outline = {}
 
@@ -83,7 +83,7 @@ def generate_outlinesJ_defaultJ(outlinepath: Path, defaultpath: Path) -> dict:
             ls_h2[hhk] = list(hhv.keys())
         outline[hk] = ls_h2
 
-    return utils_json.json_saver(data=outline, filepath=outlinepath)
+    return json_saver(outline, outlinepath)
 
 
 def generate_configJ_configT(configpath: Path, textpath: Path) -> dict:
@@ -137,10 +137,15 @@ def when_updated_schemaJ(pathes: dict, reset_userset: bool) -> dict:
     if reset_userset:
         logger.info("__reseting user setting")
         generate_configT_defaultJ(
-            pathes["CONFIG_TEXT_PATH"], pathes["DEFAULT_JSON_PATH"]
+            pathes["DEFAULT_JSON_PATH"], pathes["CONFIG_TEXT_PATH"]
         )
         logger.info("__sucessful reset user setting")
     return json_loader(pathes["CONFIG_SCHEMA_PATH"])
 
 
-when_updated_schemaJ(pathes, True)
+if __name__ == "__main__":
+    import sys
+
+    CONFIG_ROOT = Path(__file__).parent.resolve()
+    sys.path.append(CONFIG_ROOT)
+    when_updated_schemaJ(pathes, True)

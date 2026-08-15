@@ -21,10 +21,13 @@ auto_target_brightness : 100    /ASI_AUTO_TARGET_BRIGHTNESS: 自動露出の目�
 ---image_format---
 img_type   : RAW8   /img_type: 画像フォーマット (ASI432MMはモノクロ専用。高速解析はRAW8、高階調は12bit RAW16)
 
-===Visualizer===
+===sun_find_west_v2===
 
----constractor---
+---Analyzer---
 acceptable : 1      /許容角度(degree)
+buf_lookback : 300    /軌道推定に使うフレーム数
+
+---Visualizer---
 grid_color : #FFFFFF  /画像グリッドの色(hex)
 grid_ny    : 2      /画像グリッドの縦分割数
 grid_nx    : 4      /画像グリッドの横分割数

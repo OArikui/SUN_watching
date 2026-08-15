@@ -125,7 +125,7 @@
               "type": "number",
               "default": 1,
               "minimum": 0,
-              "maximum": 180
+              "maximum": 180,
               "description":"許容角度(degree)"
             },
             "buf_lookback":{
