@@ -2,6 +2,7 @@ import json
 import logging
 import hashlib
 from pathlib import Path
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +49,8 @@ def sha256_file(filepath: Path, save: bool = True) -> str:
 
     if save:
         savepath = filepath.parent / f"{filepath.name}_valid"
-        with open(savepath, "w", encoding="ascii") as f:
-            f.write(hashV)
+        with open(savepath, "a", encoding="ascii") as f:
+            f.write(f"{datetime.now(timezone.utc)}\n{hashV}\n")
     return hashV
 
 
@@ -58,7 +59,8 @@ def sha256_valid(filepath: Path) -> bool:
     expect_path = Path(str(filepath) + "_valid")
     if expect_path.exsist:
         with open(expect_path, "r", encoding="ascii") as f:
-            expected = f.read()
+            expected = f.readlines()[-1]
     else:
         expected = None
+        logger.debug(f"__hash not found :{path}")
     return actual == expected
