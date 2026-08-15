@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 import utils_json
+from utils_json import sha256_file
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ def generate_outlinesJ_defaultJ(outlinepath: Path, defaultpath: Path) -> dict:
     return utils_json.json_saver(data=outline, filepath=outlinepath)
 
 
-def generate_configJ_configT(textpath: Path, configpath: Path) -> dict:
+def generate_configJ_configT(configpath: Path, textpath: Path) -> dict:
     if not textpath.exists():
         logger.error(f"file not found:{str(textpath)}")
 
@@ -126,6 +127,14 @@ def generate_configJ_configT(textpath: Path, configpath: Path) -> dict:
     return json_saver(data=data_h1, filepath=configpath)
 
 
-reset_json(DEFAULT_JSON_PATH, CONFIG_SCHEMA_PATH)
-reset_text(DEFAULT_JSON_PATH, CONFIG_TEXT_PATH)
-generate_outlines(OUTLINE_JSON_PARH, DEFAULT_JSON_PATH)
+def when_updated_schemaJ(pathes:dict,reset_userset:bool)->dict:
+    locals()+=pathes
+    sha256_file(CONFIG_SCHEMA_PATH)
+    generate_defaultJ_schemaJ(DEFAULT_JSON_PATH, CONFIG_SCHEMA_PATH)
+    generate_outlinesJ_defaultJ(OUTLINE_JSON_PARH, DEFAULT_JSON_PATH)
+    logger.info("__sucessful update default&outline jsons")
+    if reset_userset:
+        logger.info("__reseting user setting")
+        generate_configT_defaultJ(CONFIG_TEXT_PATH,DEFAULT_JSON_PATH)
+        logger.info("__sucessful reset user setting")
+    return json_loader(CONFIG_SCHEMA_PATH)
