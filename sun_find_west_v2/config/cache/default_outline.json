@@ -1,0 +1,52 @@
+{
+    "Camera": {
+        "basic_parameters": [
+            "exposure",
+            "exposure-desc",
+            "gain",
+            "gain-desc",
+            "offset",
+            "offset-desc",
+            "gamma",
+            "gamma-desc"
+        ],
+        "transfer_settings": [
+            "band_width",
+            "band_width-desc",
+            "high_speed_mode",
+            "high_speed_mode-desc",
+            "hardware_bin",
+            "hardware_bin-desc",
+            "flip",
+            "flip-desc"
+        ],
+        "auto_control": [
+            "auto_max_gain",
+            "auto_max_gain-desc",
+            "auto_max_exp",
+            "auto_max_exp-desc",
+            "auto_target_brightness",
+            "auto_target_brightness-desc"
+        ],
+        "image_format": [
+            "img_type",
+            "img_type-desc"
+        ]
+    },
+    "Visualizer": {
+        "constractor": [
+            "acceptable",
+            "acceptable-desc",
+            "grid_color",
+            "grid_color-desc",
+            "grid_ny",
+            "grid_ny-desc",
+            "grid_nx",
+            "grid_nx-desc",
+            "grid_r",
+            "grid_r-desc",
+            "grid_alpha",
+            "grid_alpha-desc"
+        ]
+    }
+}
