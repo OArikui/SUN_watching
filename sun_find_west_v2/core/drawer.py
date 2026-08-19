@@ -15,6 +15,8 @@ except ImportError:
     raise
 
 try:
+    from collections.abc import Callable
+
     import matplotlib.pyplot as plt
     import numpy as np
     from matplotlib.patches import Arc, Circle, Polygon
@@ -289,13 +291,12 @@ class Visualizer:
     def add_slider(
         self,
         name: str,
-        key: int,
         valmin: float,
         valmax: float,
         valinit: float,
-        on_change: callable = None,
-        label: str = None,
-        valfmt: str = None,  # 表示フォーマット (例: "%1.0f", "%1.2f")
+        on_change: Callable | None = None,
+        label: str | None = None,
+        valfmt: str | None = None,  # 表示フォーマット (例: "%1.0f", "%1.2f")
     ) -> Slider:
         num_sliders = len(self.sliders)
 
@@ -311,7 +312,12 @@ class Visualizer:
             kwargs["valfmt"] = valfmt
 
         slider = Slider(
-            ax_slider, user_label, valmin, valmax, valinit=valinit, **kwargs
+            ax_slider,
+            user_label,
+            valmin,
+            valmax,
+            valinit=valinit,
+            **kwargs,  # type: ignore[arg-type]
         )
 
         if on_change is not None:

@@ -67,7 +67,6 @@ try:
     import sys
     from collections import deque
     from pathlib import Path
-    from pprint import pformat
     from time import time
 except ImportError:
     logger.error("Failed to import standard modules.")
@@ -93,17 +92,22 @@ current = Path(__file__).resolve()
 # current.parent から最上階までループ
 for parent in [current.parent, *current.parents]:
     if parent.name == "sun_find_west_v2":
-        parent_path = str(parent)
-        sys.path.append(parent_path)
+        root_path = str(parent)
+        sys.path.append(root_path)
         break
 
+
 try:
-    from camera.controller import connect_camera, apply_camera_config, handle_config
-    from core import drawer
-    from core.drawer import Visualizer
-    from core.MIN2ver2 import MIN2_ignore_sunspots as MIN2
-    from core.ransac import calculate_west_angle_robust as west_angle
-except ImportError as e:
+    from sun_find_west_v2.camera.controller import (
+        apply_camera_config,
+        connect_camera,
+        handle_config,
+    )
+    from sun_find_west_v2.config.config_manager import parameter
+    from sun_find_west_v2.core.drawer import Visualizer
+    from sun_find_west_v2.core.MIN2ver2 import MIN2_ignore_sunspots as MIN2
+    from sun_find_west_v2.core.ransac import calculate_west_angle_robust as west_angle
+except ImportError:
     logger.error("Failed to import custom modules.")
     logger.error(traceback.format_exc())
     cancel_process()
@@ -112,14 +116,13 @@ else:
 
 try:
     print("__loading parameter...")
-    from config_manager import parameter
 
     camera_param = parameter["Camera"]
     main_param = parameter["sun_find_west_v2"]
     visualizer_constract_param = main_param["Visualizer"]
     visualizer_constract_param["acceptable"] = main_param["Analyzer"]["acceptable"]
 
-except RuntimeError as e:
+except RuntimeError:
     logger.exception("__filed to load parameter")
     cancel_process()
 logger.info("__sucessful __loading parameter")
@@ -130,7 +133,7 @@ print("__setting parameter...")
 logger.info("Attempting to connect to the camera...")
 camera = None
 try:
-    env_filename = str(Path(parent_path) / "camera" / "bin" / "ASICamera2.dll")
+    env_filename = str(Path(root_path) / "camera" / "bin" / "ASICamera2.dll")
     os.environ["ZWO_ASI_LIB"] = env_filename
     logger.debug(f"Successfully set ZWO_ASI_LIB environment variable:{env_filename}")
     camera = connect_camera(env_filename)
@@ -168,9 +171,9 @@ logger.debug("Initializing visualization variables...")
 frame_count = 0
 dropped_frames = 0
 st_time = time()
-buffer_c = deque(maxlen=500)
-buffer_t = deque(maxlen=500)
-cx, cy, r = 0, 0, 1
+buffer_c = deque[list[float]](maxlen=500)
+buffer_t = deque[float](maxlen=500)
+cx, cy, r = 0.0, 0.0, 1.0
 viz = None
 
 # リアルタイム処理ループ
@@ -180,7 +183,7 @@ try:
     logger.info("Initializing Visualizer instance...")
 
     # 描画クラスを初期化
-    viz = Visualizer(width, height, **viz_init_params["constructor"])
+    viz = Visualizer(width, height, visualizer_constract_param)
 
     logger.info(
         "Starting real-time visualization. Press 'q' or close the window to exit."
@@ -221,7 +224,7 @@ try:
         # 計算処理
         try:
             (cx, cy), r = MIN2(img)
-        except Exception as e:  # TODO:MIN2独自のERRORを作製,整理
+        except Exception as e:  # TODO:MIN2独自のERRORを作製,整理  # noqa: BLE001
             logger.warning(f"MIN2 processing error: {e}")
             dropped_frames += 1
             continue
@@ -237,7 +240,9 @@ try:
         if len(recent_pts) > 2:
             try:
                 result = west_angle(recent_pts, recent_timestamps)
-                robust_angle, vectorYX = result  # pyright: ignore[reportGeneralTypeIssues]
+                if result is None:
+                    raise RuntimeError
+                robust_angle, vectorYX = result
             except (ValueError, TypeError, RuntimeError) as e:
                 logger.warning(f"Error calculating robust west angle: {e}")
         else:
