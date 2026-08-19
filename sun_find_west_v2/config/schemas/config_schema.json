@@ -136,8 +136,43 @@
             }
           }
         },
+          "MIN2ver2":{"type":"object","version":"2.3.8","properties":{
+            "n":{
+              "type":"int",
+              "minimum":1,
+              "maximum":200,
+              "default":10,
+              "description":"画像格子の分割数"
+            },
+            "light_threshod":{
+              "type":"int",
+              "minimum":0,
+              "default":50,
+              "description":"太陽の明るさの基準しきい値,格子線が太陽像上を通るかの判定に用いる"
+            },
+            "limb_wigth":{
+              "type":"int",
+              "minimum":0,
+              "default":"24",
+              "description":"太陽の縁の幅の基準値(pix)"
+              },
+            "iter_cycles":{
+              "type":"int",
+              "minimum":0,
+              "default":"2",
+              "description":"黒点排除のイテレーション回数。複数の黒点に対応できます。0なら排除なし"
+            }
+          },
+          "ransac":{"type":"object","version":"1.00","properties":{
+            "NONE":{
+              "type":"str",
+              "default":"STUB",
+              "description":"STUB"
+              }
+            }
+          }
+        },
           "Visualizer":{"type":"object","properties": {
-
             "grid_color": {
               "type": "string",
               "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",

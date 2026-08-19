@@ -6,9 +6,9 @@
             "gain": 0,
             "gain-desc": "ASI_GAIN: ゲイン (0〜400)。太陽観測は基本0。HCGモードはGain 140で自動ON(低ノイズ化)",
             "offset": 15,
-            "offset-desc": "ASI_OFFSET / ASI_BRIGHTNESS: オフセット (黒レベルの切り捨て防止)",
+            "offset-desc": "ASI_OFFSET or ASI_BRIGHTNESS: オフセット (黒レベルの切り捨て防止)",
             "gamma": 50,
-            "gamma-desc": "ASI_GAMMA: ガンマ補正値 (50=補正なし/リニア特性維持)"
+            "gamma-desc": "ASI_GAMMA: ガンマ補正値 (50=補正なし リニア特性維持)"
         },
         "transfer_settings": {
             "band_width": 80,
@@ -33,10 +33,24 @@
             "img_type-desc": "img_type: 画像フォーマット (ASI432MMはモノクロ専用。高速解析はRAW8、高階調は12bit RAW16)"
         }
     },
-    "Visualizer": {
-        "constractor": {
+    "sun_find_west_v2": {
+        "Analyzer": {
             "acceptable": 1,
             "acceptable-desc": "許容角度(degree)",
+            "buf_lookback": "300",
+            "buf_lookback-desc": "軌道推定に使うフレーム数"
+        },
+        "MIN2ver2": {
+            "n": 10,
+            "n-desc": "画像格子の分割数",
+            "light_threshod": 50,
+            "light_threshod-desc": "太陽の明るさの基準しきい値,格子線が太陽像上を通るかの判定に用いる",
+            "limb_wigth": "24",
+            "limb_wigth-desc": "太陽の縁の幅の基準値(pix)",
+            "iter_cycles": "2",
+            "iter_cycles-desc": "黒点排除のイテレーション回数。複数の黒点に対応できます。0なら排除なし"
+        },
+        "Visualizer": {
             "grid_color": "#FFFFFF",
             "grid_color-desc": "画像グリッドの色(hex)",
             "grid_ny": 2,
