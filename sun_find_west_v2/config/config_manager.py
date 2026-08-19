@@ -36,10 +36,10 @@ from pathes import pathes
 from utils_json import json_saver, json_loader, sha256_valid
 from cache_update import generate_configJ_configT
 
-CONFIG_JSON_PATH = pathes("CONFIG_JSON_PATH")
-CONFIG_TEXT_PATH = pathes("CONFIG_TEXT_PATH")
-DEFAULT_JSON_PATH = pathes("DEFAULT_JSON_PATH")
-OUTLINE_JSON_PARH = pathes("OUTLINE_JSON_PARH")
+CONFIG_JSON_PATH = pathes["CONFIG_JSON_PATH"]
+CONFIG_TEXT_PATH = pathes["CONFIG_TEXT_PATH"]
+DEFAULT_JSON_PATH = pathes["DEFAULT_JSON_PATH"]
+OUTLINE_JSON_PARH = pathes["OUTLINE_JSON_PARH"]
 
 
 def file_update_check(pathes: dict, update_basedon_textconfig: bool) -> bool:

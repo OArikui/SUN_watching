@@ -28,14 +28,14 @@
               "minimum": 0,
               "maximum": 100,
               "default": 15,
-              "description": "ASI_OFFSET / ASI_BRIGHTNESS: オフセット (黒レベルの切り捨て防止)"
+              "description": "ASI_OFFSET or ASI_BRIGHTNESS: オフセット (黒レベルの切り捨て防止)"
             },
             "gamma": {
               "type": "integer",
               "minimum": 1,
               "maximum": 100,
               "default": 50,
-              "description": "ASI_GAMMA: ガンマ補正値 (50=補正なし/リニア特性維持)"
+              "description": "ASI_GAMMA: ガンマ補正値 (50=補正なし リニア特性維持)"
             }
           }
         },

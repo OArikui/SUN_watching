@@ -111,11 +111,13 @@ def generate_configJ_configT(configpath: Path, textpath: Path) -> dict:
             h2 = line.split("---")[1]
             stash = {}
         if line[:3] == "===":
+            if stash:
+                data_h2[h2] = stash
+                stash={}
             if data_h2:
                 data_h1[h1] = data_h2
             h1 = line.split("===")[1]
             data_h2 = {}
-
     if stash:
         data_h2[h2] = stash
     if data_h2:
