@@ -90,6 +90,7 @@ else:
 
 try:
     import cv2
+    import csv
     import numpy as np
     import zwoasi as asi
 
@@ -186,6 +187,23 @@ try:
         raise RuntimeError("Cannot proceed without initialized camera")
     logger.info("Initializing Visualizer instance...")
 
+    csv_file_path = reports_path / f"sun_data_{ts}_BYsunfindwestV2.csv"
+    logger.info(f"csv_file_path: {csv_file_path}")
+    # CSVヘッダーの定義
+    csv_headers = [
+        "timestamp_iso",  # ISOフォーマット日時 (YYYY-MM-DDTHH:MM:SS.sss)
+        "timestamp_unix",  # Unixタイムスタンプ (秒)
+        "frame_count",  # フレーム番号
+        "temperature_c",  # カメラセンサー温度 (℃)
+        "gain",  # カメラ Gain
+        "exposure_us",  # カメラ 露光時間 (µs)
+        "cx",  # 太陽中心 X座標
+        "cy",  # 太陽中心 Y座標
+        "r",  # 太陽半径
+        "robust_angle",  # 計算された西偏角 (算出不能時は None)
+    ]
+
+    logger.info(f"Logging MIN2 and camera data to: {csv_file_path}")
     # 描画クラスを初期化
     viz = Visualizer(width, height, visualizer_constract_param)
 
@@ -213,74 +231,116 @@ try:
         on_change=lambda val: handle_config(camera, asi.ASI_EXPOSURE, val),
     )
 
-    while True:
-        try:
-            frame = camera.capture_video_frame(timeout=500)
-        except asi.ZWO_CaptureError as e:
-            logger.warning(f"Frame capture failed or timed out: {e}")
-            dropped_frames += 1
-            continue
+    with open(csv_file_path, mode="w", newline="", encoding="utf-8") as csv_file:
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow(csv_headers)
 
-        img = np.frombuffer(frame, dtype=np.uint8).reshape(height, width)
-
-        frame_count += 1
-
-        # 計算処理
-        try:
-            (cx, cy), r = MIN2(img)
-        except Exception as e:  # TODO:MIN2独自のERRORを作製,整理  # noqa: BLE001
-            logger.warning(f"MIN2 processing error: {e}")
-            dropped_frames += 1
-            continue
-
-        buffer_c.append([cx, cy])
-        buf_c_arr = np.array(buffer_c)
-        recent_pts = buf_c_arr[-buf_lookback:]
-
-        buffer_t.append(time())
-        buf_t_arr = np.array(buffer_t)
-        recent_timestamps = buf_t_arr[-buf_lookback:]
-
-        if len(recent_pts) > 2:
+        while True:
             try:
-                result = west_angle(recent_pts, recent_timestamps)
-                if result is None:
-                    raise RuntimeError
-                robust_angle, vectorYX = result
-            except (ValueError, TypeError, RuntimeError) as e:
-                logger.warning(f"Error calculating robust west angle: {e}")
-        else:
-            logger.debug("Insufficient points for angle calculation (buffer <= 2).")
-            robust_angle = False
-            vectorYX = (0.0, 0.0)
+                frame = camera.capture_video_frame(timeout=500)
+            except asi.ZWO_CaptureError as e:
+                logger.warning(f"Frame capture failed or timed out: {e}")
+                dropped_frames += 1
+                continue
 
-        # 描画更新
-        try:
-            viz.update(
-                img,
-                cx,
-                cy,
-                r,
-                recent_pts,
-                robust_angle,
-                frame_idx=frame_count,
-                total_frames="∞",
-            )
+            img = np.frombuffer(frame, dtype=np.uint8).reshape(height, width)
+            frame_count += 1
 
-        except Exception as e:  # noqa: BLE001 :visualizerのerrorは多岐にわたる
-            logger.warning(f"Visualizer update failed: {e}")
+            # 1. MIN2 計算処理
+            try:
+                (cx, cy), r = MIN2(img)
+            except Exception as e:  # TODO:MIN2独自のERRORを作製,整理  # noqa: BLE001
+                logger.warning(f"MIN2 processing error: {e}")
+                dropped_frames += 1
+                continue
 
-        # 終了判定
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            logger.info("Visualization loop terminated by user (keyboard input).")
-            logger.debug(f"Total frames processed: {frame_count}")
-            break
+            buffer_c.append([cx, cy])
+            buf_c_arr = np.array(buffer_c)
+            recent_pts = buf_c_arr[-buf_lookback:]
 
-        # ウィンドウが閉じられたかどうかも Visualizer に判定させる
-        if not viz.is_alive():
-            logger.info("Visualization loop terminated (window closed).")
-            logger.debug(f"Total frames processed: {frame_count}")
-            break
+            capture_time_unix = time()
+            capture_time_iso = datetime.datetime.now().isoformat()
+            buffer_t.append(capture_time_unix)
+            buf_t_arr = np.array(buffer_t)
+            recent_timestamps = buf_t_arr[-buf_lookback:]
+
+            # 2. 角度計算
+            if len(recent_pts) > 2:
+                try:
+                    result = west_angle(recent_pts, recent_timestamps)
+                    if result is None:
+                        raise RuntimeError
+                    robust_angle, vectorYX = result
+                except (ValueError, TypeError, RuntimeError) as e:
+                    logger.warning(f"Error calculating robust west angle: {e}")
+                    robust_angle = None
+            else:
+                logger.debug("Insufficient points for angle calculation (buffer <= 2).")
+                robust_angle = None
+                vectorYX = (0.0, 0.0)
+
+            # 3. 現在のカメラ情報の取得
+            try:
+                current_gain = camera.get_control_value(asi.ASI_GAIN)[0]
+                current_exposure = camera.get_control_value(asi.ASI_EXPOSURE)[0]
+                temp_raw = camera.get_control_value(asi.ASI_TEMPERATURE)[0]
+                current_temp = round(temp_raw / 10.0, 1)
+            except asi.ZWO_Error as e:
+                logger.warning(f"Failed to read camera control values: {e}")
+                current_gain, current_exposure, current_temp = None, None, None
+
+            # 4. CSVへのリアルタイム書き込み
+            try:
+                csv_writer.writerow(
+                    [
+                        capture_time_iso,
+                        capture_time_unix,
+                        frame_count,
+                        current_fps,
+                        current_temp,
+                        current_gain,
+                        current_exposure,
+                        cx,
+                        cy,
+                        r,
+                        robust_angle if robust_angle is not False else None,
+                    ]
+                )
+                csv_file.flush()
+            except Exception as e:
+                logger.error(f"Failed to write row to CSV: {e}")
+
+            # 5. 描画更新
+            try:
+                viz.update(
+                    img,
+                    cx,
+                    cy,
+                    r,
+                    recent_pts,
+                    robust_angle if robust_angle is not False else False,
+                    frame_idx=frame_count,
+                    total_frames="∞",
+                )
+            except Exception as e:
+                logger.warning(f"Visualizer update failed: {e}")
+
+            # 終了判定
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                logger.info("Visualization loop terminated by user (keyboard input).")
+                logger.debug(f"Total frames processed: {frame_count}")
+                break
+
+            if not viz.is_alive():
+                logger.info("Visualization loop terminated (window closed).")
+                logger.debug(f"Total frames processed: {frame_count}")
+                break
+
+                # ウィンドウが閉じられたかどうかも Visualizer に判定させる
+                if not viz.is_alive():
+                    logger.info("Visualization loop terminated (window closed).")
+                    logger.debug(f"Total frames processed: {frame_count}")
+                    break
 except KeyboardInterrupt as e:
     elapsed_time = float(time() - st_time)
     logger.info(f"Keyboard interrupt: {e}")
