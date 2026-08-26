@@ -378,34 +378,49 @@ class Visualizer:
 
         self.ax_shdw_c.set_data(recent_pts[:, 0], recent_pts[:, 1])
 
-        # 2つの座標系、いずれも上が正,下が負で-180~+180
-        west_angle = convert_angle_to_west(robust_angle)  # 左0°の座標
-        east_angle = robust_angle  # 右0°の座標
-
-        # 許容範囲に応じて色を変更
-        if abs(west_angle) < self.acceptable:
-            uxc = ("limegreen", "mediumseagreen")
+        if robust_angle is None:
+            # [FIX] データ不足などで角度が未算出の場合。
+            # 矢印は直前の角度のまま灰色にして「未算出」であることを示し、
+            # convert_angle_to_west(None) を呼んで落ちないようにする。
+            west_angle = None
+            uxc = ("dimgray", "gray")
+            self.ax_sunline.set_offsets(np.c_[cx, cy])
+            self.ax_sunline.set_UVC(0, 0)
+            self.arrow.update(
+                center=(cx, cy),
+                edgecolor=uxc[1],
+                tri_color=uxc[1],
+            )
+            self.ax_sunline.set_color(uxc[1])
         else:
-            uxc = ("red", "purple")
+            # 2つの座標系、いずれも上が正,下が負で-180~+180
+            west_angle = convert_angle_to_west(robust_angle)  # 左0°の座標
+            east_angle = robust_angle  # 右0°の座標
 
-        east_rad = np.radians(east_angle)
+            # 許容範囲に応じて色を変更
+            if abs(west_angle) < self.acceptable:
+                uxc = ("limegreen", "mediumseagreen")
+            else:
+                uxc = ("red", "purple")
 
-        # 角度からベクトルのX, Y成分を計算 (長さは self.sunline)
-        u = self.sunline * np.cos(east_rad)
-        v = self.sunline * np.sin(east_rad)
+            east_rad = np.radians(east_angle)
 
-        # 矢印の始点(cx, cy)とベクトル成分(u, v)を更新
-        self.ax_sunline.set_offsets(np.c_[cx, cy])
-        self.ax_sunline.set_UVC(u, v)
+            # 角度からベクトルのX, Y成分を計算 (長さは self.sunline)
+            u = self.sunline * np.cos(east_rad)
+            v = self.sunline * np.sin(east_rad)
 
-        self.arrow.update(
-            center=(cx, cy),
-            angle=east_angle,
-            edgecolor=uxc[1],
-            tri_color=uxc[1],
-        )
+            # 矢印の始点(cx, cy)とベクトル成分(u, v)を更新
+            self.ax_sunline.set_offsets(np.c_[cx, cy])
+            self.ax_sunline.set_UVC(u, v)
 
-        self.ax_sunline.set_color(uxc[1])
+            self.arrow.update(
+                center=(cx, cy),
+                angle=east_angle,
+                edgecolor=uxc[1],
+                tri_color=uxc[1],
+            )
+
+            self.ax_sunline.set_color(uxc[1])
 
         # 実際のFPSを計算
         now = time.time()
@@ -413,9 +428,12 @@ class Visualizer:
         self.prev_time = now
         actual_fps = 1.0 / dt if dt > 0 else 0.0
 
+        # [FIX] west_angle が None (未算出) の場合はN/A表示にする
+        angle_text = f"{west_angle:7.2f} °" if west_angle is not None else "    N/A"
+
         # 表示テキストのフォーマット (桁数を揃えて視認性を向上)
         text_lines = [
-            f"Angle      : {west_angle:7.2f} °",
+            f"Angle      : {angle_text}",
             f"MIN2 Stat  : X={cx:.1f} Y={cy:.1f} R={r:.1f}",
             f"Frames     : {frame_idx} / {total_frames}",
             f"Traj Points: {len(recent_pts)}",

@@ -1,22 +1,36 @@
-﻿print("Booting up the system…")
+print("Booting up the system…")
 print("Setting up logger…")
 import datetime
 import logging
+import sys
 import traceback
+from pathlib import Path
 
+# --- [FIX 1] Path/sys を使う前にimportしておく (元コードはこの時点で両方未import) ---
 current = Path(__file__).resolve()
 # current.parent から最上階までループ
+root_path = None
 for parent in [current.parent, *current.parents]:
     if parent.name == "sun_find_west_v2":
         root_path = parent
-        sys.path.append(root_path)
+        sys.path.append(str(root_path))
         break
-dt = datetime.now().strftime("%Y%m%d")
+
+# --- [FIX 2] "sun_find_west_v2" フォルダが見つからない場合に NameError で落ちないようにする ---
+if root_path is None:
+    print(
+        "[FATAL] 'sun_find_west_v2' というフォルダが親ディレクトリの中に見つかりませんでした。"
+    )
+    sys.exit(1)
+
+# --- [FIX 3] datetime.now() ではなく datetime.datetime.now() (元コードは module.now() で AttributeError) ---
+dt = datetime.datetime.now().strftime("%Y%m%d")
 ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 reports_path = root_path.parent / f"report_{dt}"
 reports_path.mkdir(parents=True, exist_ok=True)
 
-logfile = reports_path / logs / f"sunfindwestV2_{ts}.log"  # noqa: DTZ005
+# --- [FIX 4] logs -> "logs" (元コードは未定義識別子で NameError) ---
+logfile = reports_path / "logs" / f"sunfindwestV2_{ts}.log"  # noqa: DTZ005
 logfile.parent.mkdir(parents=True, exist_ok=True)
 
 logger = logging.getLogger(__name__)
@@ -77,10 +91,9 @@ logger.info("===== Processing started =====")
 logger.info("Importing standard modules...")
 try:
     import os
-    import sys
     from collections import deque
-    from pathlib import Path
     from time import time
+    # sys / Path はファイル先頭で既にimport済みなのでここでは行わない
 except ImportError:
     logger.error("Failed to import standard modules.")
     logger.error(traceback.format_exc())
@@ -138,7 +151,15 @@ print("__setting parameter...")
 logger.info("Attempting to connect to the camera...")
 camera = None
 try:
-    env_filename = str(root_path / "camera" / "bin" / "ASICamera2.dll")
+    # --- [FIX 5] Windows専用のASICamera2.dll固定パスをOSごとに切り替え ---
+    _lib_by_platform = {
+        "win32": "ASICamera2.dll",
+        "cygwin": "ASICamera2.dll",
+        "linux": "libASICamera2.so",
+        "darwin": "libASICamera2.dylib",
+    }
+    lib_name = _lib_by_platform.get(sys.platform, "libASICamera2.so")
+    env_filename = str(root_path / "camera" / "bin" / lib_name)
     os.environ["ZWO_ASI_LIB"] = env_filename
     logger.debug(f"Successfully set ZWO_ASI_LIB environment variable:{env_filename}")
     camera = connect_camera(env_filename)
@@ -168,6 +189,26 @@ if camera is not None:
         logger.critical(f"Failed to start video capture or retrieve ROI: {e}")
         cancel_process(camera=camera)
 
+# --- [FIX 6] img_type を実際に使ってdtype/形状を決定する (元コードは常にuint8/1chを決め打ち) ---
+# ASI_IMG_RAW8=0, ASI_IMG_RGB24=1, ASI_IMG_RAW16=2, ASI_IMG_Y8=3 (zwoasiパッケージの一般的な定数値)
+# ※ 実際の定数名/値はインストール済みzwoasiのバージョンで確認してください。
+_frame_format_map = {
+    getattr(asi, "ASI_IMG_RAW8", 0): (np.uint8, 1),
+    getattr(asi, "ASI_IMG_Y8", 3): (np.uint8, 1),
+    getattr(asi, "ASI_IMG_RAW16", 2): (np.uint16, 1),
+    getattr(asi, "ASI_IMG_RGB24", 1): (np.uint8, 3),
+}
+
+
+def frame_to_image(frame: bytes, width: int, height: int, img_type: int) -> np.ndarray:
+    """カメラの img_type に応じて frame バイト列を正しい dtype/形状の画像に変換する。"""
+    dtype, channels = _frame_format_map.get(img_type, (np.uint8, 1))
+    arr = np.frombuffer(frame, dtype=dtype)
+    if channels == 1:
+        return arr.reshape(height, width)
+    return arr.reshape(height, width, channels)
+
+
 # 変数読み込み
 buf_lookback = main_param["buf_lookback"]
 
@@ -181,6 +222,7 @@ buffer_t = deque[float](maxlen=500)
 cx, cy, r = 0.0, 0.0, 1.0
 viz = None
 capture_requested = False
+quit_requested = False
 cap_dir = reports_path / "captures"
 cap_dir.mkdir(parents=True, exist_ok=True)
 
@@ -207,22 +249,30 @@ try:
     ]
 
     logger.info(f"Logging MIN2 and camera data to: {csv_file_path}")
-    # 描画クラスを初期化
-    viz = Visualizer(width, height, visualizer_constract_param)
+    # --- [FIX 7] 辞書をそのまま渡していたのを **展開に変更 (元コードは acceptable にdictが入っていた) ---
+    viz = Visualizer(width, height, **visualizer_constract_param)
 
     logger.info(
-        "Starting real-time visualization. Press 'q' or close the window to exit."
+        "Starting real-time visualization. Press the 'Quit' button or close the window to exit."
     )
 
     def reset_buffers():
+        # --- [FIX 8] global宣言がなくローカル代入になっていた (frame_countがリセットされない) ---
+        global frame_count
         frame_count = 0
         buffer_c.clear()
         buffer_t.clear()
         logger.info("軌跡バッファが手動でリセットされました。")
 
     def request_capture():
-        nonlocal capture_requested
+        # --- [FIX 9] nonlocal -> global (元コードはモジュール直下の関数でnonlocalを使いSyntaxErrorだった) ---
+        global capture_requested
         capture_requested = True
+
+    def request_quit():
+        global quit_requested
+        quit_requested = True
+        logger.info("終了ボタンが押されました。")
 
     viz.add_button(
         name="reset_buffer",
@@ -236,6 +286,15 @@ try:
         label="Capture",
         on_clicked=request_capture,
         position=[0.10, 0.05, 0.07, 0.04],
+    )
+
+    # --- [FIX 10] cv2.imshow を一度も呼んでいないため cv2.waitKey('q') が機能しない懸念があった。
+    #              matplotlib側のボタンとして確実に効く終了トリガーを追加。
+    viz.add_button(
+        name="quit",
+        label="Quit",
+        on_clicked=request_quit,
+        position=[0.18, 0.05, 0.07, 0.04],
     )
 
     viz.add_slider(
@@ -263,6 +322,11 @@ try:
         csv_writer.writerow(csv_headers)
 
         while True:
+            if quit_requested:
+                logger.info("Visualization loop terminated by Quit button.")
+                logger.debug(f"Total frames processed: {frame_count}")
+                break
+
             try:
                 frame = camera.capture_video_frame(timeout=500)
             except asi.ZWO_CaptureError as e:
@@ -270,7 +334,8 @@ try:
                 dropped_frames += 1
                 continue
 
-            img = np.frombuffer(frame, dtype=np.uint8).reshape(height, width)
+            # --- [FIX 6-2] 常にuint8決め打ちだった箇所を img_type 対応の変換関数に置き換え ---
+            img = frame_to_image(frame, width, height, img_type)
             frame_count += 1
 
             # 1. MIN2 計算処理
@@ -294,6 +359,8 @@ try:
             # 2. 角度計算
             if len(recent_pts) > 2:
                 try:
+                    # NOTE: ransac.py は今回未提供のため、calculate_west_angle_robust の
+                    #       シグネチャ (引数の数) はここでは検証できていません。要確認。
                     result = west_angle(recent_pts, recent_timestamps)
                     if result is None:
                         raise RuntimeError
@@ -318,19 +385,19 @@ try:
 
             # 4. CSVへのリアルタイム書き込み
             try:
+                # --- [FIX 11] 未定義の current_fps を削除し、csv_headers(10列)と要素数/順序を一致させた ---
                 csv_writer.writerow(
                     [
                         capture_time_iso,
                         capture_time_unix,
                         frame_count,
-                        current_fps,
                         current_temp,
                         current_gain,
                         current_exposure,
                         cx,
                         cy,
                         r,
-                        robust_angle if robust_angle is not False else None,
+                        robust_angle,
                     ]
                 )
                 csv_file.flush()
@@ -339,13 +406,14 @@ try:
 
             # 5. 描画更新
             try:
+                # --- [FIX 12] "is not False" は常にTrueで無意味だったため単純化 (drawer.py側でNoneに対応済み) ---
                 viz.update(
                     img,
                     cx,
                     cy,
                     r,
                     recent_pts,
-                    robust_angle if robust_angle is not False else False,
+                    robust_angle,
                     frame_idx=frame_count,
                     total_frames="∞",
                 )
@@ -365,29 +433,13 @@ try:
                     logger.error(
                         f"キャプチャ保存失敗: \n path = {raw_path.name} \n img.size = {img.size} \n img.dtype = {img.dtype} "
                     )
-                """
-                # 2. HUD・ガイド描画付きUI画面の保存
-                viz_path = cap_dir / f"viz_{cap_ts}_f{frame_count}.png"
-                viz.fig.savefig(viz_path)
-            Viz -> {viz_path.name
-            """
 
-            # 終了判定
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                logger.info("Visualization loop terminated by user (keyboard input).")
-                logger.debug(f"Total frames processed: {frame_count}")
-                break
-
+            # --- [FIX 13] cv2.waitKey('q')判定と、到達不能な重複ブロックを削除。
+            #              終了条件は「Quitボタン」と「ウィンドウを閉じる」の2系統に一本化。
             if not viz.is_alive():
                 logger.info("Visualization loop terminated (window closed).")
                 logger.debug(f"Total frames processed: {frame_count}")
                 break
-
-                # ウィンドウが閉じられたかどうかも Visualizer に判定させる
-                if not viz.is_alive():
-                    logger.info("Visualization loop terminated (window closed).")
-                    logger.debug(f"Total frames processed: {frame_count}")
-                    break
 except KeyboardInterrupt as e:
     elapsed_time = float(time() - st_time)
     logger.info(f"Keyboard interrupt: {e}")
