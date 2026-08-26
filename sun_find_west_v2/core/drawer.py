@@ -298,13 +298,11 @@ class Visualizer:
     ) -> Button:
         """ボタンを追加する"""
         if position is None:
-            # スライダーの邪魔にならない左下のスペースをデフォルト位置にする
-            position = [0.02, 0.05, 0.12, 0.04]
+            position = [0.02, 0.05, 0.07, 0.04]
 
         ax_button = self.fig.add_axes(position)
         button = Button(ax_button, label)
 
-        # matplotlibの仕様によるevent引数を吸収し、コールバック関数を実行
         button.on_clicked(lambda event: on_clicked())
 
         self.buttons[name] = button

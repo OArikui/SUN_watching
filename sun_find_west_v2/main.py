@@ -180,6 +180,9 @@ buffer_c = deque[list[float]](maxlen=500)
 buffer_t = deque[float](maxlen=500)
 cx, cy, r = 0.0, 0.0, 1.0
 viz = None
+capture_requested = False
+cap_dir = reports_path / "captures"
+cap_dir.mkdir(parents=True, exist_ok=True)
 
 # リアルタイム処理ループ
 try:
@@ -217,11 +220,23 @@ try:
         buffer_t.clear()
         logger.info("軌跡バッファが手動でリセットされました。")
 
+    def request_capture():
+        nonlocal capture_requested
+        capture_requested = True
+
     viz.add_button(
         name="reset_buffer",
         label="Reset",
         on_clicked=reset_buffers,
-        position=[0.02, 0.05, 0.12, 0.04]
+        position=[0.02, 0.05, 0.07, 0.04],
+    )
+
+    viz.add_button(
+        name="capture_image",
+        label="Capture",
+        on_clicked=request_capture,
+        position=[0.10, 0.05, 0.07, 0.04],
+    )
 
     viz.add_slider(
         name="gain",
@@ -336,6 +351,26 @@ try:
                 )
             except Exception as e:
                 logger.warning(f"Visualizer update failed: {e}")
+
+            # キャプチャリクエスト処理
+            if capture_requested:
+                capture_requested = False
+                cap_ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
+
+                # 1. 生データ（画像単体）の保存
+                raw_path = cap_dir / f"raw_{cap_ts}_f{frame_count}.png"
+                if cv2.imwrite(str(raw_path), img):
+                    logger.info(f"キャプチャ保存完了:{raw_path.name}")
+                else:
+                    logger.error(
+                        f"キャプチャ保存失敗: \n path = {raw_path.name} \n img.size = {img.size} \n img.dtype = {img.dtype} "
+                    )
+                """
+                # 2. HUD・ガイド描画付きUI画面の保存
+                viz_path = cap_dir / f"viz_{cap_ts}_f{frame_count}.png"
+                viz.fig.savefig(viz_path)
+            Viz -> {viz_path.name
+            """
 
             # 終了判定
             if cv2.waitKey(1) & 0xFF == ord("q"):
