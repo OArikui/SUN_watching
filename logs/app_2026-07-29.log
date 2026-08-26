@@ -1,0 +1,37 @@
+2026-07-29 15:41:59,252 [INFO] __main__ <module>: ===== Processing started =====
+2026-07-29 15:41:59,253 [INFO] __main__ <module>: Importing standard modules...
+2026-07-29 15:41:59,253 [DEBUG] __main__ <module>: All standard modules imported successfully.
+2026-07-29 15:42:00,068 [INFO] __main__ <module>: Third-party modules imported successfully.
+2026-07-29 15:42:00,068 [DEBUG] __main__ <module>: Appended project root to system path:C:\projects\SUN_watching\dist\SUN_watching_app\_internal
+2026-07-29 15:42:09,005 [DEBUG] __main__ <module>: All custom modules imported successfully.
+2026-07-29 15:42:09,006 [INFO] __main__ <module>: Validating visualizer schema parameters.
+2026-07-29 15:42:09,008 [DEBUG] __main__ <module>: Visualizer parameters validated successfully.
+2026-07-29 15:42:09,008 [INFO] __main__ <module>: Attempting to connect to the camera...
+2026-07-29 15:42:09,008 [DEBUG] __main__ <module>: Successfully set ZWO_ASI_LIB environment variable:C:\projects\SUN_watching\dist\SUN_watching_app\_internal\lib\ASICamera2.dll
+2026-07-29 15:42:21,306 [INFO] __main__ <module>: Successfully connected to the camera.
+2026-07-29 15:42:21,354 [DEBUG] __main__ <module>: Camera properties configured successfully:
+{'band_width': 40, 'exposure': 30000, 'gain': 150, 'image_type': 0}
+2026-07-29 15:42:21,354 [INFO] __main__ <module>: Starting video capture...
+2026-07-29 15:42:21,354 [DEBUG] __main__ <module>: Capture status retrieved: width=1608, height=1104, binning=1, img_type=0
+2026-07-29 15:42:21,354 [DEBUG] __main__ <module>: Initializing visualization variables...
+2026-07-29 15:42:21,354 [INFO] __main__ <module>: Initializing Visualizer instance...
+2026-07-29 15:42:21,828 [INFO] __main__ <module>: Starting real-time visualization. Press 'q' or close the window to exit.
+2026-07-29 15:42:21,832 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 15:42:21,942 [DEBUG] __main__ <module>: Insufficient points for angle calculation (buffer <= 2).
+2026-07-29 15:42:32,796 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 15:42:32,836 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 15:42:32,880 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 15:42:32,928 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 15:42:32,977 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 15:42:33,030 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 15:42:34,360 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 15:42:34,418 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 15:43:54,931 [WARNING] __main__ <module>: MIN2 processing error: exceptions must derive from BaseException
+2026-07-29 15:44:13,676 [INFO] __main__ <module>: Visualization loop terminated (window closed).
+2026-07-29 15:44:13,676 [DEBUG] __main__ <module>: Total frames processed: 973
+2026-07-29 15:44:13,676 [DEBUG] __main__ <module>: Completed successfully. Total frames: 973, Dropped: 9, Time: 112.32s
+2026-07-29 15:44:13,676 [INFO] __main__ <module>: Releasing camera and resources...
+2026-07-29 15:44:13,689 [DEBUG] __main__ <module>: Camera stopped and closed successfully.
+2026-07-29 15:44:13,689 [INFO] __main__ <module>: Visualizer resources released.
+2026-07-29 15:44:13,689 [INFO] __main__ <module>: Camera successfully disconnected.
+2026-07-29 15:44:13,689 [INFO] __main__ <module>: ===== Processing finished =====
