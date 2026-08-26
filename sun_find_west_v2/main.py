@@ -4,7 +4,20 @@ import datetime
 import logging
 import traceback
 
-logfile = rf"logs\app_{datetime.datetime.now().strftime('%Y-%m-%d')}.log"  # noqa: DTZ005
+current = Path(__file__).resolve()
+# current.parent から最上階までループ
+for parent in [current.parent, *current.parents]:
+    if parent.name == "sun_find_west_v2":
+        root_path = parent
+        sys.path.append(root_path)
+        break
+dt = datetime.now().strftime("%Y%m%d")
+ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+reports_path = root_path.parent / f"report_{dt}"
+reports_path.mkdir(parents=True, exist_ok=True)
+
+logfile = reports_path / logs / f"sunfindwestV2_{ts}.log"  # noqa: DTZ005
+logfile.parent.mkdir(parents=True, exist_ok=True)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -87,15 +100,6 @@ except ImportError:
 else:
     logger.info("Third-party modules imported successfully.")
 
-current = Path(__file__).resolve()
-
-# current.parent から最上階までループ
-for parent in [current.parent, *current.parents]:
-    if parent.name == "sun_find_west_v2":
-        root_path = str(parent)
-        sys.path.append(root_path)
-        break
-
 
 try:
     from sun_find_west_v2.camera.controller import (
@@ -133,7 +137,7 @@ print("__setting parameter...")
 logger.info("Attempting to connect to the camera...")
 camera = None
 try:
-    env_filename = str(Path(root_path) / "camera" / "bin" / "ASICamera2.dll")
+    env_filename = str(root_path / "camera" / "bin" / "ASICamera2.dll")
     os.environ["ZWO_ASI_LIB"] = env_filename
     logger.debug(f"Successfully set ZWO_ASI_LIB environment variable:{env_filename}")
     camera = connect_camera(env_filename)
