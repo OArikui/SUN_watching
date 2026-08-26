@@ -211,6 +211,18 @@ try:
         "Starting real-time visualization. Press 'q' or close the window to exit."
     )
 
+    def reset_buffers():
+        frame_count = 0
+        buffer_c.clear()
+        buffer_t.clear()
+        logger.info("軌跡バッファが手動でリセットされました。")
+
+    viz.add_button(
+        name="reset_buffer",
+        label="Reset",
+        on_clicked=reset_buffers,
+        position=[0.02, 0.05, 0.12, 0.04]
+
     viz.add_slider(
         name="gain",
         label="Gain (dB)",
