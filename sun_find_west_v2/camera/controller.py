@@ -119,7 +119,7 @@ control_map = {
     "flip": asi.ASI_FLIP,
     "auto_max_gain": asi.ASI_AUTO_MAX_GAIN,
     "auto_max_exp": asi.ASI_AUTO_MAX_EXP,
-    "auto_target_brightness": asi.ASI_AUTO_TARGET_BRIGHTNESS,
+    "auto_target_brightness": asi.ASI_AUTO_MAX_BRIGHTNESS,
     "target_temp": asi.ASI_TARGET_TEMP,
     "cooler_on": asi.ASI_COOLER_ON,
 }

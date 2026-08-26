@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
-from pathes import pathes
+from config.pathes import pathes
 
 globals().update(pathes)
 
