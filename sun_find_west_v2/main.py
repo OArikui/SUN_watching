@@ -116,15 +116,15 @@ else:
 
 
 try:
-    from sun_find_west_v2.camera.controller import (
+    from camera.controller import (
         apply_camera_config,
         connect_camera,
         handle_config,
     )
-    from sun_find_west_v2.config.config_manager import parameter
-    from sun_find_west_v2.core.drawer import Visualizer
-    from sun_find_west_v2.core.MIN2ver2 import MIN2_ignore_sunspots as MIN2
-    from sun_find_west_v2.core.ransac import calculate_west_angle_robust as west_angle
+    from config.config_manager import parameter
+    from core.drawer import Visualizer
+    from core.MIN2ver2 import MIN2_ignore_sunspots as MIN2
+    from core.ransac import calculate_west_angle_robust as west_angle
 except ImportError:
     logger.error("Failed to import custom modules.")
     logger.error(traceback.format_exc())

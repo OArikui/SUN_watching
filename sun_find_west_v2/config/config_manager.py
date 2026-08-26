@@ -25,17 +25,21 @@ if __name__ == "__main__":
     # ========
     update_basedon_textconfig = True
     # ========
+    if not logfile.parent.exists():
+        logfile.parent.mkdir(parents=True, exist_ok=True)
+        logger.debug(f"Created directory: {logpath.parent}")
+        
+    from pathes import pathes
+    from utils_json import json_saver, json_loader, sha256_valid
+    from cache_update import generate_configJ_configT
+    
+    
+else:
 
+    from config.pathes import pathes
+    from config.utils_json import json_saver, json_loader, sha256_valid
+    from config.cache_update import generate_configJ_configT
 logger = logging.getLogger(__name__)
-
-if not logfile.parent.exists():
-    logfile.parent.mkdir(parents=True, exist_ok=True)
-    logger.debug(f"Created directory: {logpath.parent}")
-
-from pathes import pathes
-from utils_json import json_saver, json_loader, sha256_valid
-from cache_update import generate_configJ_configT
-
 CONFIG_JSON_PATH = pathes["CONFIG_JSON_PATH"]
 CONFIG_TEXT_PATH = pathes["CONFIG_TEXT_PATH"]
 DEFAULT_JSON_PATH = pathes["DEFAULT_JSON_PATH"]

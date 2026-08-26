@@ -1,8 +1,8 @@
 import logging
 from pathlib import Path
 
-from utils_json import sha256_file, json_loader, json_saver
-from pathes import pathes
+from config.utils_json import sha256_file, json_loader, json_saver
+from config.pathes import pathes
 
 logger = logging.getLogger(__name__)
 
