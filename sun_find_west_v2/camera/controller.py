@@ -19,6 +19,14 @@ else:
     logger.info("standard modules imported successfully")
 
 try:
+    from vid_dummy import VideoDummyCamera
+
+    HAS_VID_DUMMY = True
+except ImportError:
+    HAS_VID_DUMMY = False
+    VideoDummyCamera = None
+
+try:
     import zwoasi as asi
 except ImportError:
     logger.error("Failed to import zwoasi module")
@@ -61,6 +69,22 @@ def connect_camera(dll_path):
 
     try:
         while True:
+            # 標準入力の入力を非ブロックで確認
+            user_input = check_stdin_input()
+            if user_input:
+                if user_input == "DUMVID":
+                    if HAS_VID_DUMMY:
+                        logger.info("DUMVID received. Returning VideoDummyCamera instance.")
+                        try:
+                            # vid_dummy (VideoDummyCamera) のインスタンスを作成して返す
+                            dummy_cam = VideoDummyCamera(dummy_video_path)
+                            return dummy_cam
+                        except Exception as e:
+                            logger.error(f"Failed to initialize VideoDummyCamera: {e}")
+                    else:
+                        print("\n[INFO] ダミーコード(DUMVID)が入力されましたが、vid_dummy モジュールをインポートできませんでした。")
+                        logger.warning("DUMVID received, but vid_dummy is not available.")
+                        
             try:
                 cameras = asi.list_cameras()
             except (asi.ZWO_Error, OSError):
