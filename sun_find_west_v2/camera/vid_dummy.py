@@ -1,4 +1,6 @@
 import time
+import tkinter as tk
+from tkinter import filedialog
 import cv2
 import numpy as np
 try:
@@ -20,7 +22,29 @@ class VideoDummyCamera:
     フレームを提供するダミークラス。
     """
     
-    def __init__(self, video_path: str):
+    def __init__(self, video_path: str = None):
+        """
+        Args:
+            video_path (str, optional): 動画ファイルのパス。
+                                       指定がない場合はファイルダイアログを表示して選択させます。
+        """
+        if not video_path:
+            # tkinterのルートウィンドウを表示しないように隠す
+            root = tk.Tk()
+            root.withdraw()
+            root.attributes('-topmost', True) # ダイアログを最前面に表示
+            
+            video_path = filedialog.askopenfilename(
+                title="再生する動画ファイルを選択してください",
+                filetypes=[
+                    ("動画ファイル", "*.mp4 *.avi *.mov *.mkv *.wmv"),
+                    ("すべてのファイル", "*.*")
+                ]
+            )
+            root.destroy()
+            
+            if not video_path:
+                raise ValueError("動画ファイルが選択されませんでした。")
         self.video_path = video_path
         self.cap = cv2.VideoCapture(video_path)
         if not self.cap.isOpened():
