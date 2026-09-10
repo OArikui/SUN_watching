@@ -19,7 +19,7 @@ else:
     logger.info("standard modules imported successfully")
 
 try:
-    from vid_dummy import VideoDummyCamera
+    from camera.vid_dummy import VideoDummyCamera
 
     HAS_VID_DUMMY = True
 except ImportError:
@@ -34,7 +34,26 @@ except ImportError:
     raise
 else:
     logger.info("zwoasi modules imported successfully")
+    
+def check_stdin_input() -> str:
+    """標準入力から1行（Enterまで）を非ブロックで取得するヘルパー関数"""
+    input_str = ""
+    if os.name == "nt":  # Windows環境
+        import msvcrt
 
+        if msvcrt.kbhit():
+            try:
+                line = sys.stdin.readline()
+                return line.strip()
+            except Exception:
+                return ""
+    else:  # Linux / macOS環境
+        import select
+
+        if select.select([sys.stdin], [], [], 0.0)[0]:
+            line = sys.stdin.readline()
+            return line.strip()
+    return ""
 
 def connect_camera(dll_path):
     """
@@ -77,7 +96,7 @@ def connect_camera(dll_path):
                         logger.info("DUMVID received. Returning VideoDummyCamera instance.")
                         try:
                             # vid_dummy (VideoDummyCamera) のインスタンスを作成して返す
-                            dummy_cam = VideoDummyCamera(dummy_video_path)
+                            dummy_cam = VideoDummyCamera()
                             return dummy_cam
                         except Exception as e:
                             logger.error(f"Failed to initialize VideoDummyCamera: {e}")

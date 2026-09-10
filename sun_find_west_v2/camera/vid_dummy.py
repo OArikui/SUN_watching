@@ -37,7 +37,7 @@ class VideoDummyCamera:
             video_path = filedialog.askopenfilename(
                 title="再生する動画ファイルを選択してください",
                 filetypes=[
-                    ("動画ファイル", "*.mp4 *.avi *.mov *.mkv *.wmv"),
+                    ("動画ファイル", "*.mp4 *.avi *.mov *.mkv *.wmv *.ser"),
                     ("すべてのファイル", "*.*")
                 ]
             )
@@ -65,6 +65,98 @@ class VideoDummyCamera:
         }
         self.is_capturing = False
 
+    def get_camera_property(self):
+        """
+        zwoasi.Camera.get_camera_property() の互換メソッド。
+        必要なプロパティ情報を辞書形式で返します。
+        """
+        return {
+            "Name": "Dummy Video Camera",
+            "CameraID": -1,
+            "MaxHeight": self.height,
+            "MaxWidth": self.width,
+            "IsColorCam": True,
+            "BayerPattern": 0,
+            "SupportedBins": [1, 2, 4],
+            "SupportedVideoFormat": [getattr(asi, "ASI_IMG_RAW8", 0)],
+            "PixelSize": 3.75,
+            "MechanicalShutter": False,
+            "ST4Port": False,
+            "IsCoolerCam": False,
+            "IsUSB3Host": True,
+            "IsUSB3Camera": True,
+            "ELEC_PER_ADU": 1.0,
+            "BitDepth": 8,
+        }
+    
+    def get_controls(self):
+        """
+        zwoasi.Camera.get_controls() の互換メソッド。
+        カメラがサポートするコントロール情報 (コントロールID -> 制御パラメータ情報の辞書) を返します。
+        """
+        # ASIカメラで利用される主要なコントロールIDを取得
+        exposure_id = getattr(asi, "ASI_EXPOSURE", 2)
+        gain_id = getattr(asi, "ASI_GAIN", 1)
+        offset_id = getattr(asi, "ASI_OFFSET", 3)
+        bandwidth_id = getattr(asi, "ASI_BANDWIDTHOVERLOAD", 4)
+        target_temp_id = getattr(asi, "ASI_TARGET_TEMP", 5)
+        cooler_on_id = getattr(asi, "ASI_COOLER_ON", 6)
+
+        # apply_camera_config での 'in' 判定を通過できるように辞書を作成
+        return {
+            exposure_id: {
+                "Name": "Exposure",
+                "MinValue": 1,
+                "MaxValue": 1000000,
+                "DefaultValue": 10000,
+            },
+            gain_id: {
+                "Name": "Gain",
+                "MinValue": 0,
+                "MaxValue": 600,
+                "DefaultValue": 100,
+            },
+            offset_id: {
+                "Name": "Offset",
+                "MinValue": 0,
+                "MaxValue": 100,
+                "DefaultValue": 10,
+            },
+            bandwidth_id: {
+                "Name": "BandwidthOverload",
+                "MinValue": 40,
+                "MaxValue": 100,
+                "DefaultValue": 40,
+            },
+            target_temp_id: {
+                "Name": "TargetTemp",
+                "MinValue": -50,
+                "MaxValue": 30,
+                "DefaultValue": 0,
+            },
+            cooler_on_id: {
+                "Name": "CoolerOn",
+                "MinValue": 0,
+                "MaxValue": 1,
+                "DefaultValue": 0,
+            },
+        }
+
+    def set_roi_format(self, width=None, height=None, bins=1, image_type=0, start_x=0, start_y=0):
+        """zwoasi.Camera.set_roi_format() の互換メソッド。
+
+        ROI（関心領域）サイズやビニング、画像タイプをダミー値として保存します。
+        """
+        if width is not None:
+            self.width = int(width)
+        if height is not None:
+            self.height = int(height)
+
+        self.bins = bins
+        self.image_type = image_type
+        self.start_x = start_x
+        self.start_y = start_y
+    
     def start_video_capture(self):
         """動画キャプチャの開始を模倣"""
         self.is_capturing = True
