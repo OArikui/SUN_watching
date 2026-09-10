@@ -23,29 +23,31 @@ if root_path is None:
 
 dt = datetime.datetime.now().strftime("%Y%m%d")
 ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-reports_path = root_path.parent / f"report_{dt}"
+reports_path = root_path.parent / "report" / f"{dt}"
 reports_path.mkdir(parents=True, exist_ok=True)
 
 logfile = reports_path / "logs" / f"sunfindwestV2_{ts}.log"
 logfile.parent.mkdir(parents=True, exist_ok=True)
 
-# ロガーの設定
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-formatter = logging.Formatter(
-    "%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s"
-)
+format = "%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s"
+formatter = logging.Formatter(format)
 
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
 console_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
 
 file_handler = logging.FileHandler(filename=logfile, mode="a", encoding="utf-8")
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+
+logging.basicConfig(level=logging.DEBUG, handlers=[file_handler, console_handler])
+
+"""
+    filename=logfile,
+    format=format,"""
+# ロガーの設定
+logger = logging.getLogger(__name__)
+
 
 print(f"log={logfile}")
 print("Initializing forced termination procedure…")

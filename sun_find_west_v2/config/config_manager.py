@@ -9,24 +9,25 @@ if GUISET:
 """
 
 update_basedon_textconfig = False
+logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     CONFIG_ROOT = Path(__file__).parent.resolve()
     sys.path.append(str(CONFIG_ROOT))
 
-    logfile = Path(f"logs/config_{datetime.datetime.now().strftime('%Y-%m-%d')}.log")
+    logpath = Path(f"logs/config_{datetime.datetime.now().strftime('%Y-%m-%d')}.log")
 
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s %(funcName)s: %(message)s",
-        filename=logfile,
+        filename=logpath,
         filemode="a",
     )
     # ========
     update_basedon_textconfig = True
     # ========
-    if not logfile.parent.exists():
-        logfile.parent.mkdir(parents=True, exist_ok=True)
+    if not logpath.parent.exists():
+        logpath.parent.mkdir(parents=True, exist_ok=True)
         logger.debug(f"Created directory: {logpath.parent}")
 
     from cache_update import generate_configJ_configT
