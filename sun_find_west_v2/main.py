@@ -26,7 +26,7 @@ ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 reports_path = root_path.parent / f"report_{dt}"
 reports_path.mkdir(parents=True, exist_ok=True)
 
-logfile = reports_path / "logs" / f"sunfindwestV2_{ts}.log"  # noqa: DTZ005
+logfile = reports_path / "logs" / f"sunfindwestV2_{ts}.log"
 logfile.parent.mkdir(parents=True, exist_ok=True)
 
 # ロガーの設定
@@ -51,6 +51,7 @@ print(f"log={logfile}")
 print("Initializing forced termination procedure…")
 from typing import NoReturn
 
+
 def cancel_process(camera=None, viz=None) -> NoReturn:
     """
     初期化中（アプリ起動前）に致命的エラーが発生した場合の強制終了処理。
@@ -69,9 +70,9 @@ def cancel_process(camera=None, viz=None) -> NoReturn:
                 logger.debug("Camera closed in cancel_process.")
             except Exception as e:
                 logger.error(f"Failed to close camera: {e}")
-        
-        if 'cv2' in sys.modules:
-            sys.modules['cv2'].destroyAllWindows()
+
+        if "cv2" in sys.modules:
+            sys.modules["cv2"].destroyAllWindows()
 
         if viz is not None:
             try:
@@ -84,11 +85,12 @@ def cancel_process(camera=None, viz=None) -> NoReturn:
     logger.info("===== FINISHED =====")
     sys.exit(1)
 
+
 # モジュールインポートとパラメータロード
 logger.info("Importing standard modules...")
 try:
-    import os
     import csv
+    import os
     from collections import deque
     from time import time
 except ImportError:
@@ -111,9 +113,9 @@ else:
 try:
     from camera.controller import (
         apply_camera_config,
+        asi,
         connect_camera,
         handle_config,
-        asi
     )
     from config.config_manager import parameter
     from core.drawer import Visualizer
@@ -153,7 +155,7 @@ try:
     env_filename = str(root_path / "camera" / "bin" / lib_name)
     os.environ["ZWO_ASI_LIB"] = env_filename
     logger.debug(f"Successfully set ZWO_ASI_LIB environment variable:{env_filename}")
-    
+
     camera = connect_camera(env_filename)
 except KeyboardInterrupt:
     logger.info("Connection wait interrupted by user.")
@@ -193,6 +195,7 @@ _frame_format_map = {
     getattr(asi, "ASI_IMG_RGB24", 1): (np.uint8, 3),
 }
 
+
 def frame_to_image(frame: bytes, width: int, height: int, img_type: int) -> np.ndarray:
     """
     カメラから取得したバイト列を、img_typeに応じたNumPy配列に変換します。
@@ -211,6 +214,7 @@ def frame_to_image(frame: bytes, width: int, height: int, img_type: int) -> np.n
     if channels == 1:
         return arr.reshape(height, width)
     return arr.reshape(height, width, channels)
+
 
 cap_dir = reports_path / "captures"
 cap_dir.mkdir(parents=True, exist_ok=True)
@@ -253,21 +257,40 @@ class SunTrackerApp:
     def _bind_ui_callbacks(self):
         """UIコンポーネント（ボタン・スライダー）へのイベントバインド"""
         self.viz.add_button(
-            name="reset_buffer", label="Reset", on_clicked=self.reset_buffers, position=[0.02, 0.05, 0.07, 0.04]
+            name="reset_buffer",
+            label="Reset",
+            on_clicked=self.reset_buffers,
+            position=[0.02, 0.05, 0.07, 0.04],
         )
         self.viz.add_button(
-            name="capture_image", label="Capture", on_clicked=self.request_capture, position=[0.10, 0.05, 0.07, 0.04]
+            name="capture_image",
+            label="Capture",
+            on_clicked=self.request_capture,
+            position=[0.10, 0.05, 0.07, 0.04],
         )
         self.viz.add_button(
-            name="quit", label="Quit", on_clicked=self.request_quit, position=[0.18, 0.05, 0.07, 0.04]
+            name="quit",
+            label="Quit",
+            on_clicked=self.request_quit,
+            position=[0.18, 0.05, 0.07, 0.04],
         )
         self.viz.add_slider(
-            name="gain", label="Gain (dB)", valmin=0, valmax=300, valinit=150, valfmt="%1.0f",
-            on_change=lambda val: handle_config(self.camera, asi.ASI_GAIN, val)
+            name="gain",
+            label="Gain (dB)",
+            valmin=0,
+            valmax=300,
+            valinit=150,
+            valfmt="%1.0f",
+            on_change=lambda val: handle_config(self.camera, asi.ASI_GAIN, val),
         )
         self.viz.add_slider(
-            name="exposure", label="Exposure (µs=1e-6s)", valmin=1000, valmax=100000, valinit=30000, valfmt="%1.0f",
-            on_change=lambda val: handle_config(self.camera, asi.ASI_EXPOSURE, val)
+            name="exposure",
+            label="Exposure (µs=1e-6s)",
+            valmin=1000,
+            valmax=100000,
+            valinit=30000,
+            valfmt="%1.0f",
+            on_change=lambda val: handle_config(self.camera, asi.ASI_EXPOSURE, val),
         )
 
     def reset_buffers(self):
@@ -321,10 +344,14 @@ class SunTrackerApp:
         Args:
             csv_headers (list): CSVファイルに出力するヘッダー行のリスト
         """
-        logger.info("Starting real-time visualization. Press the 'Quit' button or close the window to exit.")
-        
+        logger.info(
+            "Starting real-time visualization. Press the 'Quit' button or close the window to exit."
+        )
+
         try:
-            with open(self.csv_file_path, mode="w", newline="", encoding="utf-8") as csv_file:
+            with open(
+                self.csv_file_path, mode="w", newline="", encoding="utf-8"
+            ) as csv_file:
                 csv_writer = csv.writer(csv_file)
                 csv_writer.writerow(csv_headers)
 
@@ -353,13 +380,13 @@ class SunTrackerApp:
 
                     self.buffer_c.append([cx, cy])
                     buf_c_arr = np.array(self.buffer_c)
-                    recent_pts = buf_c_arr[-self.buf_lookback:]
+                    recent_pts = buf_c_arr[-self.buf_lookback :]
 
                     capture_time_unix = time()
                     capture_time_iso = datetime.datetime.now().isoformat()
                     self.buffer_t.append(capture_time_unix)
                     buf_t_arr = np.array(self.buffer_t)
-                    recent_timestamps = buf_t_arr[-self.buf_lookback:]
+                    recent_timestamps = buf_t_arr[-self.buf_lookback :]
 
                     # 2. 角度の堅牢な計算 (RANSACベース)
                     if len(recent_pts) > 2:
@@ -367,18 +394,19 @@ class SunTrackerApp:
                             result = west_angle(recent_pts, recent_timestamps)
                             if result is None:
                                 raise RuntimeError
-                            robust_angle, vectorYX = result
+                            robust_angle, _vectorYX = result
                         except (ValueError, TypeError, RuntimeError) as e:
                             logger.warning(f"Error calculating robust west angle: {e}")
                             robust_angle = None
                     else:
                         robust_angle = None
-                        vectorYX = (0.0, 0.0)
 
                     # 3. カメラハードウェア状態の取得
                     try:
                         current_gain = self.camera.get_control_value(asi.ASI_GAIN)[0]
-                        current_exposure = self.camera.get_control_value(asi.ASI_EXPOSURE)[0]
+                        current_exposure = self.camera.get_control_value(
+                            asi.ASI_EXPOSURE
+                        )[0]
                         temp_raw = self.camera.get_control_value(asi.ASI_TEMPERATURE)[0]
                         current_temp = round(temp_raw / 10.0, 1)
                     except asi.ZWO_Error as e:
@@ -387,10 +415,20 @@ class SunTrackerApp:
 
                     # 4. 解析結果と状態のロギング
                     try:
-                        csv_writer.writerow([
-                            capture_time_iso, capture_time_unix, self.frame_count, current_temp,
-                            current_gain, current_exposure, cx, cy, r, robust_angle,
-                        ])
+                        csv_writer.writerow(
+                            [
+                                capture_time_iso,
+                                capture_time_unix,
+                                self.frame_count,
+                                current_temp,
+                                current_gain,
+                                current_exposure,
+                                cx,
+                                cy,
+                                r,
+                                robust_angle,
+                            ]
+                        )
                         csv_file.flush()
                     except Exception as e:
                         logger.error(f"Failed to write row to CSV: {e}")
@@ -398,8 +436,14 @@ class SunTrackerApp:
                     # 5. UIの描画更新
                     try:
                         self.viz.update(
-                            img, cx, cy, r, recent_pts, robust_angle, 
-                            frame_idx=self.frame_count, total_frames="∞"
+                            img,
+                            cx,
+                            cy,
+                            r,
+                            recent_pts,
+                            robust_angle,
+                            frame_idx=self.frame_count,
+                            total_frames="∞",
                         )
                     except Exception as e:
                         logger.warning(f"Visualizer update failed: {e}")
@@ -407,12 +451,18 @@ class SunTrackerApp:
                     # 6. 画像のオンデマンド保存
                     if self.capture_requested:
                         self.capture_requested = False
-                        cap_ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
-                        raw_path = self.cap_dir / f"raw_{cap_ts}_f{self.frame_count}.png"
+                        cap_ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")[
+                            :-3
+                        ]
+                        raw_path = (
+                            self.cap_dir / f"raw_{cap_ts}_f{self.frame_count}.png"
+                        )
                         if cv2.imwrite(str(raw_path), img):
                             logger.info(f"キャプチャ保存完了:{raw_path.name}")
                         else:
-                            logger.error(f"キャプチャ保存失敗: \n path = {raw_path.name}")
+                            logger.error(
+                                f"キャプチャ保存失敗: \n path = {raw_path.name}"
+                            )
 
                     # 7. ウィンドウが外部から閉じられたかの検知
                     if not self.viz.is_alive():
@@ -421,20 +471,26 @@ class SunTrackerApp:
 
             # 正常終了時の統計ログ
             elapsed_time = float(time() - self.st_time)
-            logger.debug(f"Completed successfully. Total frames: {self.frame_count}, Dropped: {self.dropped_frames}, Time: {elapsed_time:.2f}s")
+            logger.debug(
+                f"Completed successfully. Total frames: {self.frame_count}, Dropped: {self.dropped_frames}, Time: {elapsed_time:.2f}s"
+            )
 
         except KeyboardInterrupt as e:
             elapsed_time = float(time() - self.st_time)
             logger.info(f"Keyboard interrupt: {e}")
-            logger.debug(f"Terminated by keyboard interrupt. Total frames: {self.frame_count}, Dropped: {self.dropped_frames}, Time: {elapsed_time:.2f}s")
+            logger.debug(
+                f"Terminated by keyboard interrupt. Total frames: {self.frame_count}, Dropped: {self.dropped_frames}, Time: {elapsed_time:.2f}s"
+            )
             sys.exit(1)
-            
+
         except RuntimeError as e:
             elapsed_time = float(time() - self.st_time)
             logger.error(f"Runtime error occurred: {e}")
-            logger.debug(f"Terminated with error. Total frames: {self.frame_count}, Dropped: {self.dropped_frames}, Time: {elapsed_time:.2f}s")
+            logger.debug(
+                f"Terminated with error. Total frames: {self.frame_count}, Dropped: {self.dropped_frames}, Time: {elapsed_time:.2f}s"
+            )
             sys.exit(1)
-            
+
         finally:
             self.cleanup()
 
@@ -447,10 +503,10 @@ if __name__ == "__main__":
         sys.exit(1)
 
     logger.info("Initializing Visualizer instance...")
-    
+
     csv_file_path = reports_path / f"sun_data_{ts}_BYsunfindwestV2.csv"
     logger.info(f"csv_file_path: {csv_file_path}")
-    
+
     csv_headers = [
         "timestamp_iso",
         "timestamp_unix",
@@ -468,12 +524,12 @@ if __name__ == "__main__":
 
     img_info = (width, height, img_type)
     app = SunTrackerApp(
-        camera=camera, 
-        viz=viz, 
-        main_param=main_param, 
-        csv_file_path=csv_file_path, 
-        cap_dir=cap_dir, 
-        img_info=img_info
+        camera=camera,
+        viz=viz,
+        main_param=main_param,
+        csv_file_path=csv_file_path,
+        cap_dir=cap_dir,
+        img_info=img_info,
     )
 
     app.run(csv_headers)

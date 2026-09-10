@@ -1,8 +1,8 @@
 import logging
 from pathlib import Path
 
-from config.utils_json import sha256_file, json_loader, json_saver
 from config.pathes import pathes
+from config.utils_json import json_loader, json_saver, sha256_file
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ def generate_outlinesJ_defaultJ(outlinepath: Path, defaultpath: Path) -> dict:
     for hk, hv in data.items():
         ls_h2 = {}
         for hhk, hhv in hv.items():
-            ls_h2[hhk] = [k for k in hhv.keys() if not k.endswith("-desc")]
+            ls_h2[hhk] = [k for k in hhv if not k.endswith("-desc")]
         outline[hk] = ls_h2
 
     return json_saver(outline, outlinepath)
@@ -113,7 +113,7 @@ def generate_configJ_configT(configpath: Path, textpath: Path) -> dict:
         if line[:3] == "===":
             if stash:
                 data_h2[h2] = stash
-                stash={}
+                stash = {}
             if data_h2:
                 data_h1[h1] = data_h2
             h1 = line.split("===")[1]
