@@ -240,7 +240,7 @@ class SunTrackerApp:
         """
         self.camera = camera
         self.viz = viz
-        self.buf_lookback = main_param["buf_lookback"]
+        self.buf_lookback = int(main_param["Analyzer"]["buf_lookback"])
         self.csv_file_path = csv_file_path
         self.cap_dir = cap_dir
         self.width, self.height, self.img_type = img_info
