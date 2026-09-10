@@ -1,28 +1,46 @@
 import time
 import tkinter as tk
 from tkinter import filedialog
+
 import cv2
-import numpy as np
+
 try:
     import zwoasi as asi
 except ImportError:
     # zwoasiがインストールされていない環境でも動くようダミーを定義
     class DummyASI:
+        dum = True
         ZWO_CaptureError = Exception
         ZWO_Error = Exception
         ASI_GAIN = 1
         ASI_EXPOSURE = 2
         ASI_TEMPERATURE = 3
+        ASI_OFFSET = 4
+        ASI_GAMMA = 5
+        ASI_BANDWIDTHOVERLOAD = 6
+        ASI_HIGH_SPEED_MODE = 7
+        ASI_HARDWARE_BIN = 8
+        ASI_FLIP = 9
+        ASI_AUTO_MAX_GAIN = 10
+        ASI_AUTO_MAX_EXP = 11
+        ASI_AUTO_MAX_BRIGHTNESS = 12
+        ASI_TARGET_TEMP = 13
+        ASI_COOLER_ON = 14
         ASI_IMG_RAW8 = 0
+        ASI_IMG_RAW16 = 0
+        ASI_IMG_RGB24 = 0
+        ASI_IMG_Y8 = 0
+
     asi = DummyASI()
+
 
 class VideoDummyCamera:
     """
     zwoasi.Cameraクラスの動作を模倣し、指定された動画ファイルから
     フレームを提供するダミークラス。
     """
-    
-    def __init__(self, video_path: str = None):
+
+    def __init__(self, video_path: str | None = None):
         """
         Args:
             video_path (str, optional): 動画ファイルのパス。
@@ -32,36 +50,36 @@ class VideoDummyCamera:
             # tkinterのルートウィンドウを表示しないように隠す
             root = tk.Tk()
             root.withdraw()
-            root.attributes('-topmost', True) # ダイアログを最前面に表示
-            
+            root.attributes("-topmost", True)  # ダイアログを最前面に表示
+
             video_path = filedialog.askopenfilename(
                 title="再生する動画ファイルを選択してください",
                 filetypes=[
                     ("動画ファイル", "*.mp4 *.avi *.mov *.mkv *.wmv *.ser"),
-                    ("すべてのファイル", "*.*")
-                ]
+                    ("すべてのファイル", "*.*"),
+                ],
             )
             root.destroy()
-            
+
             if not video_path:
                 raise ValueError("動画ファイルが選択されませんでした。")
         self.video_path = video_path
         self.cap = cv2.VideoCapture(video_path)
         if not self.cap.isOpened():
             raise ValueError(f"動画ファイルを開けませんでした: {video_path}")
-            
+
         # 動画のプロパティを取得
         self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         if self.fps <= 0:
             self.fps = 30.0
-            
+
         # 仮想のコントロール値 (Gain, Exposure, Temp)
         self.controls = {
             getattr(asi, "ASI_GAIN", 1): 150,
             getattr(asi, "ASI_EXPOSURE", 2): 30000,
-            getattr(asi, "ASI_TEMPERATURE", 3): 250, # 25.0℃
+            getattr(asi, "ASI_TEMPERATURE", 3): 250,  # 25.0℃
         }
         self.is_capturing = False
 
@@ -88,7 +106,7 @@ class VideoDummyCamera:
             "ELEC_PER_ADU": 1.0,
             "BitDepth": 8,
         }
-    
+
     def get_controls(self):
         """
         zwoasi.Camera.get_controls() の互換メソッド。
@@ -142,7 +160,9 @@ class VideoDummyCamera:
             },
         }
 
-    def set_roi_format(self, width=None, height=None, bins=1, image_type=0, start_x=0, start_y=0):
+    def set_roi_format(
+        self, width=None, height=None, bins=1, image_type=0, start_x=0, start_y=0
+    ):
         """zwoasi.Camera.set_roi_format() の互換メソッド。
 
         ROI（関心領域）サイズやビニング、画像タイプをダミー値として保存します。
@@ -156,7 +176,7 @@ class VideoDummyCamera:
         self.image_type = image_type
         self.start_x = start_x
         self.start_y = start_y
-    
+
     def start_video_capture(self):
         """動画キャプチャの開始を模倣"""
         self.is_capturing = True
@@ -184,7 +204,7 @@ class VideoDummyCamera:
         """コントロール値と自動設定フラグ(bool)のタプルを返す"""
         val = self.controls.get(control_type, 0)
         return (val, False)
-        
+
     def set_control_value(self, control_type, value, auto=False):
         """UIからの設定変更を受け付けるダミーメソッド"""
         self.controls[control_type] = value
@@ -206,7 +226,9 @@ class VideoDummyCamera:
             self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             ret, frame = self.cap.read()
             if not ret:
-                raise getattr(asi, "ZWO_CaptureError", Exception)("Failed to read dummy frame")
+                raise getattr(asi, "ZWO_CaptureError", Exception)(
+                    "Failed to read dummy frame"
+                )
 
         # オリジナルの frame_to_image が numpy.frombuffer を使って bytes をパースするため、
         # グレースケール(1チャンネル)に変換してから bytes として返す

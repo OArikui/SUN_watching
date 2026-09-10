@@ -20,7 +20,7 @@ try:
     import matplotlib.pyplot as plt
     import numpy as np
     from matplotlib.patches import Arc, Circle, Polygon
-    from matplotlib.widgets import Slider, Button
+    from matplotlib.widgets import Button, Slider
 except ImportError:
     logger.error("Failed to import third-party module")
     logger.error(traceback.format_exc())

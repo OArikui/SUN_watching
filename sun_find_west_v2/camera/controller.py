@@ -20,25 +20,20 @@ else:
     logger.info("standard modules imported successfully")
 
 try:
-    from camera.vid_dummy import VideoDummyCamera
-
-    HAS_VID_DUMMY = True
+    from camera.vid_dummy import VideoDummyCamera, asi
 except ImportError:
-    HAS_VID_DUMMY = False
     VideoDummyCamera = None
+    logger.critical("no module to be asi")
+    raise
 
 try:
-    import zwoasi as asi
-except ImportError:
-    logger.error("Failed to import zwoasi module")
-    logger.error(traceback.format_exc())
-    raise
-else:
-    logger.info("zwoasi modules imported successfully")
-    
+    ONLY_DUMMY = asi.dum
+except Exception:
+    ONLY_DUMMY = False
+
+
 def check_stdin_input() -> str:
     """標準入力から1行（Enterまで）を非ブロックで取得するヘルパー関数"""
-    input_str = ""
     if os.name == "nt":  # Windows環境
         import msvcrt
 
@@ -56,10 +51,18 @@ def check_stdin_input() -> str:
             return line.strip()
     return ""
 
+
 def connect_camera(dll_path):
     """
     ASIカメラの初期化と接続待機を行うモジュール
     """
+
+    if ONLY_DUMMY and VideoDummyCamera is not None:
+        logger.info("ダミーモードとして接続処理をskipします")
+        time.sleep(1)
+        dummy_cam = VideoDummyCamera()
+        return dummy_cam
+
     # 1. DLLパスの存在確認
     if not os.path.exists(dll_path):
         logger.error(
@@ -91,20 +94,20 @@ def connect_camera(dll_path):
         while True:
             # 標準入力の入力を非ブロックで確認
             user_input = check_stdin_input()
-            if user_input:
-                if user_input == "DUMVID":
-                    if HAS_VID_DUMMY:
-                        logger.info("DUMVID received. Returning VideoDummyCamera instance.")
-                        try:
-                            # vid_dummy (VideoDummyCamera) のインスタンスを作成して返す
-                            dummy_cam = VideoDummyCamera()
-                            return dummy_cam
-                        except Exception as e:
-                            logger.error(f"Failed to initialize VideoDummyCamera: {e}")
-                    else:
-                        print("\n[INFO] ダミーコード(DUMVID)が入力されましたが、vid_dummy モジュールをインポートできませんでした。")
-                        logger.warning("DUMVID received, but vid_dummy is not available.")
-                        
+            if VideoDummyCamera is not None and user_input == "DUMVID":
+                logger.info("DUMVID received. Returning VideoDummyCamera instance.")
+                try:
+                    # vid_dummy (VideoDummyCamera) のインスタンスを作成して返す
+                    dummy_cam = VideoDummyCamera()
+                    return dummy_cam
+                except Exception as e:
+                    logger.error(f"Failed to initialize VideoDummyCamera: {e}")
+            else:
+                print(
+                    "\n[INFO] ダミーコード(DUMVID)が入力されましたが、vid_dummy モジュールをインポートできませんでした。"
+                )
+                logger.warning("DUMVID received, but vid_dummy is not available.")
+
             try:
                 cameras = asi.list_cameras()
             except (asi.ZWO_Error, OSError):
@@ -205,13 +208,12 @@ def apply_camera_config(cam: asi.Camera, config: dict):
                     val = int(val)
                 try:
                     cam.set_control_value(control_type, val)
-                except asi.ZWO_Error as e:
+                except asi.ZWO_Error:
                     logger.exception(
                         f" __ENG{key} の設定に失敗しました (範囲外の値などの可能性)"
                     )
             else:
                 logger.warning(f"__ENGこのカメラは{key}に対応していません")
-                pass
 
     logger.info("__sucessful set camera config")
 
@@ -239,7 +241,7 @@ def handle_config(cam: asi.Camera, key: int, val: float) -> None:
     ASI_FAN_ON
     ASI_ANTI_DEW_HEATER"""
     try:
-        camset_control_value(key, int(val))
+        cam.set_control_value(key, int(val))
         logger.debug(f"{key} updated to: {int(val)}")
     except asi.ZWO_Error as e:
         logger.error(f"Failed to update {key}: {e}")

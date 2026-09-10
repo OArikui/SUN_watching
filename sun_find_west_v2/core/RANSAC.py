@@ -158,19 +158,19 @@ if __name__ == "__main__":
     try:
         len_robust = math.hypot(
             vx,
-            vy,  
+            vy,
         )
         plt.quiver(
             center_x,
             center_y,
-            (vx / len_robust) * 3,  
-            (vy / len_robust) * 3,  
+            (vx / len_robust) * 3,
+            (vy / len_robust) * 3,
             angles="xy",
             scale_units="xy",
             scale=1,
             color="darkblue",
             width=0.008,
-            label=f"RANSAC Vector ({robust_angle:.1f}°)",  
+            label=f"RANSAC Vector ({robust_angle:.1f}°)",
         )
     except NameError:
         # robust_angleが定義されていない場合（データ不足など）
