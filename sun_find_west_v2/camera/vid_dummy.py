@@ -8,12 +8,27 @@ try:
 except ImportError:
     # zwoasiがインストールされていない環境でも動くようダミーを定義
     class DummyASI:
+        dum=True
         ZWO_CaptureError = Exception
         ZWO_Error = Exception
         ASI_GAIN = 1
         ASI_EXPOSURE = 2
         ASI_TEMPERATURE = 3
+        ASI_OFFSET = 4
+        ASI_GAMMA = 5
+        ASI_BANDWIDTHOVERLOAD = 6
+        ASI_HIGH_SPEED_MODE = 7
+        ASI_HARDWARE_BIN = 8
+        ASI_FLIP = 9
+        ASI_AUTO_MAX_GAIN = 10
+        ASI_AUTO_MAX_EXP = 11
+        ASI_AUTO_MAX_BRIGHTNESS = 12
+        ASI_TARGET_TEMP = 13
+        ASI_COOLER_ON = 14
         ASI_IMG_RAW8 = 0
+        ASI_IMG_RAW16 = 0
+        ASI_IMG_RGB24 = 0
+        ASI_IMG_Y8 = 0
     asi = DummyASI()
 
 class VideoDummyCamera:

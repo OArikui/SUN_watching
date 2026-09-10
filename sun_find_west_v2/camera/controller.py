@@ -20,7 +20,7 @@ else:
     logger.info("standard modules imported successfully")
 
 try:
-    from camera.vid_dummy import VideoDummyCamera
+    from camera.vid_dummy import VideoDummyCamera,asi
 
     HAS_VID_DUMMY = True
 except ImportError:
@@ -28,14 +28,10 @@ except ImportError:
     VideoDummyCamera = None
 
 try:
-    import zwoasi as asi
-except ImportError:
-    logger.error("Failed to import zwoasi module")
-    logger.error(traceback.format_exc())
-    raise
-else:
-    logger.info("zwoasi modules imported successfully")
-    
+    ONLY_DUMMY = asi.dum
+except:
+    ONLY_DUMMY = False
+
 def check_stdin_input() -> str:
     """標準入力から1行（Enterまで）を非ブロックで取得するヘルパー関数"""
     input_str = ""
@@ -60,6 +56,13 @@ def connect_camera(dll_path):
     """
     ASIカメラの初期化と接続待機を行うモジュール
     """
+
+    if ONLY_DUMMY:
+        logger.info("ダミーモードとして接続処理をskipします")
+        time.sleep(1)
+        dummy_cam = VideoDummyCamera()
+        return dummy_cam
+
     # 1. DLLパスの存在確認
     if not os.path.exists(dll_path):
         logger.error(

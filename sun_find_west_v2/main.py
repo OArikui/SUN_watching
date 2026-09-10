@@ -101,7 +101,6 @@ else:
 try:
     import cv2
     import numpy as np
-    import zwoasi as asi
 except ImportError:
     logger.error("Failed to import third-party modules.")
     logger.error(traceback.format_exc())
@@ -114,11 +113,12 @@ try:
         apply_camera_config,
         connect_camera,
         handle_config,
+        asi
     )
     from config.config_manager import parameter
     from core.drawer import Visualizer
     from core.MIN2ver2 import MIN2_ignore_sunspots as MIN2
-    from core.ransac import calculate_west_angle_robust as west_angle
+    from core.RANSAC import calculate_west_angle_robust as west_angle
 except ImportError:
     logger.error("Failed to import custom modules.")
     logger.error(traceback.format_exc())
