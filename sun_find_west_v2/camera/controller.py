@@ -12,6 +12,8 @@ else:
 try:
     import os
     import time
+    from pathlib import Path
+
 except ImportError:
     logger.error("Failed to import standard module")
     logger.error(traceback.format_exc())
@@ -19,10 +21,11 @@ except ImportError:
 else:
     logger.info("standard modules imported successfully")
 
+type VideoDummyCameraType = VideoDummyCamera
+
 try:
     from camera.vid_dummy import VideoDummyCamera, asi
 except ImportError:
-    VideoDummyCamera = None
     logger.critical("no module to be asi")
     raise
 
@@ -52,7 +55,7 @@ def check_stdin_input() -> str:
     return ""
 
 
-def connect_camera(dll_path):
+def connect_camera(dll_path: Path) -> asi.Camera | VideoDummyCamera | None:
     """
     ASIカメラの初期化と接続待機を行うモジュール
     """
@@ -64,7 +67,7 @@ def connect_camera(dll_path):
         return dummy_cam
 
     # 1. DLLパスの存在確認
-    if not os.path.exists(dll_path):
+    if not dll_path.exists():
         logger.error(
             f"DLL not found: {dll_path}. Please place the 64-bit ASICamera2.dll at this path."
         )
@@ -172,7 +175,7 @@ control_map = {
 }
 
 
-def apply_camera_config(cam: asi.Camera, config: dict):
+def apply_camera_config(cam: asi.Camera, config: dict) -> None:
     """ZWO ASIカメラの各種パラメータを一括で設定する関数
 
     cam: 初期化済みの zwoasi.Camera インスタンス

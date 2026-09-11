@@ -1,7 +1,7 @@
 import hashlib
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ def sha256_file(filepath: Path, save: bool = True) -> str:
     if save:
         savepath = filepath.parent / f"{filepath.name}_valid"
         with open(savepath, "a", encoding="ascii") as f:
-            f.write(f"{datetime.now(timezone.utc)}\n{hashV}\n")
+            f.write(f"{datetime.now(UTC)}\n{hashV}\n")
     return hashV
 
 

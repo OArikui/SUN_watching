@@ -40,7 +40,7 @@ class VideoDummyCamera:
     フレームを提供するダミークラス。
     """
 
-    def __init__(self, video_path: str | None = None):
+    def __init__(self, video_path: str | None = None) -> None:
         """
         Args:
             video_path (str, optional): 動画ファイルのパス。
@@ -83,7 +83,7 @@ class VideoDummyCamera:
         }
         self.is_capturing = False
 
-    def get_camera_property(self):
+    def get_camera_property(self) -> dict:
         """
         zwoasi.Camera.get_camera_property() の互換メソッド。
         必要なプロパティ情報を辞書形式で返します。

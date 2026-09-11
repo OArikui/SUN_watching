@@ -7,6 +7,7 @@ import traceback
 from pathlib import Path
 from typing import NoReturn
 
+print("setting root path...")
 # パス解決と初期設定
 current = Path(__file__).resolve()
 root_path = None
@@ -22,6 +23,7 @@ if root_path is None:
     )
     sys.exit(1)
 
+print("setting logger...")
 dt = datetime.datetime.now().strftime("%Y%m%d")
 ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 reports_path = root_path.parent / "report" / f"{dt}"
@@ -41,16 +43,10 @@ file_handler = logging.FileHandler(filename=logfile, mode="a", encoding="utf-8")
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 
-logging.basicConfig(level=logging.DEBUG, handlers=[file_handler, console_handler])
-
-"""
-    filename=logfile,
-    format=format,"""
-# ロガーの設定
+logging.basicConfig(handlers=[file_handler, console_handler])
 logger = logging.getLogger(__name__)
 
-
-print(f"log={logfile}")
+logger.info(f"log={logfile}")
 print("Initializing forced termination procedure…")
 
 
@@ -89,7 +85,7 @@ def cancel_process(camera=None, viz=None) -> NoReturn:
 
 
 # モジュールインポートとパラメータロード
-logger.info("Importing standard modules...")
+print("Importing modules...")
 try:
     import csv
     import os
@@ -122,8 +118,9 @@ except ImportError:
 else:
     logger.debug("All custom modules imported successfully.")
 
+
+print("__loading parameter...")
 try:
-    print("__loading parameter...")
     camera_param = parameter["Camera"]
     main_param = parameter["sun_find_west_v2"]
     visualizer_constract_param = main_param["Visualizer"]
@@ -138,8 +135,8 @@ print("__setting parameter...")
 logger.info("Attempting to connect to the camera...")
 camera = None
 try:
-    env_filename = str(root_path / "camera" / "bin" / "ASICamera2.dll")
-    os.environ["ZWO_ASI_LIB"] = env_filename
+    env_filename = root_path / "camera" / "bin" / "ASICamera2.dll"
+    os.environ["ZWO_ASI_LIB"] = str(env_filename)
     logger.debug(f"Successfully set ZWO_ASI_LIB environment variable:{env_filename}")
 
     camera = connect_camera(env_filename)
@@ -467,14 +464,14 @@ class SunTrackerApp:
             logger.debug(
                 f"Terminated by keyboard interrupt. Total frames: {self.frame_count}, Dropped: {self.dropped_frames}, Time: {elapsed_time:.2f}s"
             )
-            cancel_process(viz=self.viz,camera = self.camera)
+            cancel_process(viz=self.viz, camera=self.camera)
         except RuntimeError as e:
             elapsed_time = float(time() - self.st_time)
             logger.error(f"Runtime error occurred: {e}")
             logger.debug(
-                f"Terminated with error. Total frames: {self.frame_count}, Dropped: {self.dropped_frames}, Time: {elapsed_time:.2f}s"
+                f"Terminated with error. Total frames: {self.frame_count}, Dropped:{self.dropped_frames}, Time: {elapsed_time:.2f}s"
             )
-            cancel_process(viz=self.viz,camera = self.camera)
+            cancel_process(viz=self.viz, camera=self.camera)
         finally:
             self.cleanup()
 
