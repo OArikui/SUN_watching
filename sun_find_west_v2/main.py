@@ -95,22 +95,14 @@ try:
     import os
     from collections import deque
     from time import time
+    import cv2
+    import numpy as np
 except ImportError:
     logger.error("Failed to import standard modules.")
     logger.error(traceback.format_exc())
     cancel_process()
 else:
     logger.debug("All standard modules imported successfully.")
-
-try:
-    import cv2
-    import numpy as np
-except ImportError:
-    logger.error("Failed to import third-party modules.")
-    logger.error(traceback.format_exc())
-    raise
-else:
-    logger.info("Third-party modules imported successfully.")
 
 try:
     from camera.controller import (

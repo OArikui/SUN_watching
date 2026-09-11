@@ -9,24 +9,17 @@ else:
     logger.info("--- starting as module process ---")
 try:
     import time
-except ImportError:
-    logger.error("Failed to import standard module")
-    logger.error(traceback.format_exc())
-    raise
 
-try:
     from collections.abc import Callable
-
     import matplotlib.pyplot as plt
     import numpy as np
     from matplotlib.patches import Arc, Circle, Polygon
     from matplotlib.widgets import Button, Slider
 except ImportError:
-    logger.error("Failed to import third-party module")
+    logger.error("Failed to import standard module")
     logger.error(traceback.format_exc())
     raise
 
-logger.info("Third-party modules imported successfully")
 
 __all__ = ["OpenCircleArrow", "Visualizer"]
 
