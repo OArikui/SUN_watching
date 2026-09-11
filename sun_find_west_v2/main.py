@@ -5,6 +5,7 @@ import logging
 import sys
 import traceback
 from pathlib import Path
+from typing import NoReturn
 
 # パス解決と初期設定
 current = Path(__file__).resolve()
@@ -51,7 +52,6 @@ logger = logging.getLogger(__name__)
 
 print(f"log={logfile}")
 print("Initializing forced termination procedure…")
-from typing import NoReturn
 
 
 def cancel_process(camera=None, viz=None) -> NoReturn:
@@ -138,15 +138,7 @@ print("__setting parameter...")
 logger.info("Attempting to connect to the camera...")
 camera = None
 try:
-    # OSごとにASIカメラの共有ライブラリ(DLL/SO/DYLIB)のファイル名を切り替え
-    _lib_by_platform = {
-        "win32": "ASICamera2.dll",
-        "cygwin": "ASICamera2.dll",
-        "linux": "libASICamera2.so",
-        "darwin": "libASICamera2.dylib",
-    }
-    lib_name = _lib_by_platform.get(sys.platform, "libASICamera2.so")
-    env_filename = str(root_path / "camera" / "bin" / lib_name)
+    env_filename = str(root_path / "camera" / "bin" / "ASICamera2.dll")
     os.environ["ZWO_ASI_LIB"] = env_filename
     logger.debug(f"Successfully set ZWO_ASI_LIB environment variable:{env_filename}")
 
@@ -178,7 +170,7 @@ if camera is not None:
         cancel_process(camera=camera)
 else:
     logger.critical("Camera connection failed.")
-    sys.exit(1)
+    cancel_process()
 
 # 補助関数と保存先設定
 # 画像フォーマットとNumPyデータ型のマッピング
@@ -475,16 +467,14 @@ class SunTrackerApp:
             logger.debug(
                 f"Terminated by keyboard interrupt. Total frames: {self.frame_count}, Dropped: {self.dropped_frames}, Time: {elapsed_time:.2f}s"
             )
-            sys.exit(1)
-
+            cancel_process(viz=self.viz,camera = self.camera)
         except RuntimeError as e:
             elapsed_time = float(time() - self.st_time)
             logger.error(f"Runtime error occurred: {e}")
             logger.debug(
                 f"Terminated with error. Total frames: {self.frame_count}, Dropped: {self.dropped_frames}, Time: {elapsed_time:.2f}s"
             )
-            sys.exit(1)
-
+            cancel_process(viz=self.viz,camera = self.camera)
         finally:
             self.cleanup()
 
